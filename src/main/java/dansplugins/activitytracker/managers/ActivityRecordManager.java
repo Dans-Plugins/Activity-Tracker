@@ -18,6 +18,6 @@ public class ActivityRecordManager {
 
 
     public void assignActivityRecordToPlayerIfNecessary(Player player) {
-        // TODO: implement
+        if ()
     }
 }
