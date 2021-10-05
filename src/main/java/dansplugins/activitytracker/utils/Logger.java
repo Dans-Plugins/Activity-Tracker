@@ -19,7 +19,7 @@ public class Logger {
 
     public void log(String message) {
         if (ActivityTracker.getInstance().isDebugEnabled()) {
-            System.out.println("[Currencies] " + message);
+            System.out.println("[Activity Tracker] " + message);
         }
     }
 

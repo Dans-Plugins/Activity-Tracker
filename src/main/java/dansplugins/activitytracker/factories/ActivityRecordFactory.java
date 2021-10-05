@@ -3,6 +3,7 @@ package dansplugins.activitytracker.factories;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
+import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
 
 public class ActivityRecordFactory {
@@ -21,7 +22,8 @@ public class ActivityRecordFactory {
     }
 
     public ActivityRecord createActivityRecord(Player player) {
-        Session session = SessionFactory.getInstance().createSession(player.getUniqueId());
+        Logger.getInstance().log("Creating activity record for " + player.getName());
+        Session session = SessionFactory.getInstance().createSession(player);
         ActivityRecord newRecord = new ActivityRecord(player.getUniqueId(), session);
         return newRecord;
     }
