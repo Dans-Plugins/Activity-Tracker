@@ -21,10 +21,10 @@ public class ActivityRecordManager {
     }
 
 
-    public void assignActivityRecordToPlayerIfNecessary(Player player) {
+    public boolean assignActivityRecordToPlayerIfNecessary(Player player) {
         if (PersistentData.getInstance().getActivityRecord(player) != null) {
             // player has an activity record
-            return;
+            return false;
         }
 
         // player doesn't have an activity record
@@ -32,5 +32,6 @@ public class ActivityRecordManager {
         ActivityRecord newRecord = ActivityRecordFactory.getInstance().createActivityRecord(player);
         PersistentData.getInstance().addRecord(newRecord);
         player.sendMessage(ChatColor.AQUA + "You've been assigned an activity record.");
+        return true;
     }
 }

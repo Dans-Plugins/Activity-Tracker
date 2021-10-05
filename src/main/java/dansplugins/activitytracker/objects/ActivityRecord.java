@@ -39,7 +39,17 @@ public class ActivityRecord implements IActivityRecord {
     }
 
     @Override
+    public void setMostRecentSession(Session newSession) {
+        mostRecentSession = newSession;
+    }
+
+    @Override
     public int getHoursSpent() {
         return hoursSpent;
+    }
+
+    @Override
+    public void setHoursSpent(int number) {
+        hoursSpent = number;
     }
 }
