@@ -38,7 +38,9 @@ public final class ActivityTracker extends JavaPlugin {
     }
 
     public boolean isDebugEnabled() {
-        return ConfigManager.getInstance().getBoolean("debugMode");
+        // TODO: implement
+        return true;
+        //return ConfigManager.getInstance().getBoolean("debugMode");
     }
 
     private boolean isVersionMismatched() {
