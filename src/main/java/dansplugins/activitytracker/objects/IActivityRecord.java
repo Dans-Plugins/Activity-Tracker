@@ -10,4 +10,5 @@ public interface IActivityRecord {
     void setMostRecentSession(Session newSession);
     int getHoursSpent();
     void setHoursSpent(int number);
+    ISession getSession(int ID);
 }

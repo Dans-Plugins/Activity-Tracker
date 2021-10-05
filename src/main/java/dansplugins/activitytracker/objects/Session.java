@@ -6,13 +6,15 @@ import java.util.UUID;
 
 public class Session implements ISession {
 
+    private int ID;
     private UUID playerUUID;
     private Date loginDate;
     private Date logoutDate;
     private int minutesSpent;
     private boolean active;
 
-    public Session(UUID playerUUID) {
+    public Session(int ID, UUID playerUUID) {
+        this.ID = ID;
         this.playerUUID = playerUUID;
         loginDate = new Date();
         active = true;
@@ -21,6 +23,11 @@ public class Session implements ISession {
     public Session(Map<String, String> data) {
         // TODO: implement
         // this.load(data);
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
     @Override

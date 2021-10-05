@@ -52,4 +52,14 @@ public class ActivityRecord implements IActivityRecord {
     public void setHoursSpent(int number) {
         hoursSpent = number;
     }
+
+    @Override
+    public ISession getSession(int ID) {
+        for (ISession session : sessions) {
+            if (session.getID() == ID) {
+                return session;
+            }
+        }
+        return null;
+    }
 }
