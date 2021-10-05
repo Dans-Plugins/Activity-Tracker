@@ -1,5 +1,18 @@
 package dansplugins.activitytracker.managers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class StorageManager {
 
     private static StorageManager instance;
@@ -7,6 +20,10 @@ public class StorageManager {
     private final static String FILE_PATH = "./plugins/ActivityTracker/";
     private final static String ACTIVITY_RECORDS_FILE_NAME = "activityRecords.json";
     private final static String SESSIONS_FILE_NAME = "sessions.json";
+
+    private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
+
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private StorageManager() {
 
@@ -20,11 +37,40 @@ public class StorageManager {
     }
 
     public void save() {
+        saveActivityRecords();
+        saveSessions();
+    }
+
+    private void saveActivityRecords() {
+        // TODO: implement
+    }
+
+    private void saveSessions() {
         // TODO: implement
     }
 
     public void load() {
+        loadActivityRecords();
+        loadSessions();
+    }
+
+    private void loadActivityRecords() {
         // TODO: implement
+    }
+
+    private void loadSessions() {
+        // TODO: implement
+    }
+
+    private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
+        try{
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
+            return gson.fromJson(reader, LIST_MAP_TYPE);
+        } catch (FileNotFoundException e) {
+            // Fail silently because this can actually happen in normal use
+        }
+        return new ArrayList<>();
     }
 
 }
