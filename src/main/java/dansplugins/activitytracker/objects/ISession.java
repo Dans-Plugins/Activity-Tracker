@@ -8,4 +8,7 @@ public interface ISession {
     Date getLoginDate();
     Date getLogoutDate();
     int getMinutesSpent();
+    boolean isActive();
+    void setActive(boolean b);
+    boolean endSession();
 }
