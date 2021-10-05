@@ -1,5 +1,8 @@
 package dansplugins.activitytracker.managers;
 
+import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.factories.ActivityRecordFactory;
+import dansplugins.activitytracker.objects.ActivityRecord;
 import org.bukkit.entity.Player;
 
 public class ActivityRecordManager {
@@ -18,6 +21,14 @@ public class ActivityRecordManager {
 
 
     public void assignActivityRecordToPlayerIfNecessary(Player player) {
-        if ()
+        if (PersistentData.getInstance().getActivityRecord(player) != null) {
+            // player has an activity record
+            return;
+        }
+
+        // player doesn't have an activity record
+
+        ActivityRecord newRecord = ActivityRecordFactory.getInstance().createActivityRecord(player);
+        PersistentData.getInstance().addRecord(newRecord);
     }
 }

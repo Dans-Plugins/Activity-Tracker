@@ -1,5 +1,6 @@
 package dansplugins.activitytracker.factories;
 
+import dansplugins.activitytracker.objects.ActivityRecord;
 import org.bukkit.entity.Player;
 
 public class ActivityRecordFactory {
@@ -19,7 +20,7 @@ public class ActivityRecordFactory {
 
     public ActivityRecord createActivityRecord(Player player) {
         // TODO: implement
-        return true;
+        return null;
     }
 
 }

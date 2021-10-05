@@ -40,4 +40,14 @@ public class PersistentData {
         return null;
     }
 
+    public void addRecord(ActivityRecord recordToAdd) {
+        if (!activityRecords.contains(recordToAdd)) {
+            activityRecords.add(recordToAdd);
+        }
+    }
+
+    public void removeRecord(ActivityRecord recordToRemove) {
+        activityRecords.remove(recordToRemove);
+    }
+
 }
