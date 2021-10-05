@@ -1,6 +1,5 @@
 package dansplugins.activitytracker;
 
-import dansplugins.activitytracker.managers.ConfigManager;
 import dansplugins.activitytracker.managers.StorageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

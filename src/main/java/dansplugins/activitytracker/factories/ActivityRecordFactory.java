@@ -1,6 +1,5 @@
 package dansplugins.activitytracker.factories;
 
-import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
