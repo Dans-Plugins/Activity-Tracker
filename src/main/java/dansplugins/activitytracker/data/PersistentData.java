@@ -1,6 +1,8 @@
 package dansplugins.activitytracker.data;
 
 import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.objects.ISession;
+import dansplugins.activitytracker.objects.Session;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -50,4 +52,13 @@ public class PersistentData {
         activityRecords.remove(recordToRemove);
     }
 
+    public ISession getSession(int sessionID) {
+        for (ActivityRecord record : activityRecords) {
+            ISession session = record.getSession(sessionID);
+            if (session != null) {
+                return session;
+            }
+        }
+        return null;
+    }
 }

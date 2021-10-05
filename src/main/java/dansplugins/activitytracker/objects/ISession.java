@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public interface ISession {
+    int getID();
     UUID getPlayerUUID();
     Date getLoginDate();
     Date getLogoutDate();
