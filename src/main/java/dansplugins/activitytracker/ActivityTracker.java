@@ -14,6 +14,7 @@ public final class ActivityTracker extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        EventRegistry.getInstance().registerEvents();
         StorageManager.getInstance().load();
     }
 
