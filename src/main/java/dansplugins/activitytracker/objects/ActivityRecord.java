@@ -13,6 +13,7 @@ public class ActivityRecord implements IActivityRecord {
 
     public ActivityRecord(UUID playerUUID, Session session) {
         this.playerUUID = playerUUID;
+        sessions.add(session);
         this.mostRecentSession = session;
         hoursSpent = 0;
     }

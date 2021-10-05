@@ -1,6 +1,7 @@
 package dansplugins.activitytracker;
 
 import dansplugins.activitytracker.eventhandlers.JoinHandler;
+import dansplugins.activitytracker.eventhandlers.QuitHandler;
 import org.bukkit.plugin.PluginManager;
 
 public class EventRegistry {
@@ -25,6 +26,7 @@ public class EventRegistry {
 
         // blocks and interaction
         manager.registerEvents(new JoinHandler(), mainInstance);
+        manager.registerEvents(new QuitHandler(), mainInstance);
     }
     
 }

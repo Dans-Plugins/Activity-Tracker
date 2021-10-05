@@ -3,6 +3,7 @@ package dansplugins.activitytracker.managers;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.objects.ActivityRecord;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ActivityRecordManager {
@@ -30,5 +31,6 @@ public class ActivityRecordManager {
 
         ActivityRecord newRecord = ActivityRecordFactory.getInstance().createActivityRecord(player);
         PersistentData.getInstance().addRecord(newRecord);
+        player.sendMessage(ChatColor.AQUA + "You've been assigned an activity record.");
     }
 }
