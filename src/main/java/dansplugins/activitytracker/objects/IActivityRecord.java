@@ -1,5 +1,11 @@
 package dansplugins.activitytracker.objects;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public interface IActivityRecord {
-    // TODO: implement
+    UUID getPlayerUUID();
+    ArrayList<ISession> getSessions();
+    ISession getMostRecentSession();
+    int getHoursSpent();
 }
