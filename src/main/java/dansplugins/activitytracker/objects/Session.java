@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-public class Session implements ISession {
+public class Session implements ISession, Savable {
 
     private int ID;
     private UUID playerUUID;
@@ -74,5 +74,16 @@ public class Session implements ISession {
     private int calculateMinutesSpent() {
         // TODO: implement
         return 0;
+    }
+
+    @Override
+    public Map<String, String> save() {
+        // TODO: implement
+        return null;
+    }
+
+    @Override
+    public void load(Map<String, String> data) {
+        // TODO: implement
     }
 }

@@ -4,14 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.objects.ActivityRecord;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StorageManager {
 
@@ -42,11 +44,30 @@ public class StorageManager {
     }
 
     private void saveActivityRecords() {
-        // TODO: implement
+        List<Map<String, String>> activityRecords = new ArrayList<>();
+        for (ActivityRecord record : PersistentData.getInstance().getActivityRecords()){
+            activityRecords.add(record.save());
+        }
+
+        writeOutFiles(activityRecords, ACTIVITY_RECORDS_FILE_NAME);
     }
 
     private void saveSessions() {
         // TODO: implement
+    }
+
+    private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
+        try {
+            File parentFolder = new File(FILE_PATH);
+            parentFolder.mkdir();
+            File file = new File(FILE_PATH, fileName);
+            file.createNewFile();
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            outputStreamWriter.write(gson.toJson(saveData));
+            outputStreamWriter.close();
+        } catch(IOException e) {
+            System.out.println("ERROR: " + e.toString());
+        }
     }
 
     public void load() {

@@ -1,6 +1,7 @@
 package dansplugins.activitytracker.objects;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 public interface IActivityRecord {

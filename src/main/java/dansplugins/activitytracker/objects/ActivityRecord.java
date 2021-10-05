@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
-public class ActivityRecord implements IActivityRecord {
+public class ActivityRecord implements IActivityRecord, Savable {
 
     private UUID playerUUID;
     private ArrayList<ISession> sessions = new ArrayList<>();
@@ -61,5 +61,16 @@ public class ActivityRecord implements IActivityRecord {
             }
         }
         return null;
+    }
+
+    @Override
+    public Map<String, String> save() {
+        // TODO: implement
+        return null;
+    }
+
+    @Override
+    public void load(Map<String, String> data) {
+        // TODO: implement
     }
 }
