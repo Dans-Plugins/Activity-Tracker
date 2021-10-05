@@ -21,7 +21,7 @@ public class ActivityRecordFactory {
     }
 
     public ActivityRecord createActivityRecord(Player player) {
-        Session session = new Session(player.getUniqueId());
+        Session session = SessionFactory.getInstance().createSession(player.getUniqueId());
         ActivityRecord newRecord = new ActivityRecord(player.getUniqueId(), session);
         return newRecord;
     }
