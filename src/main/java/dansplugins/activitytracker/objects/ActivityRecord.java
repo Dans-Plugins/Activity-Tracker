@@ -2,6 +2,9 @@ package dansplugins.activitytracker.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dansplugins.activitytracker.utils.UUIDChecker;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +67,16 @@ public class ActivityRecord implements IActivityRecord, Savable {
             }
         }
         return null;
+    }
+
+    @Override
+    public void sendInfoToSender(CommandSender sender) {
+        String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(playerUUID);
+        sender.sendMessage(ChatColor.AQUA + "=================================");
+        sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
+        sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
+        sender.sendMessage(ChatColor.AQUA + "Play Time: " + hoursSpent);
+        // TODO: add last online
     }
 
     @Override

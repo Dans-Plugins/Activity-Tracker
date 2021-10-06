@@ -2,3 +2,13 @@ name: ActivityTracker
 version: 0.2
 main: dansplugins.activitytracker.ActivityTracker
 api-version: 1.13
+
+commands:
+  activitytracker:
+  at:
+
+permissions:
+  at.help:
+    default: true
+  at.info:
+    default: true
