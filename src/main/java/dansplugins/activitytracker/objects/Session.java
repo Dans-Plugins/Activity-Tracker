@@ -78,7 +78,9 @@ public class Session implements ISession, Savable {
 
     private double calculateMinutesSpent() {
         Duration duration = Duration.between(loginDate, logoutDate);
-        return duration.toMinutes();
+        double minutes = duration.toMinutes();
+        Logger.getInstance().log("Minutes calculated: " + minutes);
+        return minutes;
     }
 
     @Override
@@ -89,8 +91,8 @@ public class Session implements ISession, Savable {
         try {
             saveMap.put("ID", gson.toJson(ID));
             saveMap.put("playerUUID", gson.toJson(playerUUID));
-            saveMap.put("loginDate", gson.toJson(loginDate));
-            saveMap.put("logoutDate", gson.toJson(logoutDate));
+            saveMap.put("loginDate", gson.toJson(loginDate.toString()));
+            saveMap.put("logoutDate", gson.toJson(logoutDate.toString()));
             saveMap.put("minutesSpent", gson.toJson(minutesSpent));
             saveMap.put("active", gson.toJson(active));
         } catch (Exception e) {

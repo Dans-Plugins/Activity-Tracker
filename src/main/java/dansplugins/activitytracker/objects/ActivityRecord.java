@@ -82,6 +82,6 @@ public class ActivityRecord implements IActivityRecord, Savable {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
-        hoursSpent = Integer.parseInt(gson.fromJson(data.get("hoursSpent"), String.class));
+        hoursSpent = Double.parseDouble(gson.fromJson(data.get("hoursSpent"), String.class));
     }
 }
