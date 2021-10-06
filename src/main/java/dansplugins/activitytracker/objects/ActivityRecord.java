@@ -7,7 +7,7 @@ import java.util.UUID;
 public class ActivityRecord implements IActivityRecord, Savable {
 
     private UUID playerUUID;
-    private ArrayList<ISession> sessions = new ArrayList<>();
+    private ArrayList<Session> sessions = new ArrayList<>();
     private Session mostRecentSession;
     private int hoursSpent;
 
@@ -29,7 +29,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     @Override
-    public ArrayList<ISession> getSessions() {
+    public ArrayList<Session> getSessions() {
         return sessions;
     }
 
@@ -54,8 +54,8 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     @Override
-    public ISession getSession(int ID) {
-        for (ISession session : sessions) {
+    public Session getSession(int ID) {
+        for (Session session : sessions) {
             if (session.getID() == ID) {
                 return session;
             }

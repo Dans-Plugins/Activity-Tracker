@@ -6,6 +6,8 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.objects.ISession;
+import dansplugins.activitytracker.objects.Session;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -53,7 +55,13 @@ public class StorageManager {
     }
 
     private void saveSessions() {
-        // TODO: implement
+        List<Map<String, String>> sessions = new ArrayList<>();
+        for (ActivityRecord record : PersistentData.getInstance().getActivityRecords()){
+            for (Session session : record.getSessions()) {
+                sessions.add(session.save());
+            }
+        }
+        writeOutFiles(sessions, SESSIONS_FILE_NAME);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
