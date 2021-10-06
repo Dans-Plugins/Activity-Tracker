@@ -2,6 +2,7 @@ package dansplugins.activitytracker.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dansplugins.activitytracker.utils.Logger;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -85,12 +86,16 @@ public class Session implements ISession, Savable {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         Map<String, String> saveMap = new HashMap<>();
-        saveMap.put("ID", gson.toJson(ID));
-        saveMap.put("playerUUID", gson.toJson(playerUUID));
-        saveMap.put("loginDate", gson.toJson(loginDate));
-        saveMap.put("logoutDate", gson.toJson(logoutDate));
-        saveMap.put("minutesSpent", gson.toJson(minutesSpent));
-        saveMap.put("active", gson.toJson(active));
+        try {
+            saveMap.put("ID", gson.toJson(ID));
+            saveMap.put("playerUUID", gson.toJson(playerUUID));
+            saveMap.put("loginDate", gson.toJson(loginDate));
+            saveMap.put("logoutDate", gson.toJson(logoutDate));
+            saveMap.put("minutesSpent", gson.toJson(minutesSpent));
+            saveMap.put("active", gson.toJson(active));
+        } catch (Exception e) {
+            Logger.getInstance().log("Something went wrong saving a session.");
+        }
 
         return saveMap;
     }
