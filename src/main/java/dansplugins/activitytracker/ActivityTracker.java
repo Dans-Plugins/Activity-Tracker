@@ -58,7 +58,8 @@ public final class ActivityTracker extends JavaPlugin {
     }
 
     private boolean isVersionMismatched() {
-        return !getConfig().getString("version").equalsIgnoreCase(getVersion());
+        String version = getConfig().getString("version");
+        return version == null || !version.equalsIgnoreCase(getVersion());
     }
 
 }
