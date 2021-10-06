@@ -1,6 +1,10 @@
 package dansplugins.activitytracker.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,8 +25,7 @@ public class Session implements ISession, Savable {
     }
 
     public Session(Map<String, String> data) {
-        // TODO: implement
-        // this.load(data);
+        this.load(data);
     }
 
     @Override
@@ -78,12 +81,27 @@ public class Session implements ISession, Savable {
 
     @Override
     public Map<String, String> save() {
-        // TODO: implement
-        return null;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Map<String, String> saveMap = new HashMap<>();
+        saveMap.put("ID", gson.toJson(ID));
+        saveMap.put("playerUUID", gson.toJson(playerUUID));
+        saveMap.put("loginDate", gson.toJson(loginDate));
+        saveMap.put("logoutDate", gson.toJson(logoutDate));
+        saveMap.put("minutesSpent", gson.toJson(minutesSpent));
+        saveMap.put("active", gson.toJson(active));
+
+        return saveMap;
     }
 
     @Override
     public void load(Map<String, String> data) {
-        // TODO: implement
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
+        playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
+        loginDate = new Date(gson.fromJson(data.get("loginDate"), String.class));
+
     }
+
 }

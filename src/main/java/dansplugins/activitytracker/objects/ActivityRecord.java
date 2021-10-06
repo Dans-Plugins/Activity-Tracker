@@ -1,6 +1,10 @@
 package dansplugins.activitytracker.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,12 +69,20 @@ public class ActivityRecord implements IActivityRecord, Savable {
 
     @Override
     public Map<String, String> save() {
-        // TODO: implement
-        return null;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Map<String, String> saveMap = new HashMap<>();
+        saveMap.put("playerUUID", gson.toJson(playerUUID));
+        saveMap.put("hoursSpent", gson.toJson(hoursSpent));
+
+        return saveMap;
     }
 
     @Override
     public void load(Map<String, String> data) {
-        // TODO: implement
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
+        hoursSpent = Integer.parseInt(gson.fromJson(data.get("hoursSpent"), String.class));
     }
 }
