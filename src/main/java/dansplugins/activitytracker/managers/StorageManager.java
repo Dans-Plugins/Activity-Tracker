@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.ISession;
@@ -40,6 +41,9 @@ public class StorageManager {
     public void save() {
         saveActivityRecords();
         saveSessions();
+        if (ConfigManager.getInstance().hasBeenAltered()) {
+            ActivityTracker.getInstance().saveConfig();
+        }
     }
 
     private void saveActivityRecords() {

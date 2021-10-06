@@ -1,5 +1,6 @@
 package dansplugins.activitytracker;
 
+import dansplugins.activitytracker.managers.ConfigManager;
 import dansplugins.activitytracker.managers.StorageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -37,15 +38,11 @@ public final class ActivityTracker extends JavaPlugin {
     }
 
     public boolean isDebugEnabled() {
-        // TODO: implement
-        return true;
-        //return ConfigManager.getInstance().getBoolean("debugMode");
+        return ConfigManager.getInstance().getBoolean("debugMode");
     }
 
     private boolean isVersionMismatched() {
-        // TODO: implement
-        return false;
-        // return !getConfig().getString("version").equalsIgnoreCase(getVersion());
+        return !getConfig().getString("version").equalsIgnoreCase(getVersion());
     }
 
 }
