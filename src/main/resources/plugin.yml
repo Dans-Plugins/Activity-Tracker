@@ -1,5 +1,5 @@
 name: ActivityTracker
-version: 0.4-alpha-1
+version: 0.4-alpha-2
 main: dansplugins.activitytracker.ActivityTracker
 api-version: 1.13
 
