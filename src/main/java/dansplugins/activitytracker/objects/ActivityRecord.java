@@ -74,9 +74,11 @@ public class ActivityRecord implements IActivityRecord, Savable {
         String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(playerUUID);
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
+        sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
-        sender.sendMessage(ChatColor.AQUA + "Play Time: " + hoursSpent);
+        sender.sendMessage(ChatColor.AQUA + "Play Time: " + hoursSpent + " hours");
         // TODO: add last online
+        sender.sendMessage(ChatColor.AQUA + "=================================");
     }
 
     @Override
