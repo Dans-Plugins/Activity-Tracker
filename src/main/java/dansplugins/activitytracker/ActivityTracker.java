@@ -38,6 +38,8 @@ public final class ActivityTracker extends JavaPlugin {
         EventRegistry.getInstance().registerEvents();
 
         StorageManager.getInstance().load();
+
+        Scheduler.getInstance().scheduleAutosave();
     }
 
     @Override
