@@ -19,7 +19,9 @@ public class QuitHandler implements Listener {
         Session currentSession = record.getMostRecentSession();
         Logger.getInstance().log(player.getName() + " has quit the server. Ending their session.");
         currentSession.endSession();
-        record.setHoursSpent(record.getHoursSpent() + (currentSession.getMinutesSpent() / 60));
+        double totalHoursSpent = record.getHoursSpent() + currentSession.getMinutesSpent() / 60;
+        Logger.getInstance().log("Total hours spent: " + totalHoursSpent);
+        record.setHoursSpent(totalHoursSpent);
     }
 
 }
