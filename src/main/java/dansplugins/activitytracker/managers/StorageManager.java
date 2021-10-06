@@ -12,10 +12,7 @@ import dansplugins.activitytracker.objects.Session;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StorageManager {
 
@@ -84,11 +81,29 @@ public class StorageManager {
     }
 
     private void loadActivityRecords() {
-        // TODO: implement
+        PersistentData.getInstance().getActivityRecords().clear();
+
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ACTIVITY_RECORDS_FILE_NAME);
+
+        for (Map<String, String> activityRecordsData : data){
+            ActivityRecord record = new ActivityRecord(activityRecordsData);
+            PersistentData.getInstance().addRecord(record);
+        }
     }
 
     private void loadSessions() {
-        // TODO: implement
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + SESSIONS_FILE_NAME);
+
+        if (data.size() == 0) {
+            return;
+        }
+
+        for (Map<String, String> sessionsData : data) {
+            Session session = new Session(sessionsData);
+            UUID playerUUID = session.getPlayerUUID();
+            ActivityRecord record = PersistentData.getInstance().getActivityRecord(playerUUID);
+            record.getSessions().add(session);
+        }
     }
 
     private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
