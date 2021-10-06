@@ -1,7 +1,6 @@
 package dansplugins.activitytracker.objects;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 public interface ISession {
@@ -9,7 +8,7 @@ public interface ISession {
     UUID getPlayerUUID();
     LocalDateTime getLoginDate();
     LocalDateTime getLogoutDate();
-    int getMinutesSpent();
+    double getMinutesSpent();
     boolean isActive();
     void setActive(boolean b);
     boolean endSession();

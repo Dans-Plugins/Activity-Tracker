@@ -13,7 +13,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
     private UUID playerUUID;
     private ArrayList<Session> sessions = new ArrayList<>();
     private Session mostRecentSession;
-    private int hoursSpent;
+    private double hoursSpent;
 
     public ActivityRecord(UUID playerUUID, Session session) {
         this.playerUUID = playerUUID;
@@ -47,12 +47,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     @Override
-    public int getHoursSpent() {
+    public double getHoursSpent() {
         return hoursSpent;
     }
 
     @Override
-    public void setHoursSpent(int number) {
+    public void setHoursSpent(double number) {
         hoursSpent = number;
     }
 

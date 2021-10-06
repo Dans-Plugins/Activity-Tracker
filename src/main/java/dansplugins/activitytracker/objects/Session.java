@@ -3,8 +3,8 @@ package dansplugins.activitytracker.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,7 +15,7 @@ public class Session implements ISession, Savable {
     private UUID playerUUID;
     private LocalDateTime loginDate;
     private LocalDateTime logoutDate;
-    private int minutesSpent;
+    private double minutesSpent;
     private boolean active;
 
     public Session(int ID, UUID playerUUID) {
@@ -50,7 +50,7 @@ public class Session implements ISession, Savable {
     }
 
     @Override
-    public int getMinutesSpent() {
+    public double getMinutesSpent() {
         return minutesSpent;
     }
 
@@ -75,9 +75,9 @@ public class Session implements ISession, Savable {
         return true;
     }
 
-    private int calculateMinutesSpent() {
-        // TODO: implement
-        return 0;
+    private double calculateMinutesSpent() {
+        Duration duration = Duration.between(loginDate, logoutDate);
+        return duration.toMinutes();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class Session implements ISession, Savable {
         playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
         loginDate = LocalDateTime.parse(gson.fromJson(data.get("loginDate"), String.class));
         logoutDate = LocalDateTime.parse(gson.fromJson(data.get("logoutDate"), String.class));
-        minutesSpent = Integer.parseInt(gson.fromJson(data.get("minutesSpent"), String.class));
+        minutesSpent = Double.parseDouble(gson.fromJson(data.get("minutesSpent"), String.class));
         active = Boolean.parseBoolean(gson.fromJson(data.get("active"), String.class));
     }
 

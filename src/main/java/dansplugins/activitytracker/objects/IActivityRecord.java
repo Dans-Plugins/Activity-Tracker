@@ -1,7 +1,6 @@
 package dansplugins.activitytracker.objects;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 
 public interface IActivityRecord {
@@ -9,7 +8,7 @@ public interface IActivityRecord {
     ArrayList<Session> getSessions();
     Session getMostRecentSession();
     void setMostRecentSession(Session newSession);
-    int getHoursSpent();
-    void setHoursSpent(int number);
+    double getHoursSpent();
+    void setHoursSpent(double number);
     Session getSession(int ID);
 }
