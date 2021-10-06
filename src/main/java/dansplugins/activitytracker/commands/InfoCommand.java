@@ -8,11 +8,15 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
-public class InfoCommand {
+public class InfoCommand implements ICommand {
+
+    @Override
+    public boolean execute(CommandSender sender) {
+        // unused
+        return false;
+    }
 
     public boolean execute(CommandSender sender, String[] args) {
-        // TODO: implement
-
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /at info (playerName)");
             return false;

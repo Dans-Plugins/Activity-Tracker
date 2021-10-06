@@ -7,8 +7,9 @@ import dansplugins.activitytracker.utils.PermissionChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CommandInterpreter {
+public class CommandInterpreter implements ICommandInterpreter {
 
+    @Override
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
         if (label.equalsIgnoreCase("activitytracker") || label.equalsIgnoreCase("at")) {
 

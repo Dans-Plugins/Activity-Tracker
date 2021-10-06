@@ -1,24 +1,26 @@
-package dansplugins.activitytracker;
+package dansplugins.activitytracker.utils;
 
+import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.eventhandlers.JoinHandler;
 import dansplugins.activitytracker.eventhandlers.QuitHandler;
 import org.bukkit.plugin.PluginManager;
 
-public class EventRegistry {
+public class EventHandlerRegistry implements IEventHandlerRegistry {
 
-    private static EventRegistry instance;
+    private static EventHandlerRegistry instance;
 
-    private EventRegistry() {
+    private EventHandlerRegistry() {
 
     }
 
-    public static EventRegistry getInstance() {
+    public static EventHandlerRegistry getInstance() {
         if (instance == null) {
-            instance = new EventRegistry();
+            instance = new EventHandlerRegistry();
         }
         return instance;
     }
 
+    @Override
     public void registerEvents() {
 
         ActivityTracker mainInstance = ActivityTracker.getInstance();

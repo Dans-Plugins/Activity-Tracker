@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonReader;
 import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.objects.ISession;
 import dansplugins.activitytracker.objects.Session;
 
 import java.io.*;
@@ -15,7 +14,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class StorageManager {
+public class StorageManager implements IStorageService {
 
     private static StorageManager instance;
 
@@ -31,19 +30,53 @@ public class StorageManager {
 
     }
 
-    public static StorageManager getInstance() {
+    public static IStorageService getInstance() {
         if (instance == null) {
             instance = new StorageManager();
         }
         return instance;
     }
 
+    @Override
     public void save() {
         saveActivityRecords();
         saveSessions();
         if (ConfigManager.getInstance().hasBeenAltered()) {
             ActivityTracker.getInstance().saveConfig();
         }
+    }
+
+    @Override
+    public void load() {
+        loadActivityRecords();
+        loadSessions();
+    }
+
+    @Override
+    public void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
+        try {
+            File parentFolder = new File(FILE_PATH);
+            parentFolder.mkdir();
+            File file = new File(FILE_PATH, fileName);
+            file.createNewFile();
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            outputStreamWriter.write(gson.toJson(saveData));
+            outputStreamWriter.close();
+        } catch(IOException e) {
+            System.out.println("ERROR: " + e.toString());
+        }
+    }
+
+    @Override
+    public ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
+        try{
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
+            return gson.fromJson(reader, LIST_MAP_TYPE);
+        } catch (FileNotFoundException e) {
+            // Fail silently because this can actually happen in normal use
+        }
+        return new ArrayList<>();
     }
 
     private void saveActivityRecords() {
@@ -63,25 +96,6 @@ public class StorageManager {
             }
         }
         writeOutFiles(sessions, SESSIONS_FILE_NAME);
-    }
-
-    private void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
-        try {
-            File parentFolder = new File(FILE_PATH);
-            parentFolder.mkdir();
-            File file = new File(FILE_PATH, fileName);
-            file.createNewFile();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            outputStreamWriter.write(gson.toJson(saveData));
-            outputStreamWriter.close();
-        } catch(IOException e) {
-            System.out.println("ERROR: " + e.toString());
-        }
-    }
-
-    public void load() {
-        loadActivityRecords();
-        loadSessions();
     }
 
     private void loadActivityRecords() {
@@ -110,15 +124,6 @@ public class StorageManager {
         }
     }
 
-    private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
-        try{
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
-            return gson.fromJson(reader, LIST_MAP_TYPE);
-        } catch (FileNotFoundException e) {
-            // Fail silently because this can actually happen in normal use
-        }
-        return new ArrayList<>();
-    }
+
 
 }

@@ -1,10 +1,10 @@
-package dansplugins.activitytracker;
+package dansplugins.activitytracker.utils;
 
+import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.managers.StorageManager;
-import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.Bukkit;
 
-public class Scheduler {
+public class Scheduler implements IScheduler {
 
     private static Scheduler instance;
 
@@ -19,6 +19,7 @@ public class Scheduler {
         return instance;
     }
 
+    @Override
     public void scheduleAutosave() {
         Logger.getInstance().log("Scheduling hourly autosave.");
         int delay = 60 * 60; // 1 hour

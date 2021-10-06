@@ -2,7 +2,7 @@ package dansplugins.activitytracker.utils;
 
 import java.util.ArrayList;
 
-public class ArgumentParser {
+public class ArgumentParser implements IArgumentParser {
 
     private static ArgumentParser instance;
 
@@ -17,6 +17,7 @@ public class ArgumentParser {
         return instance;
     }
 
+    @Override
     public String[] dropFirstArgument(String[] args) {
         String[] toReturn = new String[args.length - 1];
 
@@ -27,6 +28,7 @@ public class ArgumentParser {
         return toReturn;
     }
 
+    @Override
     public ArrayList<String> getArgumentsInsideDoubleQuotes(String[] args) {
         ArrayList<String> toReturn = new ArrayList<>();
 

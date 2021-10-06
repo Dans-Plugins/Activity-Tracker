@@ -8,7 +8,7 @@ import java.util.UUID;
 import static org.bukkit.Bukkit.getOfflinePlayers;
 import static org.bukkit.Bukkit.getOnlinePlayers;
 
-public class UUIDChecker {
+public class UUIDChecker implements IUUIDChecker {
 
     private static UUIDChecker instance;
 
@@ -17,6 +17,7 @@ public class UUIDChecker {
         return instance;
     }
 
+    @Override
     public String findPlayerNameBasedOnUUID(UUID playerUUID) {
         // Check online
         for (Player player : getOnlinePlayers()) {
@@ -33,6 +34,7 @@ public class UUIDChecker {
         return "";
     }
 
+    @Override
     public UUID findUUIDBasedOnPlayerName(String playerName) {
         // Check online
         for (Player player : getOnlinePlayers()) {

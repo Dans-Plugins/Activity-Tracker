@@ -3,6 +3,8 @@ package dansplugins.activitytracker;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.managers.ConfigManager;
 import dansplugins.activitytracker.managers.StorageManager;
+import dansplugins.activitytracker.utils.EventHandlerRegistry;
+import dansplugins.activitytracker.utils.Scheduler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,7 +37,7 @@ public final class ActivityTracker extends JavaPlugin {
             reloadConfig();
         }
 
-        EventRegistry.getInstance().registerEvents();
+        EventHandlerRegistry.getInstance().registerEvents();
 
         StorageManager.getInstance().load();
 
