@@ -6,11 +6,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public final class ActivityTracker extends JavaPlugin {
 
     private static ActivityTracker instance;
 
-    private String version = "v0.2-alpha-1";
+    private String version = "v0.2";
 
     public static ActivityTracker getInstance() {
         return instance;
@@ -19,7 +21,21 @@ public final class ActivityTracker extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        // create/load config
+        if (!(new File("./plugins/Mailboxes/config.yml").exists())) {
+            ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+        }
+        else {
+            // pre load compatibility checks
+            if (isVersionMismatched()) {
+                ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            }
+            reloadConfig();
+        }
+
         EventRegistry.getInstance().registerEvents();
+
         StorageManager.getInstance().load();
     }
 
