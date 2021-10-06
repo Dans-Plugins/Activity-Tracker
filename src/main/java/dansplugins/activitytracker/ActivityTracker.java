@@ -24,7 +24,7 @@ public final class ActivityTracker extends JavaPlugin {
         instance = this;
 
         // create/load config
-        if (!(new File("./plugins/Mailboxes/config.yml").exists())) {
+        if (!(new File("./plugins/ActivityTracker/config.yml").exists())) {
             ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
         }
         else {
