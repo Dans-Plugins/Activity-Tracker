@@ -3,6 +3,7 @@ package dansplugins.activitytracker.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,15 +13,15 @@ public class Session implements ISession, Savable {
 
     private int ID;
     private UUID playerUUID;
-    private Date loginDate;
-    private Date logoutDate;
+    private LocalDateTime loginDate;
+    private LocalDateTime logoutDate;
     private int minutesSpent;
     private boolean active;
 
     public Session(int ID, UUID playerUUID) {
         this.ID = ID;
         this.playerUUID = playerUUID;
-        loginDate = new Date();
+        loginDate = LocalDateTime.now();
         active = true;
     }
 
@@ -39,12 +40,12 @@ public class Session implements ISession, Savable {
     }
 
     @Override
-    public Date getLoginDate() {
+    public LocalDateTime getLoginDate() {
         return loginDate;
     }
 
     @Override
-    public Date getLogoutDate() {
+    public LocalDateTime getLogoutDate() {
         return logoutDate;
     }
 
@@ -68,7 +69,7 @@ public class Session implements ISession, Savable {
         if (!active) {
             return false;
         }
-        logoutDate = new Date();
+        logoutDate = LocalDateTime.now();
         minutesSpent = calculateMinutesSpent();
         setActive(false);
         return true;
@@ -100,8 +101,10 @@ public class Session implements ISession, Savable {
 
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
         playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
-        loginDate = new Date(gson.fromJson(data.get("loginDate"), String.class));
-
+        loginDate = LocalDateTime.parse(gson.fromJson(data.get("loginDate"), String.class));
+        logoutDate = LocalDateTime.parse(gson.fromJson(data.get("logoutDate"), String.class));
+        minutesSpent = Integer.parseInt(gson.fromJson(data.get("minutesSpent"), String.class));
+        active = Boolean.parseBoolean(gson.fromJson(data.get("active"), String.class));
     }
 
 }

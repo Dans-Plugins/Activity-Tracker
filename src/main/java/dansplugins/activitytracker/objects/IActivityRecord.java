@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface IActivityRecord {
     UUID getPlayerUUID();
     ArrayList<Session> getSessions();
-    ISession getMostRecentSession();
+    Session getMostRecentSession();
     void setMostRecentSession(Session newSession);
     int getHoursSpent();
     void setHoursSpent(int number);

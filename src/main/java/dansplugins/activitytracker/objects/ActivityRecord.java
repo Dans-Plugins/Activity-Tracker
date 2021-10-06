@@ -23,8 +23,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     public ActivityRecord(Map<String, String> data) {
-        // TODO: implement
-        // this.load(data);
+        this.load(data);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     @Override
-    public ISession getMostRecentSession() {
+    public Session getMostRecentSession() {
         return mostRecentSession;
     }
 
