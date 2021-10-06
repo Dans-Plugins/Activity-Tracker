@@ -80,7 +80,7 @@ public class Session implements ISession, Savable {
         Duration duration = Duration.between(loginDate, logoutDate);
         double seconds = duration.getSeconds();
         double minutes = seconds / 60;
-        Logger.getInstance().log("Minutes calculated: " + minutes);
+        Logger.getInstance().log("Minutes calculated for session: " + minutes);
         return minutes;
     }
 
