@@ -52,9 +52,9 @@ public class PersistentData {
         activityRecords.remove(recordToRemove);
     }
 
-    public ISession getSession(int sessionID) {
+    public Session getSession(int sessionID) {
         for (ActivityRecord record : activityRecords) {
-            ISession session = record.getSession(sessionID);
+            Session session = record.getSession(sessionID);
             if (session != null) {
                 return session;
             }

@@ -1,13 +1,17 @@
 package dansplugins.activitytracker.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ActivityRecord implements IActivityRecord {
+public class ActivityRecord implements IActivityRecord, Savable {
 
     private UUID playerUUID;
-    private ArrayList<ISession> sessions = new ArrayList<>();
+    private ArrayList<Session> sessions = new ArrayList<>();
     private Session mostRecentSession;
     private int hoursSpent;
 
@@ -19,8 +23,7 @@ public class ActivityRecord implements IActivityRecord {
     }
 
     public ActivityRecord(Map<String, String> data) {
-        // TODO: implement
-        // this.load(data);
+        this.load(data);
     }
 
     @Override
@@ -29,12 +32,12 @@ public class ActivityRecord implements IActivityRecord {
     }
 
     @Override
-    public ArrayList<ISession> getSessions() {
+    public ArrayList<Session> getSessions() {
         return sessions;
     }
 
     @Override
-    public ISession getMostRecentSession() {
+    public Session getMostRecentSession() {
         return mostRecentSession;
     }
 
@@ -54,12 +57,31 @@ public class ActivityRecord implements IActivityRecord {
     }
 
     @Override
-    public ISession getSession(int ID) {
-        for (ISession session : sessions) {
+    public Session getSession(int ID) {
+        for (Session session : sessions) {
             if (session.getID() == ID) {
                 return session;
             }
         }
         return null;
+    }
+
+    @Override
+    public Map<String, String> save() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        Map<String, String> saveMap = new HashMap<>();
+        saveMap.put("playerUUID", gson.toJson(playerUUID));
+        saveMap.put("hoursSpent", gson.toJson(hoursSpent));
+
+        return saveMap;
+    }
+
+    @Override
+    public void load(Map<String, String> data) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
+        hoursSpent = Integer.parseInt(gson.fromJson(data.get("hoursSpent"), String.class));
     }
 }
