@@ -3,7 +3,7 @@ package dansplugins.activitytracker.utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class PermissionChecker {
+public class PermissionChecker implements IPermissionChecker {
 
     private static PermissionChecker instance;
 
@@ -18,6 +18,7 @@ public class PermissionChecker {
         return instance;
     }
 
+    @Override
     public boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {
             sender.sendMessage(ChatColor.RED + "In order to use this command, you need the following permission: '" + permission + "'");
