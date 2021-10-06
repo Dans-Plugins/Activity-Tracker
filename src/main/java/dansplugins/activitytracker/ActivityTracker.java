@@ -1,5 +1,6 @@
 package dansplugins.activitytracker;
 
+import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.managers.ConfigManager;
 import dansplugins.activitytracker.managers.StorageManager;
 import org.bukkit.command.Command;
@@ -41,6 +42,7 @@ public final class ActivityTracker extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        PersistentData.getInstance().endCurrentSessions();
         StorageManager.getInstance().save();
     }
 

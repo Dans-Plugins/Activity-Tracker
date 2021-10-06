@@ -3,6 +3,8 @@ package dansplugins.activitytracker.data;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.ISession;
 import dansplugins.activitytracker.objects.Session;
+import dansplugins.activitytracker.utils.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -60,5 +62,13 @@ public class PersistentData {
             }
         }
         return null;
+    }
+
+    public void endCurrentSessions() {
+        Logger.getInstance().log("Ending current sessions.");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            ActivityRecord record = getActivityRecord(player);
+            record.getMostRecentSession().endSession();
+        }
     }
 }
