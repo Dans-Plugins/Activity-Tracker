@@ -50,7 +50,7 @@ public final class ActivityTracker extends JavaPlugin {
         Scheduler.getInstance().scheduleAutosave();
 
         DansAPI_Integrator DAPI_Integrator = new DansAPI_Integrator(this);
-        DAPI_Integrator.getAPI().getToolbox().getLogger().log("This debug message was printed through the use of Dan's API.");
+        DAPI_Integrator.getAPI().getToolbox().getLogger().log(isDebugEnabled(), "This debug message was printed through the use of Dan's API.");
     }
 
     @Override
