@@ -5,6 +5,7 @@ import dansplugins.activitytracker.managers.ConfigManager;
 import dansplugins.activitytracker.managers.StorageManager;
 import dansplugins.activitytracker.utils.EventHandlerRegistry;
 import dansplugins.activitytracker.utils.Scheduler;
+import dansplugins.dansapi.implementation.DansAPI_Integrator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,6 +43,9 @@ public final class ActivityTracker extends JavaPlugin {
         StorageManager.getInstance().load();
 
         Scheduler.getInstance().scheduleAutosave();
+
+        DansAPI_Integrator DAPI_Integrator = new DansAPI_Integrator(this);
+        DAPI_Integrator.getAPI().getToolbox().getLogger().log("This debug message was printed through the use of Dan's API.");
     }
 
     @Override
