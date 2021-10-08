@@ -56,8 +56,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     @Override
-    public double getHoursSpent() {
+    public double getHoursSpentNotIncludingTheCurrentSession() {
         return hoursSpent;
+    }
+
+    public double getTotalHoursSpent() {
+        return getHoursSpentNotIncludingTheCurrentSession() + getMostRecentSession().getMinutesSinceLogin()/60;
     }
 
     @Override

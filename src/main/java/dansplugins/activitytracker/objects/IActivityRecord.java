@@ -10,7 +10,7 @@ public interface IActivityRecord {
     ArrayList<Session> getSessions();
     Session getMostRecentSession();
     void setMostRecentSession(Session newSession);
-    double getHoursSpent();
+    double getHoursSpentNotIncludingTheCurrentSession();
     void setHoursSpent(double number);
     Session getSession(int ID);
     void sendInfoToSender(CommandSender sender);

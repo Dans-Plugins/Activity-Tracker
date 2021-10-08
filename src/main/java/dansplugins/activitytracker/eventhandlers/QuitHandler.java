@@ -2,7 +2,6 @@ package dansplugins.activitytracker.eventhandlers;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.objects.ISession;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
@@ -19,7 +18,7 @@ public class QuitHandler implements Listener {
         Session currentSession = record.getMostRecentSession();
         Logger.getInstance().log(player.getName() + " has quit the server. Ending their session.");
         currentSession.endSession();
-        double totalHoursSpent = record.getHoursSpent() + currentSession.getMinutesSpent() / 60;
+        double totalHoursSpent = record.getHoursSpentNotIncludingTheCurrentSession() + currentSession.getMinutesSpent() / 60;
         Logger.getInstance().log("Total hours spent on the server: " + totalHoursSpent);
         record.setHoursSpent(totalHoursSpent);
     }
