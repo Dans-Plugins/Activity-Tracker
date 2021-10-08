@@ -43,7 +43,11 @@ public class ActivityRecord implements IActivityRecord, Savable {
 
     @Override
     public Session getMostRecentSession() {
-        return getSession(mostRecentSessionID);
+        Session session = getSession(mostRecentSessionID);
+        if (session == null) {
+            return sessions.get(sessions.size() - 1);
+        }
+        return session;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
             sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
         }
         else {
-            Logger.getInstance().log("Most Recent Session was null for " + playerName);
+            Logger.getInstance().log("Play time could not be displayed because the most recent session was null for " + playerName);
         }
         boolean online = Bukkit.getPlayer(playerUUID) != null;
         if (online) {
