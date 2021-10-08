@@ -36,7 +36,7 @@ public class CommandInterpreter implements ICommandInterpreter {
                 return command.execute(sender, arguments);
             }
 
-            if (secondaryLabel.equalsIgnoreCase("at.top")) {
+            if (secondaryLabel.equalsIgnoreCase("top")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.top")) { return false; }
                 TopCommand command = new TopCommand();
                 return command.execute(sender);
