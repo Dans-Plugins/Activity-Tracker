@@ -2,6 +2,7 @@ package dansplugins.activitytracker.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dansplugins.activitytracker.utils.Logger;
 import dansplugins.activitytracker.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -77,8 +78,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
         sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
-        sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hoursSpent + mostRecentSession.getMinutesSinceLogin()/60) + " hours");
-        boolean online = Bukkit.getOfflinePlayer(playerUUID).isOnline();
+        Logger.getInstance().log("hoursSpent: " + hoursSpent);
+        Logger.getInstance().log("Most Recent Session: " + mostRecentSession);
+        Logger.getInstance().log("Minutes since login: " + mostRecentSession.getMinutesSinceLogin());
+        double hours = hoursSpent + mostRecentSession.getMinutesSinceLogin()/60;
+        sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
+        boolean online = Bukkit.getPlayer(playerUUID) != null;
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
             sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogin()/60) + " hours");
