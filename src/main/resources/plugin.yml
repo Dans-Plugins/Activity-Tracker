@@ -12,3 +12,5 @@ permissions:
     default: true
   at.info:
     default: true
+  at.top:
+    default: true

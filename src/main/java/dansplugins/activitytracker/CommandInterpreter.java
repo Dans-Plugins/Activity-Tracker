@@ -2,6 +2,7 @@ package dansplugins.activitytracker;
 
 import dansplugins.activitytracker.commands.HelpCommand;
 import dansplugins.activitytracker.commands.InfoCommand;
+import dansplugins.activitytracker.commands.TopCommand;
 import dansplugins.activitytracker.utils.ArgumentParser;
 import dansplugins.activitytracker.utils.PermissionChecker;
 import org.bukkit.ChatColor;
@@ -33,6 +34,12 @@ public class CommandInterpreter implements ICommandInterpreter {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.info")) { return false; }
                 InfoCommand command = new InfoCommand();
                 return command.execute(sender, arguments);
+            }
+
+            if (secondaryLabel.equalsIgnoreCase("at.top")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "at.top")) { return false; }
+                TopCommand command = new TopCommand();
+                return command.execute(sender);
             }
 
             sender.sendMessage(ChatColor.RED + "Activity Tracker doesn't recognize that command.");
