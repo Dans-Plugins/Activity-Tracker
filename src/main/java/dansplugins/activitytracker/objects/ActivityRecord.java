@@ -77,7 +77,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
         sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
-        sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hoursSpent) + " hours");
+        sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hoursSpent + mostRecentSession.getMinutesSinceLogin()) + " hours");
         boolean online = Bukkit.getOfflinePlayer(playerUUID).isOnline();
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
