@@ -21,7 +21,7 @@ public class TopCommand implements ICommand {
             }
             String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(record.getPlayerUUID());
 
-            sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getHoursSpentNotIncludingTheCurrentSession()) + " hours");
+            sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getTotalHoursSpent()) + " hours");
             count++;
         }
         return false;

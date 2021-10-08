@@ -58,7 +58,7 @@ public class ActivityRecordManager {
             if (toIgnore.contains(record)) {
                 continue;
             }
-            if (record.getHoursSpentNotIncludingTheCurrentSession() > max) {
+            if (record.getTotalHoursSpent() > max) {
                 toReturn = record;
                 max = record.getTotalHoursSpent();
             }

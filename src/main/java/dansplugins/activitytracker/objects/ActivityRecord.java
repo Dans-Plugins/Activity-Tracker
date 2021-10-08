@@ -61,7 +61,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
     }
 
     public double getTotalHoursSpent() {
-        return getHoursSpentNotIncludingTheCurrentSession() + getMostRecentSession().getMinutesSinceLogin()/60;
+        if (getMostRecentSession().isActive()) {
+            return getHoursSpentNotIncludingTheCurrentSession() + getMostRecentSession().getMinutesSinceLogin()/60;
+        }
+        else {
+            return getHoursSpentNotIncludingTheCurrentSession();
+        }
     }
 
     @Override
@@ -83,8 +88,15 @@ public class ActivityRecord implements IActivityRecord, Savable {
     public void sendInfoToSender(CommandSender sender) {
         String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(playerUUID);
         Session mostRecentSession = getMostRecentSession();
-        double hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
+        double hours = -1;
         boolean online = Bukkit.getPlayer(playerUUID) != null;
+
+        if (online) {
+            hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
+        }
+        else {
+            hours = hoursSpent;
+        }
 
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
