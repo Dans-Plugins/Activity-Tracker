@@ -81,11 +81,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
         boolean online = Bukkit.getOfflinePlayer(playerUUID).isOnline();
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
+            // TODO add time since login
         }
         else {
             sender.sendMessage(ChatColor.AQUA + "Status: Offline");
+            // TODO: add time since logout
         }
-        // TODO: add last online
         sender.sendMessage(ChatColor.AQUA + "=================================");
     }
 
