@@ -2,7 +2,6 @@ package dansplugins.activitytracker.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dansplugins.activitytracker.utils.Logger;
 import dansplugins.activitytracker.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

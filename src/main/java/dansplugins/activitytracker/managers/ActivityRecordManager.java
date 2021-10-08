@@ -4,7 +4,6 @@ import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.utils.Logger;
-import dansplugins.activitytracker.utils.UUIDChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
