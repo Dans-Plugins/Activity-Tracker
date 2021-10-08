@@ -1,5 +1,6 @@
 package dansplugins.activitytracker;
 
+import dansplugins.activitytracker.bstats.Metrics;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.managers.ConfigManager;
 import dansplugins.activitytracker.managers.StorageManager;
@@ -24,6 +25,10 @@ public final class ActivityTracker extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        // bStats
+        int pluginId = 12983;
+        Metrics metrics = new Metrics(this, pluginId);
 
         // create/load config
         if (!(new File("./plugins/ActivityTracker/config.yml").exists())) {
