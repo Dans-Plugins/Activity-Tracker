@@ -12,4 +12,6 @@ public interface ISession {
     boolean isActive();
     void setActive(boolean b);
     boolean endSession();
+    double getMinutesSinceLogin();
+    double getMinutesSinceLogout();
 }

@@ -76,6 +76,23 @@ public class Session implements ISession, Savable {
         return true;
     }
 
+    @Override
+    public double getMinutesSinceLogin() {
+        return calculateMinutesSinceDateTime(loginDate);
+    }
+
+    @Override
+    public double getMinutesSinceLogout() {
+        return calculateMinutesSinceDateTime(logoutDate);
+    }
+
+    private double calculateMinutesSinceDateTime(LocalDateTime dateTime) {
+        Duration duration = Duration.between(dateTime, LocalDateTime.now());
+        double seconds = duration.getSeconds();
+        double minutes = seconds / 60;
+        return minutes;
+    }
+
     private double calculateMinutesSpent() {
         Duration duration = Duration.between(loginDate, logoutDate);
         double seconds = duration.getSeconds();
