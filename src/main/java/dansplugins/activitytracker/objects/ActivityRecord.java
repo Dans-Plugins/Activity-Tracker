@@ -78,36 +78,22 @@ public class ActivityRecord implements IActivityRecord, Savable {
     @Override
     public void sendInfoToSender(CommandSender sender) {
         String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(playerUUID);
+        Session mostRecentSession = getMostRecentSession();
+        double hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
+        boolean online = Bukkit.getPlayer(playerUUID) != null;
+
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
-        Session mostRecentSession = getMostRecentSession();
-        if (mostRecentSession != null) {
-            double hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
-            sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
-        }
-        else {
-            Logger.getInstance().log("Play time could not be displayed because the most recent session was null for " + playerName);
-        }
-        boolean online = Bukkit.getPlayer(playerUUID) != null;
+        sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
-            if (mostRecentSession != null) {
-                sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", getMostRecentSession().getMinutesSinceLogin()/60) + " hours");
-            }
-            else {
-                Logger.getInstance().log("Most Recent Session was null for " + playerName);
-            }
+            sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogin()/60) + " hours");
         }
         else {
             sender.sendMessage(ChatColor.AQUA + "Status: Offline");
-            if (mostRecentSession != null) {
-                sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", getMostRecentSession().getMinutesSinceLogout()/60) + " hours");
-            }
-            else {
-                Logger.getInstance().log("Most Recent Session was null for " + playerName);
-            }
+            sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogout()/60) + " hours");
         }
         sender.sendMessage(ChatColor.AQUA + "=================================");
     }
