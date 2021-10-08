@@ -83,17 +83,26 @@ public class ActivityRecord implements IActivityRecord, Savable {
             double hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
             sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
         }
+        else {
+            Logger.getInstance().log("Most Recent Session was null for " + playerName);
+        }
         boolean online = Bukkit.getPlayer(playerUUID) != null;
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
             if (mostRecentSession != null) {
                 sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", getMostRecentSession().getMinutesSinceLogin()/60) + " hours");
             }
+            else {
+                Logger.getInstance().log("Most Recent Session was null for " + playerName);
+            }
         }
         else {
             sender.sendMessage(ChatColor.AQUA + "Status: Offline");
             if (mostRecentSession != null) {
                 sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", getMostRecentSession().getMinutesSinceLogout()/60) + " hours");
+            }
+            else {
+                Logger.getInstance().log("Most Recent Session was null for " + playerName);
             }
         }
         sender.sendMessage(ChatColor.AQUA + "=================================");
