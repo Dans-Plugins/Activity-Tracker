@@ -14,12 +14,13 @@ public class TopCommand implements ICommand {
     public boolean execute(CommandSender sender) {
         ArrayList<ActivityRecord> records = ActivityRecordManager.getInstance().getTopTenRecords();
         sender.sendMessage(ChatColor.AQUA + "=== Most Active Players ===");
+        int count = 1;
         for (ActivityRecord record : records) {
             if (record == null) {
                 continue;
             }
             String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(record.getPlayerUUID());
-            int count = 1;
+
             sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getHoursSpentNotIncludingTheCurrentSession()) + " hours");
             count++;
         }
