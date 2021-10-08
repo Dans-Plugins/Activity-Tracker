@@ -17,13 +17,13 @@ public class ActivityRecord implements IActivityRecord, Savable {
 
     private UUID playerUUID;
     private ArrayList<Session> sessions = new ArrayList<>();
-    private Session mostRecentSession;
+    private int mostRecentSessionID;
     private double hoursSpent;
 
     public ActivityRecord(UUID playerUUID, Session session) {
         this.playerUUID = playerUUID;
         sessions.add(session);
-        this.mostRecentSession = session;
+        this.mostRecentSessionID = session.getID();
         hoursSpent = 0;
     }
 
@@ -43,12 +43,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
 
     @Override
     public Session getMostRecentSession() {
-        return mostRecentSession;
+        return getSession(mostRecentSessionID);
     }
 
     @Override
     public void setMostRecentSession(Session newSession) {
-        mostRecentSession = newSession;
+        mostRecentSessionID = newSession.getID();
     }
 
     @Override
@@ -79,18 +79,18 @@ public class ActivityRecord implements IActivityRecord, Savable {
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
         Logger.getInstance().log("hoursSpent: " + hoursSpent);
-        Logger.getInstance().log("Most Recent Session: " + mostRecentSession);
-        Logger.getInstance().log("Minutes since login: " + mostRecentSession.getMinutesSinceLogin());
-        double hours = hoursSpent + mostRecentSession.getMinutesSinceLogin()/60;
+        Logger.getInstance().log("Most Recent Session: " + getMostRecentSession());
+        Logger.getInstance().log("Minutes since login: " + getMostRecentSession().getMinutesSinceLogin());
+        double hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
         sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
         boolean online = Bukkit.getPlayer(playerUUID) != null;
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
-            sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogin()/60) + " hours");
+            sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", getMostRecentSession().getMinutesSinceLogin()/60) + " hours");
         }
         else {
             sender.sendMessage(ChatColor.AQUA + "Status: Offline");
-            sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogout()/60) + " hours");
+            sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", getMostRecentSession().getMinutesSinceLogout()/60) + " hours");
         }
         sender.sendMessage(ChatColor.AQUA + "=================================");
     }
@@ -103,6 +103,8 @@ public class ActivityRecord implements IActivityRecord, Savable {
         saveMap.put("playerUUID", gson.toJson(playerUUID));
         saveMap.put("hoursSpent", gson.toJson(hoursSpent));
 
+        saveMap.put("mostRecentSessionID", gson.toJson(mostRecentSessionID));
+
         return saveMap;
     }
 
@@ -112,5 +114,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
 
         playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
         hoursSpent = Double.parseDouble(gson.fromJson(data.get("hoursSpent"), String.class));
+
+        mostRecentSessionID = Integer.parseInt(gson.fromJson(data.getOrDefault("mostRecentSessionID", "" + sessions.get(sessions.size() - 1).getID()), String.class));
     }
 }
