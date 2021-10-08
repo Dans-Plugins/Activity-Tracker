@@ -14,6 +14,9 @@ public class TopCommand implements ICommand {
     public boolean execute(CommandSender sender) {
         ArrayList<ActivityRecord> records = ActivityRecordManager.getInstance().getTopTenRecords();
         for (ActivityRecord record : records) {
+            if (record == null) {
+                continue;
+            }
             String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(record.getPlayerUUID());
             sender.sendMessage(ChatColor.AQUA + playerName + " - " + String.format("%.2f", record.getHoursSpent()));
         }

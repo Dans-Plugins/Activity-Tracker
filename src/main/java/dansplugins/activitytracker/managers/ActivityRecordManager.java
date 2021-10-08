@@ -38,35 +38,30 @@ public class ActivityRecordManager {
     }
 
     public ArrayList<ActivityRecord> getTopTenRecords() {
-        ArrayList<ActivityRecord> copyOfActivityRecords = getCopyOfActivityRecords();
+        ArrayList<ActivityRecord> toIgnore = new ArrayList<>();
         ArrayList<ActivityRecord> toReturn = new ArrayList<>();
 
-        int topNumber = 10; // TODO: make this a config option
-        for (int i = 0; i < topNumber; i++) {
-            ActivityRecord topRecord = getTopRecord(copyOfActivityRecords);
+        int numRecords = 10; // TODO: make this a config option
+        for (int i = 0; i < numRecords; i++) {
+            ActivityRecord topRecord = getTopRecord(toIgnore);
             toReturn.add(topRecord);
-            copyOfActivityRecords.remove(topRecord);
+            toIgnore.add(topRecord);
         }
 
         return toReturn;
     }
 
-    public ActivityRecord getTopRecord(ArrayList<ActivityRecord> records) {
+    public ActivityRecord getTopRecord(ArrayList<ActivityRecord> toIgnore) {
         ActivityRecord toReturn = null;
         double max = 0;
-        for (ActivityRecord record : records) {
+        for (ActivityRecord record : PersistentData.getInstance().getActivityRecords()) {
+            if (toIgnore.contains(record)) {
+                continue;
+            }
             if (record.getHoursSpent() > max) {
                 toReturn = record;
                 max = record.getHoursSpent();
             }
-        }
-        return toReturn;
-    }
-
-    private ArrayList<ActivityRecord> getCopyOfActivityRecords() {
-        ArrayList<ActivityRecord> toReturn = new ArrayList<>();
-        for (ActivityRecord record : PersistentData.getInstance().getActivityRecords()) {
-            toReturn.add(record);
         }
         return toReturn;
     }
