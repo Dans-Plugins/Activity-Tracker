@@ -3,6 +3,7 @@ package dansplugins.activitytracker.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dansplugins.activitytracker.utils.UUIDChecker;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -77,6 +78,13 @@ public class ActivityRecord implements IActivityRecord, Savable {
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
         sender.sendMessage(ChatColor.AQUA + "Play Time: " + hoursSpent + " hours");
+        boolean online = Bukkit.getOfflinePlayer(playerUUID).isOnline();
+        if (online) {
+            sender.sendMessage(ChatColor.AQUA + "Status: Online");
+        }
+        else {
+            sender.sendMessage(ChatColor.AQUA + "Status: Offline");
+        }
         // TODO: add last online
         sender.sendMessage(ChatColor.AQUA + "=================================");
     }
