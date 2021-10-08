@@ -16,7 +16,7 @@ public final class ActivityTracker extends JavaPlugin {
 
     private static ActivityTracker instance;
 
-    private String version = "v0.4-alpha-2";
+    private String version = "v0.4";
 
     public static ActivityTracker getInstance() {
         return instance;
