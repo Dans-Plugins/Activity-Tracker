@@ -89,6 +89,7 @@ public class ActivityRecord implements IActivityRecord, Savable {
         Session mostRecentSession = getMostRecentSession();
         double hours = -1;
         boolean online = Bukkit.getPlayer(playerUUID) != null;
+        Session firstSession = getFirstSession();
 
         if (online) {
             hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
@@ -109,6 +110,9 @@ public class ActivityRecord implements IActivityRecord, Savable {
         else {
             sender.sendMessage(ChatColor.AQUA + "Status: Offline");
             sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogout()/60) + " hours");
+        }
+        if (firstSession != null) {
+            sender.sendMessage(ChatColor.AQUA + "First Recorded Login: " + firstSession.getLoginDate().toString());
         }
         sender.sendMessage(ChatColor.AQUA + "=================================");
     }
@@ -134,5 +138,12 @@ public class ActivityRecord implements IActivityRecord, Savable {
         hoursSpent = Double.parseDouble(gson.fromJson(data.get("hoursSpent"), String.class));
 
         mostRecentSessionID = Integer.parseInt(gson.fromJson(data.getOrDefault("mostRecentSessionID", "-1"), String.class));
+    }
+
+    private Session getFirstSession() {
+        if (sessions.size() == 0) {
+            return null;
+        }
+        return sessions.get(0);
     }
 }
