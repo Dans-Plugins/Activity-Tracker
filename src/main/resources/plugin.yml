@@ -1,5 +1,5 @@
 name: ActivityTracker
-version: 0.5-alpha-2
+version: 0.5
 main: dansplugins.activitytracker.ActivityTracker
 api-version: 1.13
 
@@ -13,6 +13,8 @@ permissions:
   at.info:
     default: true
   at.top:
+    default: true
+  at.stats:
     default: true
   at.config:
     default: op

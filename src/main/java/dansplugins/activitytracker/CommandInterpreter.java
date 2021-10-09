@@ -1,9 +1,6 @@
 package dansplugins.activitytracker;
 
-import dansplugins.activitytracker.commands.ConfigCommand;
-import dansplugins.activitytracker.commands.HelpCommand;
-import dansplugins.activitytracker.commands.InfoCommand;
-import dansplugins.activitytracker.commands.TopCommand;
+import dansplugins.activitytracker.commands.*;
 import dansplugins.activitytracker.utils.ArgumentParser;
 import dansplugins.activitytracker.utils.PermissionChecker;
 import org.bukkit.ChatColor;
@@ -48,6 +45,11 @@ public class CommandInterpreter implements ICommandInterpreter {
             if (secondaryLabel.equalsIgnoreCase("config")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.config")) { return false; }
                 ConfigCommand command = new ConfigCommand();
+                return command.execute(sender, arguments);
+            }
+            if (secondaryLabel.equalsIgnoreCase("stats")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "at.stats")) { return false; }
+                StatsCommand command = new StatsCommand();
                 return command.execute(sender);
             }
 

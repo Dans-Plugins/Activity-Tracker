@@ -70,4 +70,12 @@ public class PersistentData {
             record.getMostRecentSession().endSession();
         }
     }
+
+    public int getTotalNumberOfLogins() {
+        int count = 0;
+        for (ActivityRecord record : activityRecords) {
+            count += record.getSessions().size();
+        }
+        return count;
+    }
 }
