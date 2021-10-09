@@ -1,5 +1,6 @@
 package dansplugins.activitytracker;
 
+import dansplugins.activitytracker.commands.ConfigCommand;
 import dansplugins.activitytracker.commands.HelpCommand;
 import dansplugins.activitytracker.commands.InfoCommand;
 import dansplugins.activitytracker.commands.TopCommand;
@@ -29,16 +30,19 @@ public class CommandInterpreter implements ICommandInterpreter {
                 HelpCommand command = new HelpCommand();
                 return command.execute(sender);
             }
-
             if (secondaryLabel.equalsIgnoreCase("info")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.info")) { return false; }
                 InfoCommand command = new InfoCommand();
                 return command.execute(sender, arguments);
             }
-
             if (secondaryLabel.equalsIgnoreCase("top")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.top")) { return false; }
                 TopCommand command = new TopCommand();
+                return command.execute(sender);
+            }
+            if (secondaryLabel.equalsIgnoreCase("config")) {
+                if (!PermissionChecker.getInstance().checkPermission(sender, "at.config")) { return false; }
+                ConfigCommand command = new ConfigCommand();
                 return command.execute(sender);
             }
 
