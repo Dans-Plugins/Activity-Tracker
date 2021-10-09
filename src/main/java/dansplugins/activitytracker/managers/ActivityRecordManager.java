@@ -45,6 +45,9 @@ public class ActivityRecordManager {
         int numRecords = 10; // TODO: make this a config option
         for (int i = 0; i < numRecords; i++) {
             ActivityRecord topRecord = getTopRecord(toIgnore);
+            if (topRecord == null) {
+                break;
+            }
             toReturn.add(topRecord);
             toIgnore.add(topRecord);
         }
@@ -66,7 +69,9 @@ public class ActivityRecordManager {
                 max = record.getTotalHoursSpent();
             }
         }
-        Logger.getInstance().log("Record for " + toReturn.getPlayerUUID() + " is the top record currently. " + toIgnore.size() + " records were ignored when performing this search.");
+        if (toReturn != null) {
+            Logger.getInstance().log("Record for " + toReturn.getPlayerUUID() + " is the top record currently. " + toIgnore.size() + " records were ignored when performing this search.");
+        }
         return toReturn;
     }
 }
