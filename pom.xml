@@ -72,10 +72,10 @@
         </dependency>
         <dependency>
             <groupId>dansplugins</groupId>
-            <artifactId>DansAPI</artifactId>
+            <artifactId>PonderAPI</artifactId>
             <version>v0.1-alpha-1</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/DansAPI-v0.1-alpha-1.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/PonderAPI-v0.1-alpha-1.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
