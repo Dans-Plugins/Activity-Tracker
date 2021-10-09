@@ -33,7 +33,12 @@ public class CommandInterpreter implements ICommandInterpreter {
             if (secondaryLabel.equalsIgnoreCase("info")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.info")) { return false; }
                 InfoCommand command = new InfoCommand();
-                return command.execute(sender, arguments);
+                if (arguments.length == 0) {
+                    return command.execute(sender);
+                }
+                else {
+                    return command.execute(sender, arguments);
+                }
             }
             if (secondaryLabel.equalsIgnoreCase("top")) {
                 if (!PermissionChecker.getInstance().checkPermission(sender, "at.top")) { return false; }
