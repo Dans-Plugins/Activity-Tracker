@@ -67,15 +67,8 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>dansplugins</groupId>
-            <artifactId>PonderAPI</artifactId>
-            <version>v0.1-alpha-1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/PonderAPI-v0.1-alpha-1.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
