@@ -3,6 +3,7 @@ package dansplugins.activitytracker.managers;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -52,17 +53,20 @@ public class ActivityRecordManager {
     }
 
     public ActivityRecord getTopRecord(ArrayList<ActivityRecord> toIgnore) {
+        Logger.getInstance().log("Attempting to get top record, ignoring " + toIgnore.size() + " records.");
         ActivityRecord toReturn = null;
         double max = 0;
         for (ActivityRecord record : PersistentData.getInstance().getActivityRecords()) {
             if (toIgnore.contains(record)) {
+                Logger.getInstance().log("Record for " + record.getPlayerUUID().toString() + " is in the ignore list.");
                 continue;
             }
-            if (record.getHoursSpentNotIncludingTheCurrentSession() > max) {
+            if (record.getTotalHoursSpent() > max) {
                 toReturn = record;
                 max = record.getTotalHoursSpent();
             }
         }
+        Logger.getInstance().log("Record for " + toReturn.getPlayerUUID() + " is the top record currently. " + toIgnore.size() + " records were ignored when performing this search.");
         return toReturn;
     }
 }

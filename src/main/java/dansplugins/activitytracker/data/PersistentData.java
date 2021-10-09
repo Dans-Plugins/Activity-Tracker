@@ -1,7 +1,6 @@
 package dansplugins.activitytracker.data;
 
 import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.objects.ISession;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.Bukkit;
