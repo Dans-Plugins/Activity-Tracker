@@ -2,7 +2,7 @@ package dansplugins.activitytracker.eventhandlers;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.SessionFactory;
-import dansplugins.activitytracker.managers.ActivityRecordManager;
+import dansplugins.activitytracker.services.ActivityRecordManager;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import org.bukkit.entity.Player;

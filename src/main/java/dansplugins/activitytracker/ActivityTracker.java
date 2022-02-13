@@ -2,8 +2,9 @@ package dansplugins.activitytracker;
 
 import dansplugins.activitytracker.bstats.Metrics;
 import dansplugins.activitytracker.data.PersistentData;
-import dansplugins.activitytracker.managers.ConfigManager;
-import dansplugins.activitytracker.managers.StorageManager;
+import dansplugins.activitytracker.services.ConfigManager;
+import dansplugins.activitytracker.services.LocalCommandService;
+import dansplugins.activitytracker.services.StorageManager;
 import dansplugins.activitytracker.utils.EventHandlerRegistry;
 import dansplugins.activitytracker.utils.Scheduler;
 import org.bukkit.command.Command;
@@ -56,8 +57,8 @@ public final class ActivityTracker extends JavaPlugin {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        CommandInterpreter commandInterpreter = new CommandInterpreter();
-        return commandInterpreter.interpretCommand(sender, label, args);
+        LocalCommandService localCommandService = new LocalCommandService();
+        return localCommandService.interpretCommand(sender, label, args);
     }
 
     public String getVersion() {

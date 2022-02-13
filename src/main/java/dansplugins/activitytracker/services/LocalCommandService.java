@@ -1,14 +1,14 @@
-package dansplugins.activitytracker;
+package dansplugins.activitytracker.services;
 
+import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.commands.*;
 import dansplugins.activitytracker.utils.ArgumentParser;
 import dansplugins.activitytracker.utils.PermissionChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CommandInterpreter implements ICommandInterpreter {
+public class LocalCommandService {
 
-    @Override
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
         if (label.equalsIgnoreCase("activitytracker") || label.equalsIgnoreCase("at")) {
 

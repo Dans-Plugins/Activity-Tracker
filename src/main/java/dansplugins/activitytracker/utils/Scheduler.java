@@ -1,7 +1,7 @@
 package dansplugins.activitytracker.utils;
 
 import dansplugins.activitytracker.ActivityTracker;
-import dansplugins.activitytracker.managers.StorageManager;
+import dansplugins.activitytracker.services.StorageManager;
 import org.bukkit.Bukkit;
 
 public class Scheduler implements IScheduler {

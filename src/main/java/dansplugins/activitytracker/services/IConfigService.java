@@ -1,4 +1,4 @@
-package dansplugins.activitytracker.managers;
+package dansplugins.activitytracker.services;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;

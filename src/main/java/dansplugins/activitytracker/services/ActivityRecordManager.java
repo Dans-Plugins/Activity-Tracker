@@ -1,4 +1,4 @@
-package dansplugins.activitytracker.managers;
+package dansplugins.activitytracker.services;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;

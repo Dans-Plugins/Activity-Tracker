@@ -1,6 +1,6 @@
 package dansplugins.activitytracker.commands;
 
-import dansplugins.activitytracker.managers.ConfigManager;
+import dansplugins.activitytracker.services.ConfigManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

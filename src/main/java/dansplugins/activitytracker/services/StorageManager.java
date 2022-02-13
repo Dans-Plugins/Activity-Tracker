@@ -1,4 +1,4 @@
-package dansplugins.activitytracker.managers;
+package dansplugins.activitytracker.services;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

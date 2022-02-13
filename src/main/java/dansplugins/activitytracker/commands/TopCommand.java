@@ -1,6 +1,6 @@
 package dansplugins.activitytracker.commands;
 
-import dansplugins.activitytracker.managers.ActivityRecordManager;
+import dansplugins.activitytracker.services.ActivityRecordManager;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.utils.UUIDChecker;
 import org.bukkit.ChatColor;

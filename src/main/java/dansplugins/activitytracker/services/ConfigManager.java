@@ -1,4 +1,4 @@
-package dansplugins.activitytracker.managers;
+package dansplugins.activitytracker.services;
 
 import dansplugins.activitytracker.ActivityTracker;
 import org.bukkit.ChatColor;

@@ -1,4 +1,4 @@
-package dansplugins.activitytracker.managers;
+package dansplugins.activitytracker.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
