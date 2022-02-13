@@ -12,23 +12,21 @@ import org.bukkit.configuration.file.FileConfiguration;
     - sendConfigList()
  */
 
-public class ConfigManager implements IConfigService {
-
-    private static ConfigManager instance;
+public class LocalConfigService {
+    private static LocalConfigService instance;
     private boolean altered = false;
 
-    private ConfigManager() {
+    private LocalConfigService() {
 
     }
 
-    public static ConfigManager getInstance() {
+    public static LocalConfigService getInstance() {
         if (instance == null) {
-            instance = new ConfigManager();
+            instance = new LocalConfigService();
         }
         return instance;
     }
 
-    @Override
     public void saveMissingConfigDefaultsIfNotPresent() {
         // set version
         if (!getConfig().isString("version")) {
@@ -46,7 +44,6 @@ public class ConfigManager implements IConfigService {
         ActivityTracker.getInstance().saveConfig();
     }
 
-    @Override
     public void setConfigOption(String option, String value, CommandSender sender) {
 
         if (getConfig().isSet(option)) {
@@ -76,41 +73,33 @@ public class ConfigManager implements IConfigService {
         }
     }
 
-    @Override
     public void sendConfigList(CommandSender sender) {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode"));
     }
 
-    @Override
     public boolean hasBeenAltered() {
         return altered;
     }
 
-    @Override
     public FileConfiguration getConfig() {
         return ActivityTracker.getInstance().getConfig();
     }
 
-    @Override
     public int getInt(String option) {
         return getConfig().getInt(option);
     }
 
-    @Override
     public boolean getBoolean(String option) {
         return getConfig().getBoolean(option);
     }
 
-    @Override
     public double getDouble(String option) {
         return getConfig().getDouble(option);
     }
 
-    @Override
     public String getString(String option) {
         return getConfig().getString(option);
     }
-
 }

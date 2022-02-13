@@ -3,8 +3,16 @@ package dansplugins.activitytracker.commands;
 import dansplugins.activitytracker.data.PersistentData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 
-public class StatsCommand implements ICommand {
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class StatsCommand extends AbstractPluginCommand {
+
+    public StatsCommand() {
+        super(new ArrayList<>(Arrays.asList("stats")), new ArrayList<>(Arrays.asList("at.stats")));
+    }
 
     @Override
     public boolean execute(CommandSender sender) {
@@ -19,7 +27,6 @@ public class StatsCommand implements ICommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        // unused
-        return false;
+        return execute(sender);
     }
 }

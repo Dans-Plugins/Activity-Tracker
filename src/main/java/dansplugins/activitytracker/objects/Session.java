@@ -3,6 +3,7 @@ package dansplugins.activitytracker.objects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dansplugins.activitytracker.utils.Logger;
+import preponderous.ponder.misc.abs.Savable;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -10,8 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Session implements ISession, Savable {
-
+public class Session implements Savable {
     private int ID;
     private UUID playerUUID;
     private LocalDateTime loginDate;
@@ -30,42 +30,34 @@ public class Session implements ISession, Savable {
         this.load(data);
     }
 
-    @Override
     public int getID() {
         return ID;
     }
 
-    @Override
     public UUID getPlayerUUID() {
         return playerUUID;
     }
 
-    @Override
     public LocalDateTime getLoginDate() {
         return loginDate;
     }
 
-    @Override
     public LocalDateTime getLogoutDate() {
         return logoutDate;
     }
 
-    @Override
     public double getMinutesSpent() {
         return minutesSpent;
     }
 
-    @Override
     public boolean isActive() {
         return active;
     }
 
-    @Override
     public void setActive(boolean b) {
         active = b;
     }
 
-    @Override
     public boolean endSession() {
         if (!active) {
             return false;
@@ -76,12 +68,10 @@ public class Session implements ISession, Savable {
         return true;
     }
 
-    @Override
     public double getMinutesSinceLogin() {
         return calculateMinutesSinceDateTime(loginDate);
     }
 
-    @Override
     public double getMinutesSinceLogout() {
         return calculateMinutesSinceDateTime(logoutDate);
     }
@@ -131,5 +121,4 @@ public class Session implements ISession, Savable {
         minutesSpent = Double.parseDouble(gson.fromJson(data.get("minutesSpent"), String.class));
         active = Boolean.parseBoolean(gson.fromJson(data.get("active"), String.class));
     }
-
 }

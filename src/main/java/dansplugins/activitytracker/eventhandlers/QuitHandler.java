@@ -22,5 +22,4 @@ public class QuitHandler implements Listener {
         Logger.getInstance().log("Total hours spent on the server: " + totalHoursSpent);
         record.setHoursSpent(totalHoursSpent);
     }
-
 }

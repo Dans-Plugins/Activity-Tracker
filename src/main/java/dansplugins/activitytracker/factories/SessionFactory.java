@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.UUID;
 
 public class SessionFactory {
-
     private static SessionFactory instance;
 
     private SessionFactory() {
@@ -49,5 +48,4 @@ public class SessionFactory {
     private boolean isSessionIDTaken(int sessionID) {
         return PersistentData.getInstance().getSession(sessionID) != null;
     }
-
 }

@@ -2,8 +2,16 @@ package dansplugins.activitytracker.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 
-public class HelpCommand implements ICommand {
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class HelpCommand extends AbstractPluginCommand {
+
+    public HelpCommand() {
+        super(new ArrayList<>(Arrays.asList("help")), new ArrayList<>(Arrays.asList("at.help")));
+    }
 
     @Override
     public boolean execute(CommandSender sender) {
@@ -18,8 +26,6 @@ public class HelpCommand implements ICommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        // unused
-        return false;
+        return execute(sender);
     }
-
 }
