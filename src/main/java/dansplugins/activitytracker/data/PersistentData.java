@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class PersistentData {
-
     private static PersistentData instance;
-
-    private ArrayList<ActivityRecord> activityRecords = new ArrayList<>();
+    private final ArrayList<ActivityRecord> activityRecords = new ArrayList<>();
 
     private PersistentData() {
 

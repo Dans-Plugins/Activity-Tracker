@@ -9,16 +9,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class ActivityRecordManager {
+public class LocalActivityRecordService {
+    private static LocalActivityRecordService instance;
 
-    private static ActivityRecordManager instance;
-
-    private ActivityRecordManager() {
+    private LocalActivityRecordService() {
 
     }
-    public static ActivityRecordManager getInstance() {
+    public static LocalActivityRecordService getInstance() {
         if (instance == null) {
-            instance = new ActivityRecordManager();
+            instance = new LocalActivityRecordService();
         }
         return instance;
     }

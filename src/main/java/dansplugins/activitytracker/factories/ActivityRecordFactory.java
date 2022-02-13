@@ -6,7 +6,6 @@ import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
 
 public class ActivityRecordFactory {
-
     private static ActivityRecordFactory instance;
 
     private ActivityRecordFactory() {
@@ -26,5 +25,4 @@ public class ActivityRecordFactory {
         ActivityRecord newRecord = new ActivityRecord(player.getUniqueId(), session);
         return newRecord;
     }
-
 }

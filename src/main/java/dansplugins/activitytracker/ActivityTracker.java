@@ -1,23 +1,24 @@
 package dansplugins.activitytracker;
 
 import dansplugins.activitytracker.bstats.Metrics;
+import dansplugins.activitytracker.commands.DefaultCommand;
 import dansplugins.activitytracker.data.PersistentData;
-import dansplugins.activitytracker.services.ConfigManager;
-import dansplugins.activitytracker.services.LocalCommandService;
-import dansplugins.activitytracker.services.StorageManager;
+import dansplugins.activitytracker.services.LocalConfigService;
+import dansplugins.activitytracker.services.LocalStorageService;
 import dansplugins.activitytracker.utils.EventHandlerRegistry;
 import dansplugins.activitytracker.utils.Scheduler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
+import preponderous.ponder.minecraft.bukkit.PonderMC;
+import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
+import preponderous.ponder.minecraft.bukkit.services.CommandService;
 
 import java.io.File;
 
-public final class ActivityTracker extends JavaPlugin {
-
+public final class ActivityTracker extends PonderBukkitPlugin {
     private static ActivityTracker instance;
-
-    private String version = "v1.0";
+    private final String version = "v1.0";
+    private final CommandService commandService = new CommandService((PonderMC) getPonder());
 
     public static ActivityTracker getInstance() {
         return instance;
@@ -33,19 +34,19 @@ public final class ActivityTracker extends JavaPlugin {
 
         // create/load config
         if (!(new File("./plugins/ActivityTracker/config.yml").exists())) {
-            ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
         }
         else {
             // pre load compatibility checks
             if (isVersionMismatched()) {
-                ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+                LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
             }
             reloadConfig();
         }
 
         EventHandlerRegistry.getInstance().registerEvents();
 
-        StorageManager.getInstance().load();
+        LocalStorageService.getInstance().load();
 
         Scheduler.getInstance().scheduleAutosave();
     }
@@ -53,12 +54,25 @@ public final class ActivityTracker extends JavaPlugin {
     @Override
     public void onDisable() {
         PersistentData.getInstance().endCurrentSessions();
-        StorageManager.getInstance().save();
+        LocalStorageService.getInstance().save();
     }
 
+    /**
+     * This method handles commands sent to the minecraft server and interprets them if the label matches one of the core commands.
+     * @param sender The sender of the command.
+     * @param cmd The command that was sent. This is unused.
+     * @param label The core command that has been invoked.
+     * @param args Arguments of the core command. Often sub-commands.
+     * @return A boolean indicating whether the execution of the command was successful.
+     */
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        LocalCommandService localCommandService = new LocalCommandService();
-        return localCommandService.interpretCommand(sender, label, args);
+        if (args.length == 0) {
+            DefaultCommand defaultCommand = new DefaultCommand();
+            return defaultCommand.execute(sender);
+        }
+
+        return commandService.interpretAndExecuteCommand(sender, label, args);
     }
 
     public String getVersion() {
@@ -66,7 +80,7 @@ public final class ActivityTracker extends JavaPlugin {
     }
 
     public boolean isDebugEnabled() {
-        return ConfigManager.getInstance().getBoolean("debugMode");
+        return LocalConfigService.getInstance().getBoolean("debugMode");
     }
 
     private boolean isVersionMismatched() {

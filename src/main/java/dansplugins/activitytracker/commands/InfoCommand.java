@@ -2,14 +2,21 @@ package dansplugins.activitytracker.commands;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.utils.UUIDChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
+import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
-public class InfoCommand implements ICommand {
+public class InfoCommand extends AbstractPluginCommand {
+
+    public InfoCommand() {
+        super(new ArrayList<>(Arrays.asList("info")), new ArrayList<>(Arrays.asList("at.info")));
+    }
 
     @Override
     public boolean execute(CommandSender sender) {
@@ -28,9 +35,11 @@ public class InfoCommand implements ICommand {
         return true;
     }
 
+    @Override
     public boolean execute(CommandSender sender, String[] args) {
         String playerName = args[0];
-        UUID playerUUID = UUIDChecker.getInstance().findUUIDBasedOnPlayerName(playerName);
+        UUIDChecker uuidChecker = new UUIDChecker();
+        UUID playerUUID = uuidChecker.findUUIDBasedOnPlayerName(playerName);
         if (playerUUID == null) {
             sender.sendMessage(ChatColor.RED + "That player wasn't found.");
             return false;
@@ -45,5 +54,4 @@ public class InfoCommand implements ICommand {
         record.sendInfoToSender(sender);
         return true;
     }
-
 }

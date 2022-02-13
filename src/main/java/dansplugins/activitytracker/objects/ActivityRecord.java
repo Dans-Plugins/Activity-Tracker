@@ -2,17 +2,18 @@ package dansplugins.activitytracker.objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dansplugins.activitytracker.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
+import preponderous.ponder.misc.abs.Savable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ActivityRecord implements IActivityRecord, Savable {
+public class ActivityRecord implements Savable {
 
     private UUID playerUUID;
     private ArrayList<Session> sessions = new ArrayList<>();
@@ -30,17 +31,14 @@ public class ActivityRecord implements IActivityRecord, Savable {
         this.load(data);
     }
 
-    @Override
     public UUID getPlayerUUID() {
         return playerUUID;
     }
 
-    @Override
     public ArrayList<Session> getSessions() {
         return sessions;
     }
 
-    @Override
     public Session getMostRecentSession() {
         Session session = getSession(mostRecentSessionID);
         if (session == null) {
@@ -49,12 +47,10 @@ public class ActivityRecord implements IActivityRecord, Savable {
         return session;
     }
 
-    @Override
     public void setMostRecentSession(Session newSession) {
         mostRecentSessionID = newSession.getID();
     }
 
-    @Override
     public double getHoursSpentNotIncludingTheCurrentSession() {
         return hoursSpent;
     }
@@ -68,12 +64,10 @@ public class ActivityRecord implements IActivityRecord, Savable {
         }
     }
 
-    @Override
     public void setHoursSpent(double number) {
         hoursSpent = number;
     }
 
-    @Override
     public Session getSession(int ID) {
         for (Session session : sessions) {
             if (session.getID() == ID) {
@@ -83,9 +77,9 @@ public class ActivityRecord implements IActivityRecord, Savable {
         return null;
     }
 
-    @Override
     public void sendInfoToSender(CommandSender sender) {
-        String playerName = UUIDChecker.getInstance().findPlayerNameBasedOnUUID(playerUUID);
+        UUIDChecker uuidChecker = new UUIDChecker();
+        String playerName = uuidChecker.findPlayerNameBasedOnUUID(playerUUID);
         Session mostRecentSession = getMostRecentSession();
         double hours = -1;
         boolean online = Bukkit.getPlayer(playerUUID) != null;

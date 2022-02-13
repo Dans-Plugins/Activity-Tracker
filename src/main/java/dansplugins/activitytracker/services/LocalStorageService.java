@@ -14,9 +14,8 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class StorageManager implements IStorageService {
-
-    private static StorageManager instance;
+public class LocalStorageService {
+    private static LocalStorageService instance;
 
     private final static String FILE_PATH = "./plugins/ActivityTracker/";
     private final static String ACTIVITY_RECORDS_FILE_NAME = "activityRecords.json";
@@ -26,33 +25,30 @@ public class StorageManager implements IStorageService {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private StorageManager() {
+    private LocalStorageService() {
 
     }
 
-    public static IStorageService getInstance() {
+    public static LocalStorageService getInstance() {
         if (instance == null) {
-            instance = new StorageManager();
+            instance = new LocalStorageService();
         }
         return instance;
     }
 
-    @Override
     public void save() {
         saveActivityRecords();
         saveSessions();
-        if (ConfigManager.getInstance().hasBeenAltered()) {
+        if (LocalConfigService.getInstance().hasBeenAltered()) {
             ActivityTracker.getInstance().saveConfig();
         }
     }
 
-    @Override
     public void load() {
         loadActivityRecords();
         loadSessions();
     }
 
-    @Override
     public void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
         try {
             File parentFolder = new File(FILE_PATH);
@@ -67,7 +63,6 @@ public class StorageManager implements IStorageService {
         }
     }
 
-    @Override
     public ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
         try{
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -123,7 +118,4 @@ public class StorageManager implements IStorageService {
             record.getSessions().add(session);
         }
     }
-
-
-
 }

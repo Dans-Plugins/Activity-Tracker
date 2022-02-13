@@ -1,26 +1,29 @@
 package dansplugins.activitytracker.commands;
 
-import dansplugins.activitytracker.services.ConfigManager;
+import dansplugins.activitytracker.services.LocalConfigService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 
-public class ConfigCommand implements ICommand {
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class ConfigCommand extends AbstractPluginCommand {
+
+    public ConfigCommand() {
+        super(new ArrayList<>(Arrays.asList("config")), new ArrayList<>(Arrays.asList("at.config")));
+    }
 
     @Override
     public boolean execute(CommandSender sender) {
-        // unused
+        sender.sendMessage(ChatColor.RED + "Sub-commands: show, set");
         return false;
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Sub-commands: show, set");
-            return false;
-        }
-
         if (args[0].equalsIgnoreCase("show")) {
-            ConfigManager.getInstance().sendConfigList(sender);
+            LocalConfigService.getInstance().sendConfigList(sender);
             return true;
         }
         else if (args[0].equalsIgnoreCase("set")) {
@@ -32,7 +35,7 @@ public class ConfigCommand implements ICommand {
 
             String value = args[2];
 
-            ConfigManager.getInstance().setConfigOption(option, value, sender);
+            LocalConfigService.getInstance().setConfigOption(option, value, sender);
             return true;
         }
         else {
@@ -40,5 +43,4 @@ public class ConfigCommand implements ICommand {
             return false;
         }
     }
-
 }
