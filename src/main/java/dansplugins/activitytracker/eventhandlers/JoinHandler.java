@@ -1,15 +1,19 @@
 package dansplugins.activitytracker.eventhandlers;
 
-import dansplugins.activitytracker.data.PersistentData;
-import dansplugins.activitytracker.factories.SessionFactory;
-import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.objects.Session;
-import dansplugins.activitytracker.services.LocalActivityRecordService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.factories.SessionFactory;
+import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.objects.Session;
+import dansplugins.activitytracker.services.LocalActivityRecordService;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class JoinHandler implements Listener {
 
     @EventHandler()

@@ -1,9 +1,10 @@
 package dansplugins.activitytracker.services;
 
-import dansplugins.activitytracker.ActivityTracker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import dansplugins.activitytracker.ActivityTracker;
 
 /*
     To add a new config option, the following methods must be altered:
@@ -12,6 +13,9 @@ import org.bukkit.configuration.file.FileConfiguration;
     - sendConfigList()
  */
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class LocalConfigService {
     private static LocalConfigService instance;
     private boolean altered = false;

@@ -1,13 +1,17 @@
 package dansplugins.activitytracker.commands;
 
-import dansplugins.activitytracker.data.PersistentData;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import dansplugins.activitytracker.data.PersistentData;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class StatsCommand extends AbstractPluginCommand {
 
     public StatsCommand() {

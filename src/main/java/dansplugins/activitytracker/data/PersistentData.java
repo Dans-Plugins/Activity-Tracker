@@ -1,14 +1,18 @@
 package dansplugins.activitytracker.data;
 
-import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.objects.Session;
-import dansplugins.activitytracker.utils.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.objects.Session;
+import dansplugins.activitytracker.utils.Logger;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class PersistentData {
     private static PersistentData instance;
     private final ArrayList<ActivityRecord> activityRecords = new ArrayList<>();

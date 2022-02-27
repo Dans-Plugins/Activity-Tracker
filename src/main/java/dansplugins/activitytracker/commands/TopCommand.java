@@ -1,15 +1,19 @@
 package dansplugins.activitytracker.commands;
 
-import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.services.LocalActivityRecordService;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
-import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.services.LocalActivityRecordService;
+import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
+import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class TopCommand extends AbstractPluginCommand {
 
     public TopCommand() {

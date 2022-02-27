@@ -1,19 +1,33 @@
 package dansplugins.activitytracker.services;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+
 import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class LocalStorageService {
     private static LocalStorageService instance;
 
