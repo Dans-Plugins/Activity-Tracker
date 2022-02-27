@@ -1,16 +1,20 @@
 package dansplugins.activitytracker.objects;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import dansplugins.activitytracker.utils.Logger;
-import preponderous.ponder.misc.abs.Savable;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import dansplugins.activitytracker.utils.Logger;
+import preponderous.ponder.misc.abs.Savable;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class Session implements Savable {
     private int ID;
     private UUID playerUUID;

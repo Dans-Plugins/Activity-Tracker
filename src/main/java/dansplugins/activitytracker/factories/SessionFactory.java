@@ -1,13 +1,17 @@
 package dansplugins.activitytracker.factories;
 
-import dansplugins.activitytracker.data.PersistentData;
-import dansplugins.activitytracker.objects.Session;
-import dansplugins.activitytracker.utils.Logger;
-import org.bukkit.entity.Player;
-
 import java.util.Random;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
+import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.objects.Session;
+import dansplugins.activitytracker.utils.Logger;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class SessionFactory {
     private static SessionFactory instance;
 

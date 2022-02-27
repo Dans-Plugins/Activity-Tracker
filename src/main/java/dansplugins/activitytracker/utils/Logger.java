@@ -2,6 +2,9 @@ package dansplugins.activitytracker.utils;
 
 import dansplugins.activitytracker.ActivityTracker;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class Logger {
     private static Logger instance;
 

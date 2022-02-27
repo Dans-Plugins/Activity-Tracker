@@ -1,9 +1,13 @@
 package dansplugins.activitytracker.utils;
 
-import dansplugins.activitytracker.ActivityTracker;
-import dansplugins.activitytracker.services.LocalStorageService;
 import org.bukkit.Bukkit;
 
+import dansplugins.activitytracker.ActivityTracker;
+import dansplugins.activitytracker.services.LocalStorageService;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class Scheduler {
     private static Scheduler instance;
 

@@ -1,14 +1,18 @@
 package dansplugins.activitytracker.eventhandlers;
 
-import dansplugins.activitytracker.data.PersistentData;
-import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.objects.Session;
-import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.objects.Session;
+import dansplugins.activitytracker.utils.Logger;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class QuitHandler implements Listener {
 
     @EventHandler()

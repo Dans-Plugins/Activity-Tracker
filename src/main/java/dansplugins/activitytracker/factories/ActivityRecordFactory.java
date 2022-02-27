@@ -5,6 +5,9 @@ import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class ActivityRecordFactory {
     private static ActivityRecordFactory instance;
 

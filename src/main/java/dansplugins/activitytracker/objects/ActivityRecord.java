@@ -1,18 +1,23 @@
 package dansplugins.activitytracker.objects;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
-import preponderous.ponder.misc.abs.Savable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
+import preponderous.ponder.misc.abs.Savable;
+
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class ActivityRecord implements Savable {
 
     private UUID playerUUID;
