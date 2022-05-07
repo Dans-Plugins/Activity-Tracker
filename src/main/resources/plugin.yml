@@ -1,5 +1,5 @@
 name: ActivityTracker
-version: 1.0
+version: '${project.version}'
 main: dansplugins.activitytracker.ActivityTracker
 api-version: 1.13
 
