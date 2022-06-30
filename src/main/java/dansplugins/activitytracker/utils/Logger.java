@@ -6,21 +6,14 @@ import dansplugins.activitytracker.ActivityTracker;
  * @author Daniel McCoy Stephenson
  */
 public class Logger {
-    private static Logger instance;
+    private final ActivityTracker activityTracker;
 
-    private Logger() {
-
-    }
-
-    public static Logger getInstance() {
-        if (instance == null) {
-            instance = new Logger();
-        }
-        return instance;
+    public Logger(ActivityTracker activityTracker) {
+        this.activityTracker = activityTracker;
     }
 
     public void log(String message) {
-        if (ActivityTracker.getInstance().isDebugEnabled()) {
+        if (activityTracker.isDebugEnabled()) {
             System.out.println("[Activity Tracker] " + message);
         }
     }

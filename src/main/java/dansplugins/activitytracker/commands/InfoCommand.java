@@ -17,9 +17,11 @@ import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
  * @author Daniel McCoy Stephenson
  */
 public class InfoCommand extends AbstractPluginCommand {
+    private final PersistentData persistentData;
 
-    public InfoCommand() {
+    public InfoCommand(PersistentData persistentData) {
         super(new ArrayList<>(Arrays.asList("info")), new ArrayList<>(Arrays.asList("at.info")));
+        this.persistentData = persistentData;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class InfoCommand extends AbstractPluginCommand {
             return false;
         }
         Player player = (Player) sender;
-        ActivityRecord record = PersistentData.getInstance().getActivityRecord(player.getUniqueId());
+        ActivityRecord record = persistentData.getActivityRecord(player.getUniqueId());
         if (record == null) {
             sender.sendMessage(ChatColor.RED + "You don't have an activity record.");
             return false;
@@ -49,7 +51,7 @@ public class InfoCommand extends AbstractPluginCommand {
             return false;
         }
 
-        ActivityRecord record = PersistentData.getInstance().getActivityRecord(playerUUID);
+        ActivityRecord record = persistentData.getActivityRecord(playerUUID);
         if (record == null) {
             sender.sendMessage(ChatColor.RED + "That player doesn't have an activity record.");
             return false;

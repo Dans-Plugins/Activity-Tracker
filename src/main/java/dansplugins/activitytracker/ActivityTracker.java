@@ -4,6 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.factories.ActivityRecordFactory;
+import dansplugins.activitytracker.factories.SessionFactory;
+import dansplugins.activitytracker.services.ActivityRecordService;
+import dansplugins.activitytracker.services.ConfigService;
+import dansplugins.activitytracker.services.StorageService;
+import dansplugins.activitytracker.utils.Logger;
+import dansplugins.activitytracker.utils.Scheduler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -15,12 +23,8 @@ import dansplugins.activitytracker.commands.HelpCommand;
 import dansplugins.activitytracker.commands.InfoCommand;
 import dansplugins.activitytracker.commands.StatsCommand;
 import dansplugins.activitytracker.commands.TopCommand;
-import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.eventhandlers.JoinHandler;
 import dansplugins.activitytracker.eventhandlers.QuitHandler;
-import dansplugins.activitytracker.services.LocalConfigService;
-import dansplugins.activitytracker.services.LocalStorageService;
-import dansplugins.activitytracker.utils.Scheduler;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.abs.PonderBukkitPlugin;
 import preponderous.ponder.minecraft.bukkit.services.CommandService;
@@ -30,29 +34,28 @@ import preponderous.ponder.minecraft.bukkit.tools.EventHandlerRegistry;
  * @author Daniel McCoy Stephenson
  */
 public final class ActivityTracker extends PonderBukkitPlugin {
-    private static ActivityTracker instance;
     private final String pluginVersion = "v" + getDescription().getVersion();
-    private final CommandService commandService = new CommandService(getPonder());
 
-    /**
-     * This can be used to get the instance of the main class that is managed by itself.
-     * @return The managed instance of the main class.
-     */
-    public static ActivityTracker getInstance() {
-        return instance;
-    }
+    private final CommandService commandService = new CommandService(getPonder());
+    private final Logger logger = new Logger(this);
+    private final ConfigService configService = new ConfigService(this);
+    private final PersistentData persistentData = new PersistentData(logger);
+    private final StorageService storageService = new StorageService(configService, this, persistentData, logger);
+    private final Scheduler scheduler = new Scheduler(logger, this, storageService);
+    private final SessionFactory sessionFactory = new SessionFactory(logger, persistentData);
+    private final ActivityRecordFactory activityRecordFactory = new ActivityRecordFactory(logger, sessionFactory);
+    private final ActivityRecordService activityRecordService = new ActivityRecordService(persistentData, activityRecordFactory, logger);
 
     /**
      * This runs when the server starts.
      */
     @Override
     public void onEnable() {
-        instance = this;
         initializeConfig();
         registerEventHandlers();
         initializeCommandService();
-        LocalStorageService.getInstance().load();
-        Scheduler.getInstance().scheduleAutosave();
+        storageService.load();
+        scheduler.scheduleAutosave();
         handlebStatsIntegration();
     }
 
@@ -61,8 +64,8 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     @Override
     public void onDisable() {
-        PersistentData.getInstance().endCurrentSessions();
-        LocalStorageService.getInstance().save();
+        persistentData.endCurrentSessions();
+        storageService.save();
     }
 
     /**
@@ -76,7 +79,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
-            DefaultCommand defaultCommand = new DefaultCommand();
+            DefaultCommand defaultCommand = new DefaultCommand(this);
             return defaultCommand.execute(sender);
         }
 
@@ -109,7 +112,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      * @return Whether debug is enabled.
      */
     public boolean isDebugEnabled() {
-        return LocalConfigService.getInstance().getBoolean("debugMode");
+        return configService.getBoolean("debugMode");
     }
 
     private void initializeConfig() {
@@ -117,7 +120,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
             performCompatibilityChecks();
         }
         else {
-            LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            configService.saveMissingConfigDefaultsIfNotPresent();
         }
     }
 
@@ -127,7 +130,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
 
     private void performCompatibilityChecks() {
         if (isVersionMismatched()) {
-            LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            configService.saveMissingConfigDefaultsIfNotPresent();
         }
     }
 
@@ -137,8 +140,8 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private void registerEventHandlers() {
         EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry();
         ArrayList<Listener> listeners = new ArrayList<>(Arrays.asList(
-                new JoinHandler(),
-                new QuitHandler()
+                new JoinHandler(activityRecordService, persistentData, sessionFactory),
+                new QuitHandler(persistentData, logger)
         ));
         eventHandlerRegistry.registerEventHandlers(listeners, this);
     }
@@ -148,11 +151,11 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     private void initializeCommandService() {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
-                new ConfigCommand(),
+                new ConfigCommand(configService),
                 new HelpCommand(),
-                new InfoCommand(),
-                new StatsCommand(),
-                new TopCommand()
+                new InfoCommand(persistentData),
+                new StatsCommand(persistentData),
+                new TopCommand(activityRecordService)
         ));
         commandService.initialize(commands, "That command wasn't found.");
     }

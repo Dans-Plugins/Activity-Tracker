@@ -14,18 +14,12 @@ import dansplugins.activitytracker.utils.Logger;
  * @author Daniel McCoy Stephenson
  */
 public class PersistentData {
-    private static PersistentData instance;
+    private final Logger logger;
+
     private final ArrayList<ActivityRecord> activityRecords = new ArrayList<>();
 
-    private PersistentData() {
-
-    }
-
-    public static PersistentData getInstance() {
-        if (instance == null) {
-            instance = new PersistentData();
-        }
-        return instance;
+    public PersistentData(Logger logger) {
+        this.logger = logger;
     }
 
     public ArrayList<ActivityRecord> getActivityRecords() {
@@ -66,7 +60,7 @@ public class PersistentData {
     }
 
     public void endCurrentSessions() {
-        Logger.getInstance().log("Ending current sessions.");
+        logger.log("Ending current sessions.");
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActivityRecord record = getActivityRecord(player);
             record.getMostRecentSession().endSession();

@@ -9,22 +9,17 @@ import org.bukkit.entity.Player;
  * @author Daniel McCoy Stephenson
  */
 public class ActivityRecordFactory {
-    private static ActivityRecordFactory instance;
+    private final Logger logger;
+    private final SessionFactory sessionFactory;
 
-    private ActivityRecordFactory() {
-
-    }
-
-    public static ActivityRecordFactory getInstance() {
-        if (instance == null) {
-            instance = new ActivityRecordFactory();
-        }
-        return instance;
+    public ActivityRecordFactory(Logger logger, SessionFactory sessionFactory) {
+        this.logger = logger;
+        this.sessionFactory = sessionFactory;
     }
 
     public ActivityRecord createActivityRecord(Player player) {
-        Logger.getInstance().log("Creating activity record for " + player.getName());
-        Session session = SessionFactory.getInstance().createSession(player);
+        logger.log("Creating activity record for " + player.getName());
+        Session session = sessionFactory.createSession(player);
         ActivityRecord newRecord = new ActivityRecord(player.getUniqueId(), session);
         return newRecord;
     }

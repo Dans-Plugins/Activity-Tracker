@@ -19,7 +19,6 @@ import preponderous.ponder.misc.abs.Savable;
  * @author Daniel McCoy Stephenson
  */
 public class ActivityRecord implements Savable {
-
     private UUID playerUUID;
     private ArrayList<Session> sessions = new ArrayList<>();
     private int mostRecentSessionID;

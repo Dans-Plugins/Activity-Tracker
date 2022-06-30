@@ -3,9 +3,9 @@ package dansplugins.activitytracker.factories;
 import java.util.Random;
 import java.util.UUID;
 
+import dansplugins.activitytracker.data.PersistentData;
 import org.bukkit.entity.Player;
 
-import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
 
@@ -13,26 +13,21 @@ import dansplugins.activitytracker.utils.Logger;
  * @author Daniel McCoy Stephenson
  */
 public class SessionFactory {
-    private static SessionFactory instance;
+    private final Logger logger;
+    private final PersistentData persistentData;
 
-    private SessionFactory() {
-
-    }
-
-    public static SessionFactory getInstance() {
-        if (instance == null) {
-            instance = new SessionFactory();
-        }
-        return instance;
+    public SessionFactory(Logger logger, PersistentData persistentData) {
+        this.logger = logger;
+        this.persistentData = persistentData;
     }
 
     public Session createSession(Player player) {
-        Logger.getInstance().log("Creating session for " + player.getName());
+        logger.log("Creating session for " + player.getName());
         return createSession(player.getUniqueId());
     }
 
     public Session createSession(UUID playerUUID) {
-        return new Session(getNewSessionID(), playerUUID);
+        return new Session(logger, getNewSessionID(), playerUUID);
     }
 
     private int getNewSessionID() {
@@ -50,6 +45,6 @@ public class SessionFactory {
     }
 
     private boolean isSessionIDTaken(int sessionID) {
-        return PersistentData.getInstance().getSession(sessionID) != null;
+        return persistentData.getSession(sessionID) != null;
     }
 }
