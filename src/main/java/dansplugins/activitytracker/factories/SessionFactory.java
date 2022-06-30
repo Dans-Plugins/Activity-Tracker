@@ -37,7 +37,6 @@ public class SessionFactory {
         int newID = -1;
         do {
             int maxMessageIDNumber = 100000;
-            // int maxMessageIDNumber = ConfigManager.getInstance().getInt("maxMessageIDNumber");
             newID = random.nextInt(maxMessageIDNumber);
             numAttempts++;
         } while (isSessionIDTaken(newID) && numAttempts <= maxAttempts);
