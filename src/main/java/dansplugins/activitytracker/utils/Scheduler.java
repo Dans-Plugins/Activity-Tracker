@@ -1,36 +1,32 @@
 package dansplugins.activitytracker.utils;
 
-import org.bukkit.Bukkit;
-
 import dansplugins.activitytracker.ActivityTracker;
-import dansplugins.activitytracker.services.LocalStorageService;
+import dansplugins.activitytracker.services.StorageService;
+import org.bukkit.Bukkit;
 
 /**
  * @author Daniel McCoy Stephenson
  */
 public class Scheduler {
-    private static Scheduler instance;
+    private final Logger logger;
+    private final ActivityTracker activityTracker;
+    private final StorageService storageService;
 
-    private Scheduler() {
-
-    }
-
-    public static Scheduler getInstance() {
-        if (instance == null) {
-            instance = new Scheduler();
-        }
-        return instance;
+    public Scheduler(Logger logger, ActivityTracker activityTracker, StorageService storageService) {
+        this.logger = logger;
+        this.activityTracker = activityTracker;
+        this.storageService = storageService;
     }
 
     public void scheduleAutosave() {
-        Logger.getInstance().log("Scheduling hourly autosave.");
+        logger.log("Scheduling hourly autosave.");
         int delay = 60 * 60; // 1 hour
         int secondsUntilRepeat = 60 * 60; // 1 hour
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(ActivityTracker.getInstance(), new Runnable() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(activityTracker, new Runnable() {
             @Override
             public void run() {
-                Logger.getInstance().log("Saving. This will happen hourly.");
-                LocalStorageService.getInstance().save();
+                logger.log("Saving. This will happen hourly.");
+                storageService.save();
             }
         }, delay * 20, secondsUntilRepeat * 20);
     }

@@ -7,7 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import dansplugins.activitytracker.objects.ActivityRecord;
-import dansplugins.activitytracker.services.LocalActivityRecordService;
+import dansplugins.activitytracker.services.ActivityRecordService;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
 
@@ -15,14 +15,16 @@ import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
  * @author Daniel McCoy Stephenson
  */
 public class TopCommand extends AbstractPluginCommand {
+    private final ActivityRecordService activityRecordService;
 
-    public TopCommand() {
+    public TopCommand(ActivityRecordService activityRecordService) {
         super(new ArrayList<>(Arrays.asList("top")), new ArrayList<>(Arrays.asList("at.top")));
+        this.activityRecordService = activityRecordService;
     }
 
     @Override
     public boolean execute(CommandSender sender) {
-        ArrayList<ActivityRecord> records = LocalActivityRecordService.getInstance().getTopTenRecords();
+        ArrayList<ActivityRecord> records = activityRecordService.getTopTenRecords();
         sender.sendMessage(ChatColor.AQUA + "=== Most Active Players ===");
         int count = 1;
         for (ActivityRecord record : records) {

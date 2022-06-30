@@ -6,16 +6,18 @@ import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import dansplugins.activitytracker.services.LocalConfigService;
+import dansplugins.activitytracker.services.ConfigService;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 
 /**
  * @author Daniel McCoy Stephenson
  */
 public class ConfigCommand extends AbstractPluginCommand {
+    private final ConfigService configService;
 
-    public ConfigCommand() {
+    public ConfigCommand(ConfigService configService) {
         super(new ArrayList<>(Arrays.asList("config")), new ArrayList<>(Arrays.asList("at.config")));
+        this.configService = configService;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class ConfigCommand extends AbstractPluginCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if (args[0].equalsIgnoreCase("show")) {
-            LocalConfigService.getInstance().sendConfigList(sender);
+            configService.sendConfigList(sender);
             return true;
         }
         else if (args[0].equalsIgnoreCase("set")) {
@@ -39,7 +41,7 @@ public class ConfigCommand extends AbstractPluginCommand {
 
             String value = args[2];
 
-            LocalConfigService.getInstance().setConfigOption(option, value, sender);
+            configService.setConfigOption(option, value, sender);
             return true;
         }
         else {

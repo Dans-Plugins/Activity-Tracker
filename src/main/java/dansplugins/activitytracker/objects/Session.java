@@ -16,6 +16,8 @@ import preponderous.ponder.misc.abs.Savable;
  * @author Daniel McCoy Stephenson
  */
 public class Session implements Savable {
+    private final Logger logger;
+
     private int ID;
     private UUID playerUUID;
     private LocalDateTime loginDate;
@@ -23,14 +25,16 @@ public class Session implements Savable {
     private double minutesSpent;
     private boolean active;
 
-    public Session(int ID, UUID playerUUID) {
+    public Session(Logger logger, int ID, UUID playerUUID) {
+        this.logger = logger;
         this.ID = ID;
         this.playerUUID = playerUUID;
         loginDate = LocalDateTime.now();
         active = true;
     }
 
-    public Session(Map<String, String> data) {
+    public Session(Map<String, String> data, Logger logger) {
+        this.logger = logger;
         this.load(data);
     }
 
@@ -91,7 +95,7 @@ public class Session implements Savable {
         Duration duration = Duration.between(loginDate, logoutDate);
         double seconds = duration.getSeconds();
         double minutes = seconds / 60;
-        Logger.getInstance().log("Minutes calculated for session: " + String.format("%.2f", minutes));
+        logger.log("Minutes calculated for session: " + String.format("%.2f", minutes));
         return minutes;
     }
 
@@ -108,7 +112,7 @@ public class Session implements Savable {
             saveMap.put("minutesSpent", gson.toJson(minutesSpent));
             saveMap.put("active", gson.toJson(active));
         } catch (Exception e) {
-            Logger.getInstance().log("Something went wrong saving a session.");
+            logger.log("Something went wrong saving a session.");
         }
 
         return saveMap;
