@@ -46,7 +46,7 @@ public class ActivityRecord implements Savable {
     public Session getMostRecentSession() {
         Session session = getSession(mostRecentSessionID);
         if (session == null) {
-            return sessions.get(sessions.size() - 1);
+            throw new NullPointerException("The most recent session was null.");
         }
         return session;
     }
@@ -60,11 +60,16 @@ public class ActivityRecord implements Savable {
     }
 
     public double getTotalHoursSpent() {
-        if (getMostRecentSession().isActive()) {
-            return getHoursSpentNotIncludingTheCurrentSession() + getMostRecentSession().getMinutesSinceLogin()/60;
+        try {
+            if (getMostRecentSession().isActive()) {
+                return getHoursSpentNotIncludingTheCurrentSession() + getMostRecentSession().getMinutesSinceLogin()/60;
+            }
+            else {
+                return getHoursSpentNotIncludingTheCurrentSession();
+            }
         }
-        else {
-            return getHoursSpentNotIncludingTheCurrentSession();
+        catch (NullPointerException e) {
+            return 0;
         }
     }
 
@@ -84,13 +89,26 @@ public class ActivityRecord implements Savable {
     public void sendInfoToSender(CommandSender sender) {
         UUIDChecker uuidChecker = new UUIDChecker();
         String playerName = uuidChecker.findPlayerNameBasedOnUUID(playerUUID);
-        Session mostRecentSession = getMostRecentSession();
+        Session mostRecentSession;
+        try {
+            mostRecentSession = getMostRecentSession();
+        }
+        catch (NullPointerException e) {
+            sender.sendMessage(ChatColor.RED + "The most recent session was null.");
+            return;
+        }
         double hours = -1;
         boolean online = Bukkit.getPlayer(playerUUID) != null;
         Session firstSession = getFirstSession();
 
         if (online) {
-            hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin()/60;
+            try {
+                hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin() / 60;
+            }
+            catch (NullPointerException e) {
+                sender.sendMessage(ChatColor.RED + "The most recent session was null.");
+                return;
+            }
         }
         else {
             hours = hoursSpent;

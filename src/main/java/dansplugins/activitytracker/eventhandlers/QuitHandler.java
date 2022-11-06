@@ -26,7 +26,14 @@ public class QuitHandler implements Listener {
     public void handle(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         ActivityRecord record = persistentData.getActivityRecord(player);
-        Session currentSession = record.getMostRecentSession();
+        Session currentSession;
+        try {
+            currentSession = record.getMostRecentSession();
+        }
+        catch (NullPointerException e) {
+            logger.log("The most recent session was null.");
+            return;
+        }
         logger.log(player.getName() + " has quit the server. Ending their session.");
         currentSession.endSession();
         double totalHoursSpent = record.getHoursSpentNotIncludingTheCurrentSession() + currentSession.getMinutesSpent() / 60;
