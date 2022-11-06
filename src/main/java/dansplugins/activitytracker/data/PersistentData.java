@@ -63,7 +63,12 @@ public class PersistentData {
         logger.log("Ending current sessions.");
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActivityRecord record = getActivityRecord(player);
-            record.getMostRecentSession().endSession();
+            try {
+                record.getMostRecentSession().endSession();
+            }
+            catch (NullPointerException e) {
+                logger.log("No session found for " + player.getName() + ".");
+            }
         }
     }
 
