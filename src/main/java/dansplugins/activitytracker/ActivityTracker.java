@@ -21,6 +21,7 @@ import dansplugins.activitytracker.commands.ConfigCommand;
 import dansplugins.activitytracker.commands.DefaultCommand;
 import dansplugins.activitytracker.commands.HelpCommand;
 import dansplugins.activitytracker.commands.InfoCommand;
+import dansplugins.activitytracker.commands.ListCommand;
 import dansplugins.activitytracker.commands.StatsCommand;
 import dansplugins.activitytracker.commands.TopCommand;
 import dansplugins.activitytracker.eventhandlers.JoinHandler;
@@ -154,6 +155,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
                 new ConfigCommand(configService),
                 new HelpCommand(),
                 new InfoCommand(persistentData),
+                new ListCommand(persistentData),
                 new StatsCommand(persistentData),
                 new TopCommand(activityRecordService)
         ));
