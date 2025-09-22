@@ -32,11 +32,14 @@ public class ListCommand extends AbstractPluginCommand {
         // Get all sessions from all activity records
         List<Session> allSessions = new ArrayList<>();
         for (ActivityRecord record : persistentData.getActivityRecords()) {
-            allSessions.addAll(record.getSessions());
+            if (record != null && record.getSessions() != null) {
+                allSessions.addAll(record.getSessions());
+            }
         }
 
         // Sort sessions by login date in descending order (most recent first)
         List<Session> sortedSessions = allSessions.stream()
+                .filter(session -> session != null && session.getLoginDate() != null)
                 .sorted(Comparator.comparing(Session::getLoginDate).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
@@ -61,9 +64,14 @@ public class ListCommand extends AbstractPluginCommand {
             String loginTime = session.getLoginDate().format(formatter);
             String status = session.isActive() ? ChatColor.GREEN + "Active" : ChatColor.RED + "Ended";
             
-            String sessionInfo = String.format("%d. %s - Login: %s (%s%s%s)", 
-                count, playerName, loginTime, status, ChatColor.AQUA, 
-                session.isActive() ? "" : String.format(" - Duration: %.1f min", session.getMinutesSpent()));
+            String sessionInfo;
+            if (session.isActive()) {
+                sessionInfo = String.format("%d. %s - Login: %s (%s%s)", 
+                    count, playerName, loginTime, status, ChatColor.AQUA);
+            } else {
+                sessionInfo = String.format("%d. %s - Login: %s (%s%s - Duration: %.1f min)", 
+                    count, playerName, loginTime, status, ChatColor.AQUA, session.getMinutesSpent());
+            }
             
             sender.sendMessage(ChatColor.AQUA + sessionInfo);
             count++;
