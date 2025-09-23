@@ -153,7 +153,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
                 new ConfigCommand(configService),
                 new HelpCommand(),
-                new InfoCommand(persistentData),
+                new InfoCommand(persistentData, activityRecordService),
                 new StatsCommand(persistentData),
                 new TopCommand(activityRecordService)
         ));
