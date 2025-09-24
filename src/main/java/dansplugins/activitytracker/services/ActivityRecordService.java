@@ -1,6 +1,8 @@
 package dansplugins.activitytracker.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.utils.Logger;
@@ -39,39 +41,23 @@ public class ActivityRecordService {
     }
 
     public ArrayList<ActivityRecord> getTopTenRecords() {
-        ArrayList<ActivityRecord> toIgnore = new ArrayList<>();
-        ArrayList<ActivityRecord> toReturn = new ArrayList<>();
-
-        int numRecords = 10; // TODO: make this a config option
+        ArrayList<ActivityRecord> allRecords = new ArrayList<>(persistentData.getActivityRecords());
+        
+        // Sort records by total hours spent in descending order
+        Collections.sort(allRecords, new Comparator<ActivityRecord>() {
+            @Override
+            public int compare(ActivityRecord r1, ActivityRecord r2) {
+                return Double.compare(r2.getTotalHoursSpent(), r1.getTotalHoursSpent());
+            }
+        });
+        
+        // Return the top 10 records (or fewer if less than 10 exist)
+        ArrayList<ActivityRecord> topTen = new ArrayList<>();
+        int numRecords = Math.min(10, allRecords.size()); // TODO: make this a config option
         for (int i = 0; i < numRecords; i++) {
-            ActivityRecord topRecord = getTopRecord(toIgnore);
-            if (topRecord == null) {
-                break;
-            }
-            toReturn.add(topRecord);
-            toIgnore.add(topRecord);
+            topTen.add(allRecords.get(i));
         }
-
-        return toReturn;
-    }
-
-    public ActivityRecord getTopRecord(ArrayList<ActivityRecord> toIgnore) {
-        logger.log("Attempting to get top record, ignoring " + toIgnore.size() + " records.");
-        ActivityRecord toReturn = null;
-        double max = 0;
-        for (ActivityRecord record : persistentData.getActivityRecords()) {
-            if (toIgnore.contains(record)) {
-                logger.log("Record for " + record.getPlayerUUID().toString() + " is in the ignore list.");
-                continue;
-            }
-            if (record.getTotalHoursSpent() > max) {
-                toReturn = record;
-                max = record.getTotalHoursSpent();
-            }
-        }
-        if (toReturn != null) {
-            logger.log("Record for " + toReturn.getPlayerUUID() + " is the top record currently. " + toIgnore.size() + " records were ignored when performing this search.");
-        }
-        return toReturn;
+        
+        return topTen;
     }
 }
