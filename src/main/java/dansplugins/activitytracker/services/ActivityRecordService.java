@@ -1,8 +1,10 @@
 package dansplugins.activitytracker.services;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dansplugins.activitytracker.algorithms.TopRecordsAlgorithm;
+import dansplugins.activitytracker.algorithms.ActivityRecordAdapter;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.ChatColor;
@@ -43,6 +45,22 @@ public class ActivityRecordService {
 
     public ArrayList<ActivityRecord> getTopTenRecords() {
         ArrayList<ActivityRecord> allRecords = new ArrayList<>(persistentData.getActivityRecords());
-        return new ArrayList<>(topRecordsAlgorithm.getTopTenRecords(allRecords));
+        
+        // Wrap records in adapters for the generic algorithm
+        List<ActivityRecordAdapter> adapters = new ArrayList<>();
+        for (ActivityRecord record : allRecords) {
+            adapters.add(new ActivityRecordAdapter(record));
+        }
+        
+        // Use the generic algorithm
+        List<ActivityRecordAdapter> topAdapters = topRecordsAlgorithm.getTopTenRecords(adapters);
+        
+        // Extract the original records
+        ArrayList<ActivityRecord> result = new ArrayList<>();
+        for (ActivityRecordAdapter adapter : topAdapters) {
+            result.add(adapter.getRecord());
+        }
+        
+        return result;
     }
 }

@@ -1,14 +1,12 @@
 package dansplugins.activitytracker.algorithms;
 
-import dansplugins.activitytracker.objects.ActivityRecord;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 /**
- * Algorithm for efficiently finding top N activity records by hours played.
+ * Algorithm for efficiently finding top N records by a numeric value.
  * Extracted from ActivityRecordService for better testability.
  * 
  * Uses efficient O(n log n) sorting instead of the previous O(n²) approach.
@@ -18,14 +16,21 @@ import java.util.List;
 public class TopRecordsAlgorithm {
     
     /**
-     * Gets the top N activity records sorted by total hours spent (descending).
+     * Interface for objects that have a numeric value that can be compared.
+     */
+    public interface Scorable {
+        double getScore();
+    }
+    
+    /**
+     * Gets the top N records sorted by score (descending).
      * 
-     * @param records The list of activity records to analyze
+     * @param records The list of records to analyze
      * @param count The number of top records to return (e.g., 10 for top 10)
      * @return List of top N records, or fewer if less than N records exist
      * @throws IllegalArgumentException if count is negative
      */
-    public List<ActivityRecord> getTopRecords(List<ActivityRecord> records, int count) {
+    public <T extends Scorable> List<T> getTopRecords(List<T> records, int count) {
         if (count < 0) {
             throw new IllegalArgumentException("Count cannot be negative");
         }
@@ -35,13 +40,13 @@ public class TopRecordsAlgorithm {
         }
         
         // Create a copy to avoid modifying the original list
-        ArrayList<ActivityRecord> sortedRecords = new ArrayList<>(records);
+        ArrayList<T> sortedRecords = new ArrayList<>(records);
         
-        // Sort records by total hours spent in descending order
-        Collections.sort(sortedRecords, new Comparator<ActivityRecord>() {
+        // Sort records by score in descending order
+        Collections.sort(sortedRecords, new Comparator<T>() {
             @Override
-            public int compare(ActivityRecord r1, ActivityRecord r2) {
-                return Double.compare(r2.getTotalHoursSpent(), r1.getTotalHoursSpent());
+            public int compare(T r1, T r2) {
+                return Double.compare(r2.getScore(), r1.getScore());
             }
         });
         
@@ -53,10 +58,10 @@ public class TopRecordsAlgorithm {
     /**
      * Convenience method to get the top 10 records.
      * 
-     * @param records The list of activity records to analyze
+     * @param records The list of records to analyze
      * @return List of top 10 records, or fewer if less than 10 records exist
      */
-    public List<ActivityRecord> getTopTenRecords(List<ActivityRecord> records) {
+    public <T extends Scorable> List<T> getTopTenRecords(List<T> records) {
         return getTopRecords(records, 10);
     }
 }
