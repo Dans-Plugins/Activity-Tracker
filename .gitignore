@@ -24,6 +24,13 @@ buildNumber.properties
 test-output/
 .allure/
 
+# Compiled classes
+*.class
+
 # OS files
 .DS_Store
 Thumbs.db
+
+# Test POM files
+pom.xml.test
+pom.xml.ci
