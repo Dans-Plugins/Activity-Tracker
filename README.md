@@ -13,6 +13,7 @@ This plugin has been optimized for performance with comprehensive algorithm test
 
 - **Algorithm Optimization**: Top player algorithm improved from O(n²) to O(n log n) complexity
 - **Performance Gain**: Up to 100x improvement for large datasets (1000+ players)
+- **Comprehensive Testing**: 24 comprehensive unit test methods covering all scenarios
 - **Automated Testing**: Simple CI pipeline validates algorithm functionality and performance
 - **Generic Architecture**: Reusable TopRecordsAlgorithm with adapter pattern
 
