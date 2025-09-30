@@ -30,8 +30,9 @@ jobs:
     - name: Run basic algorithm test
       run: |
         # Create and run a simple test to validate the algorithm works
-        cat > /tmp/SimpleTest.java << 'EOF'
+        cat > /tmp/test-compile/SimpleTest.java << 'EOF'
         import java.util.*;
+        import dansplugins.activitytracker.algorithms.TopRecordsAlgorithm;
 
         class SimpleScorableImpl implements TopRecordsAlgorithm.Scorable {
             private double score;
@@ -75,14 +76,15 @@ jobs:
         
         # Compile and run the test
         cd /tmp/test-compile
-        javac -cp . /tmp/SimpleTest.java
-        java -cp .:/tmp SimpleTest
+        javac -cp . SimpleTest.java
+        java -cp . SimpleTest
         
     - name: Test with larger dataset
       run: |
         # Test performance with larger dataset
-        cat > /tmp/PerformanceTest.java << 'EOF'
+        cat > /tmp/test-compile/PerformanceTest.java << 'EOF'
         import java.util.*;
+        import dansplugins.activitytracker.algorithms.TopRecordsAlgorithm;
 
         class ScorableItem implements TopRecordsAlgorithm.Scorable {
             private double score;
@@ -131,8 +133,8 @@ jobs:
         EOF
         
         cd /tmp/test-compile
-        javac -cp . /tmp/PerformanceTest.java
-        java -cp .:/tmp PerformanceTest
+        javac -cp . PerformanceTest.java
+        java -cp . PerformanceTest
         
     - name: Summary
       run: |
