@@ -163,7 +163,7 @@ public class RestApiService {
                     mostRecentSession = record.getMostRecentSession();
                 } catch (NullPointerException e) {
                     // Session list exists but mostRecentSession is null
-                    logger.log("Unable to get most recent session for player " + playerUuid);
+                    logger.log("Unable to get most recent session for player " + playerUuid + ": " + e.getMessage());
                 }
             }
 
