@@ -1,7 +1,5 @@
 package dansplugins.activitytracker.api;
 
-import java.util.List;
-
 /**
  * Response object for player activity information
  * @author Daniel McCoy Stephenson

@@ -158,10 +158,13 @@ public class RestApiService {
 
             boolean online = Bukkit.getPlayer(playerUuid) != null;
             Session mostRecentSession = null;
-            try {
-                mostRecentSession = record.getMostRecentSession();
-            } catch (NullPointerException e) {
-                // No recent session
+            if (!record.getSessions().isEmpty()) {
+                try {
+                    mostRecentSession = record.getMostRecentSession();
+                } catch (NullPointerException e) {
+                    // Session list exists but mostRecentSession is null
+                    logger.log("Unable to get most recent session for player " + playerUuid);
+                }
             }
 
             String firstLogin = null;
