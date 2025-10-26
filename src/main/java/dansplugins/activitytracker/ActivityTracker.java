@@ -10,6 +10,7 @@ import dansplugins.activitytracker.factories.SessionFactory;
 import dansplugins.activitytracker.services.ActivityRecordService;
 import dansplugins.activitytracker.services.ConfigService;
 import dansplugins.activitytracker.services.StorageService;
+import dansplugins.activitytracker.api.RestApiService;
 import dansplugins.activitytracker.utils.Logger;
 import dansplugins.activitytracker.utils.Scheduler;
 import org.bukkit.command.Command;
@@ -45,6 +46,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private final SessionFactory sessionFactory = new SessionFactory(logger, persistentData);
     private final ActivityRecordFactory activityRecordFactory = new ActivityRecordFactory(logger, sessionFactory);
     private final ActivityRecordService activityRecordService = new ActivityRecordService(persistentData, activityRecordFactory, logger);
+    private RestApiService restApiService;
 
     /**
      * This runs when the server starts.
@@ -57,6 +59,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
         storageService.load();
         scheduler.scheduleAutosave();
         handlebStatsIntegration();
+        startRestApiIfEnabled();
     }
 
     /**
@@ -64,6 +67,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     @Override
     public void onDisable() {
+        stopRestApi();
         persistentData.endCurrentSessions();
         storageService.save();
     }
@@ -163,6 +167,22 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private void handlebStatsIntegration() {
         int pluginId = 12983;
         new Metrics(this, pluginId);
+    }
+
+    private void startRestApiIfEnabled() {
+        if (configService.getBoolean("restApiEnabled")) {
+            int port = configService.getInt("restApiPort");
+            restApiService = new RestApiService(persistentData, activityRecordService, logger, port);
+            restApiService.start();
+        } else {
+            logger.log("REST API is disabled in config.");
+        }
+    }
+
+    private void stopRestApi() {
+        if (restApiService != null) {
+            restApiService.stop();
+        }
     }
 
 }

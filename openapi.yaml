@@ -1,0 +1,261 @@
+openapi: 3.0.3
+info:
+  title: Activity Tracker REST API
+  description: |
+    REST API for the Activity Tracker Minecraft plugin. This API allows external applications 
+    to retrieve player activity statistics, leaderboards, and detailed player information.
+  version: 1.2.0
+  contact:
+    name: Activity Tracker
+    url: https://github.com/Dans-Plugins/Activity-Tracker
+  license:
+    name: GPL-3.0
+    url: https://github.com/Dans-Plugins/Activity-Tracker/blob/master/LICENSE
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server (default port)
+
+tags:
+  - name: Statistics
+    description: Server-wide activity statistics
+  - name: Leaderboard
+    description: Player activity rankings
+  - name: Players
+    description: Individual player activity information
+  - name: Health
+    description: API health checks
+
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      description: Check if the API is running and responding
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/stats:
+    get:
+      summary: Get server statistics
+      description: Retrieve server-wide activity statistics including unique and total login counts
+      operationId: getStats
+      tags:
+        - Statistics
+      responses:
+        '200':
+          description: Server statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+
+  /api/leaderboard:
+    get:
+      summary: Get activity leaderboard
+      description: Retrieve the top 10 players by total hours played
+      operationId: getLeaderboard
+      tags:
+        - Leaderboard
+      responses:
+        '200':
+          description: Leaderboard retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+
+  /api/players:
+    get:
+      summary: List all tracked players
+      description: Get a list of UUIDs for all players being tracked by the plugin
+      operationId: getPlayers
+      tags:
+        - Players
+      responses:
+        '200':
+          description: List of player UUIDs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+  /api/players/{uuid}:
+    get:
+      summary: Get player activity details
+      description: Retrieve detailed activity information for a specific player by their UUID
+      operationId: getPlayerActivity
+      tags:
+        - Players
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: The UUID of the player
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '200':
+          description: Player activity details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerActivityResponse'
+        '400':
+          description: Invalid UUID format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Health status of the API
+          example: "OK"
+        service:
+          type: string
+          description: Name of the service
+          example: "Activity Tracker REST API"
+      required:
+        - status
+        - service
+
+    StatsResponse:
+      type: object
+      properties:
+        uniqueLogins:
+          type: integer
+          description: Number of unique players who have logged in
+          example: 150
+        totalLogins:
+          type: integer
+          description: Total number of login sessions across all players
+          example: 2543
+      required:
+        - uniqueLogins
+        - totalLogins
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        playerUuid:
+          type: string
+          format: uuid
+          description: UUID of the player
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        playerName:
+          type: string
+          description: Name of the player
+          example: "Steve"
+        hoursPlayed:
+          type: number
+          format: double
+          description: Total hours played by the player
+          example: 123.45
+        totalLogins:
+          type: integer
+          description: Total number of times the player has logged in
+          example: 87
+      required:
+        - playerUuid
+        - playerName
+        - hoursPlayed
+        - totalLogins
+
+    PlayerActivityResponse:
+      type: object
+      properties:
+        playerUuid:
+          type: string
+          format: uuid
+          description: UUID of the player
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        playerName:
+          type: string
+          description: Name of the player
+          example: "Steve"
+        totalLogins:
+          type: integer
+          description: Total number of times the player has logged in
+          example: 87
+        totalHoursPlayed:
+          type: number
+          format: double
+          description: Total hours played by the player
+          example: 123.45
+        currentlyOnline:
+          type: boolean
+          description: Whether the player is currently online
+          example: true
+        firstLogin:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the player's first login
+          example: "2023-01-15T14:30:00"
+        lastLogin:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the player's most recent login
+          example: "2023-10-26T10:15:00"
+        lastLogout:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the player's most recent logout
+          example: "2023-10-26T12:45:00"
+        hoursSinceLogin:
+          type: number
+          format: double
+          nullable: true
+          description: Hours since the player logged in (only present if currently online)
+          example: 2.5
+        hoursSinceLogout:
+          type: number
+          format: double
+          nullable: true
+          description: Hours since the player logged out (only present if currently offline)
+          example: 48.3
+      required:
+        - playerUuid
+        - playerName
+        - totalLogins
+        - totalHoursPlayed
+        - currentlyOnline
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Player not found"
+      required:
+        - error
