@@ -168,10 +168,6 @@ public class PersistentDataTest {
 
     @Test
     public void testAddRecordWithNullUUID() {
-        // Arrange
-        Session session = new Session(logger, 1, testPlayerUUID);
-        ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
-        
         // Act - try to add null record
         persistentData.addRecord(null);
 
