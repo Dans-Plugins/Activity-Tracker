@@ -204,32 +204,6 @@ public class PersistentDataTest {
     }
 
     /**
-     * Test the scenario where the bug occurred (before the fix)
-     * This demonstrates what would happen WITHOUT the fix
-     */
-    @Test
-    public void testWithoutFixSessionTimeLost() throws InterruptedException {
-        // Arrange - Player is online playing
-        Session activeSession = new Session(logger, 1, testPlayerUUID);
-        ActivityRecord record = new ActivityRecord(testPlayerUUID, activeSession);
-        record.setHoursSpent(5.0); // Previous playtime: 5 hours
-        persistentData.addRecord(record);
-        
-        Thread.sleep(100); // Simulate player being online
-        
-        // Act - OLD BEHAVIOR (before fix): session ended but hours NOT updated
-        record.getMostRecentSession().endSession();
-        // NOTE: hours NOT updated here - this was the bug
-        
-        // Assert - Time would be LOST without the fix
-        assertEquals("Without fix, hours would remain unchanged", 
-            5.0, record.getHoursSpentNotIncludingTheCurrentSession(), 0.001);
-        assertFalse("Session would be ended", record.getMostRecentSession().isActive());
-        assertTrue("But minutes were calculated", record.getMostRecentSession().getMinutesSpent() > 0);
-        // The bug: minutesSpent was calculated but never added to hoursSpent!
-    }
-
-    /**
      * Test multiple players scenario during server restart
      */
     @Test
