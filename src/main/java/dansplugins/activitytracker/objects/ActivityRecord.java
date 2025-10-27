@@ -46,7 +46,13 @@ public class ActivityRecord implements Savable {
     public Session getMostRecentSession() {
         Session session = getSession(mostRecentSessionID);
         if (session == null) {
-            throw new NullPointerException("The most recent session was null.");
+            // Try to recover by finding the actual most recent session
+            if (sessions.size() > 0) {
+                session = sessions.get(sessions.size() - 1);
+                mostRecentSessionID = session.getID();
+                return session;
+            }
+            throw new NullPointerException("The most recent session was null and no sessions exist for recovery.");
         }
         return session;
     }
