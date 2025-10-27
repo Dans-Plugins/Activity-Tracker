@@ -101,7 +101,7 @@ public class ActivityRecordTest {
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session1);
         
         // Simulate first session
-        Thread.sleep(500); // 0.5 seconds to ensure measurable time
+        Thread.sleep(1000); // 1 second to ensure measurable time
         session1.endSession();
         double totalAfterSession1 = record.getHoursSpentNotIncludingTheCurrentSession() + session1.getMinutesSpent() / 60;
         record.setHoursSpent(totalAfterSession1);
@@ -110,7 +110,7 @@ public class ActivityRecordTest {
         Session session2 = new Session(logger, 2, testPlayerUUID);
         record.getSessions().add(session2);
         record.setMostRecentSession(session2);
-        Thread.sleep(500); // 0.5 seconds to ensure measurable time
+        Thread.sleep(1000); // 1 second to ensure measurable time
         session2.endSession();
         
         // Act - This is what the fix does on server restart
