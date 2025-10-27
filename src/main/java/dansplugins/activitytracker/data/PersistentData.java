@@ -64,7 +64,11 @@ public class PersistentData {
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActivityRecord record = getActivityRecord(player);
             try {
-                record.getMostRecentSession().endSession();
+                Session currentSession = record.getMostRecentSession();
+                currentSession.endSession();
+                double totalHoursSpent = record.getHoursSpentNotIncludingTheCurrentSession() + currentSession.getMinutesSpent() / 60;
+                logger.log(player.getName() + "'s session ended. Total hours spent on the server: " + totalHoursSpent);
+                record.setHoursSpent(totalHoursSpent);
             }
             catch (NullPointerException e) {
                 logger.log("No session found for " + player.getName() + ".");
