@@ -178,7 +178,7 @@ public class PersistentDataTest {
         record.setHoursSpent(5.0); // Previous playtime: 5 hours
         persistentData.addRecord(record);
         
-        Thread.sleep(100); // Simulate player being online for some time
+        Thread.sleep(1000); // Simulate player being online for 1 second to ensure measurable time
         
         // Act - Server shutdown: endCurrentSessions is called (THE FIX)
         // This simulates what PersistentData.endCurrentSessions() does for each player
@@ -191,7 +191,7 @@ public class PersistentDataTest {
         assertTrue("Session should be ended", !currentSession.isActive());
         assertTrue("Hours should increase from previous total", 
             record.getHoursSpentNotIncludingTheCurrentSession() > 5.0);
-        assertTrue("Increase should be small (< 1 hour for 100ms)", 
+        assertTrue("Increase should be small (< 1 hour for 1 second)", 
             record.getHoursSpentNotIncludingTheCurrentSession() < 6.0);
         
         // Verify the fix: minutes were calculated and added
@@ -229,7 +229,7 @@ public class PersistentDataTest {
         persistentData.addRecord(record2);
         persistentData.addRecord(record3);
         
-        Thread.sleep(100); // All players online for some time
+        Thread.sleep(1000); // All players online for 1 second to ensure measurable time
         
         // Act - Server shutdown: apply fix to all players
         for (ActivityRecord record : persistentData.getActivityRecords()) {

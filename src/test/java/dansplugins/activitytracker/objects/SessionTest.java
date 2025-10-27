@@ -71,7 +71,7 @@ public class SessionTest {
     public void testEndSessionCalculatesMinutesSpent() throws InterruptedException {
         // Arrange
         Session session = new Session(logger, 1, testPlayerUUID);
-        Thread.sleep(100); // Sleep for 100ms to ensure some time passes
+        Thread.sleep(1000); // Sleep for 1 second to ensure measurable time passes
         
         // Act
         session.endSession();
@@ -99,7 +99,7 @@ public class SessionTest {
     public void testGetMinutesSinceLogin() throws InterruptedException {
         // Arrange
         Session session = new Session(logger, 1, testPlayerUUID);
-        Thread.sleep(100); // Sleep for 100ms
+        Thread.sleep(1000); // Sleep for 1 second to ensure measurable time
         
         // Act
         double minutesSinceLogin = session.getMinutesSinceLogin();

@@ -64,7 +64,7 @@ public class ActivityRecordTest {
         // Arrange
         Session session = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
-        Thread.sleep(100); // Let some time pass
+        Thread.sleep(1000); // Let 1 second pass to ensure measurable time
         session.endSession();
         
         // Act - Simulate what happens on server restart fix
@@ -84,7 +84,7 @@ public class ActivityRecordTest {
         Session session = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
         record.setHoursSpent(5.0); // Previous sessions
-        Thread.sleep(100); // Current session time
+        Thread.sleep(1000); // Current session time - 1 second to ensure measurable time
         
         // Act
         double totalHours = record.getTotalHoursSpent();
@@ -101,7 +101,7 @@ public class ActivityRecordTest {
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session1);
         
         // Simulate first session
-        Thread.sleep(50);
+        Thread.sleep(500); // 0.5 seconds to ensure measurable time
         session1.endSession();
         double totalAfterSession1 = record.getHoursSpentNotIncludingTheCurrentSession() + session1.getMinutesSpent() / 60;
         record.setHoursSpent(totalAfterSession1);
@@ -110,7 +110,7 @@ public class ActivityRecordTest {
         Session session2 = new Session(logger, 2, testPlayerUUID);
         record.getSessions().add(session2);
         record.setMostRecentSession(session2);
-        Thread.sleep(50);
+        Thread.sleep(500); // 0.5 seconds to ensure measurable time
         session2.endSession();
         
         // Act - This is what the fix does on server restart
@@ -130,7 +130,7 @@ public class ActivityRecordTest {
         // Arrange - Player joins server
         Session session1 = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session1);
-        Thread.sleep(100); // Player plays for some time
+        Thread.sleep(1000); // Player plays for 1 second to ensure measurable time
         
         // Act - Server restarts (this is the fix being tested)
         // BEFORE FIX: session would be ended but hours not updated
@@ -164,7 +164,7 @@ public class ActivityRecordTest {
         Session session = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
         record.setHoursSpent(10.0); // Previous sessions: 10 hours
-        Thread.sleep(100); // Current session: ~0.0017 hours
+        Thread.sleep(1000); // Current session: 1 second to ensure measurable time
         
         // Act - Simulate proper shutdown (the fix)
         session.endSession();
