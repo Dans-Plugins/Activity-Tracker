@@ -160,4 +160,38 @@ public class SessionTest {
         assertEquals("Minutes spent should not change after session ends", 
             firstCheck, secondCheck, 0.001);
     }
+
+    @Test
+    public void testActiveSessionSaveAndLoad() {
+        // Arrange - create an active session (not ended)
+        Session activeSession = new Session(logger, 999, testPlayerUUID);
+        
+        // Act
+        Map<String, String> savedData = activeSession.save();
+        Session loadedSession = new Session(savedData, logger);
+
+        // Assert
+        assertEquals("ID should match", activeSession.getID(), loadedSession.getID());
+        assertEquals("Player UUID should match", activeSession.getPlayerUUID(), loadedSession.getPlayerUUID());
+        assertTrue("Loaded session should be active", loadedSession.isActive());
+        assertNull("Loaded session should have null logoutDate", loadedSession.getLogoutDate());
+    }
+
+    @Test
+    public void testActiveSessionWithNullLogoutDateHandling() {
+        // Arrange - create an active session
+        Session session = new Session(logger, 888, testPlayerUUID);
+        
+        // Act - save and reload
+        Map<String, String> savedData = session.save();
+        
+        // Assert - save should not throw exception even with null logoutDate
+        assertNotNull("Saved data should not be null", savedData);
+        assertTrue("Saved data should contain logoutDate key", savedData.containsKey("logoutDate"));
+        
+        // Load and verify
+        Session reloadedSession = new Session(savedData, logger);
+        assertNull("Reloaded session should have null logoutDate", reloadedSession.getLogoutDate());
+        assertTrue("Reloaded session should be active", reloadedSession.isActive());
+    }
 }

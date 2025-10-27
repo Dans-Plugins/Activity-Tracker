@@ -166,6 +166,44 @@ public class PersistentDataTest {
         assertEquals(1, persistentData.getActivityRecords().size());
     }
 
+    @Test
+    public void testAddRecordWithNullUUID() {
+        // Arrange
+        Session session = new Session(logger, 1, testPlayerUUID);
+        ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
+        
+        // Act - try to add null record
+        persistentData.addRecord(null);
+
+        // Assert
+        assertEquals(0, persistentData.getActivityRecords().size());
+    }
+
+    @Test
+    public void testGetActivityRecordWithNullUUID() {
+        // Act
+        ActivityRecord record = persistentData.getActivityRecord((UUID) null);
+
+        // Assert
+        assertNull(record);
+    }
+
+    @Test
+    public void testDuplicateRecordWithSameUUIDNotAdded() {
+        // Arrange
+        Session session1 = new Session(logger, 1, testPlayerUUID);
+        Session session2 = new Session(logger, 2, testPlayerUUID);
+        ActivityRecord record1 = new ActivityRecord(testPlayerUUID, session1);
+        ActivityRecord record2 = new ActivityRecord(testPlayerUUID, session2);
+        
+        // Act
+        persistentData.addRecord(record1);
+        persistentData.addRecord(record2);
+
+        // Assert - should only have one record for the UUID
+        assertEquals(1, persistentData.getActivityRecords().size());
+    }
+
     /**
      * Test that simulates the server restart scenario
      * This proves the fix works: session time is preserved when properly ended

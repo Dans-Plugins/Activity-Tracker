@@ -226,4 +226,42 @@ public class ActivityRecordTest {
         assertEquals("New record should start with 0 hours", 
             0.0, record.getHoursSpentNotIncludingTheCurrentSession(), 0.001);
     }
+
+    @Test
+    public void testGetMostRecentSessionRecovery() {
+        // Arrange - create a record with sessions but broken mostRecentSessionID
+        Session session1 = new Session(logger, 1, testPlayerUUID);
+        Session session2 = new Session(logger, 2, testPlayerUUID);
+        ActivityRecord record = new ActivityRecord(testPlayerUUID, session1);
+        record.getSessions().add(session2);
+        
+        // Simulate a broken reference by creating a new record from save/load
+        // with sessions but mostRecentSessionID pointing to non-existent session
+        java.util.Map<String, String> savedData = record.save();
+        ActivityRecord loadedRecord = new ActivityRecord(savedData);
+        
+        // Manually add sessions back but mostRecentSessionID is still from saved data
+        loadedRecord.getSessions().clear();
+        loadedRecord.getSessions().add(session1);
+        loadedRecord.getSessions().add(session2);
+        
+        // Act - this should recover by using the last session in the list
+        Session recovered = loadedRecord.getMostRecentSession();
+
+        // Assert
+        assertNotNull("Should recover and return a session", recovered);
+        // Should return the last session in the list
+        assertEquals("Should recover to last session", 2, recovered.getID());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetMostRecentSessionThrowsWhenNoSessions() {
+        // Arrange - create a record but clear its sessions
+        Session session = new Session(logger, 1, testPlayerUUID);
+        ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
+        record.getSessions().clear();
+        
+        // Act - should throw NullPointerException
+        record.getMostRecentSession();
+    }
 }
