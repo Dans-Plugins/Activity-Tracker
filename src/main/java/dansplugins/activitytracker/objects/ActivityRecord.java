@@ -43,6 +43,12 @@ public class ActivityRecord implements Savable {
         return sessions;
     }
 
+    public void addSession(Session session) {
+        if (session != null) {
+            sessions.add(session);
+        }
+    }
+
     public Session getMostRecentSession() {
         Session session = getSession(mostRecentSessionID);
         if (session == null) {
@@ -80,7 +86,11 @@ public class ActivityRecord implements Savable {
     }
 
     public void setHoursSpent(double number) {
-        hoursSpent = number;
+        if (number < 0) {
+            hoursSpent = 0;
+        } else {
+            hoursSpent = number;
+        }
     }
 
     public Session getSession(int ID) {

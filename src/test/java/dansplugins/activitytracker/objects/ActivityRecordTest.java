@@ -229,7 +229,7 @@ public class ActivityRecordTest {
 
     @Test
     public void testGetMostRecentSessionRecovery() {
-        // Arrange - create a record with sessions but broken mostRecentSessionID
+        // Arrange - create a record with sessions and set mostRecentSessionID to non-existent ID
         Session session1 = new Session(logger, 1, testPlayerUUID);
         Session session2 = new Session(logger, 2, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session1);
@@ -240,17 +240,17 @@ public class ActivityRecordTest {
         java.util.Map<String, String> savedData = record.save();
         ActivityRecord loadedRecord = new ActivityRecord(savedData);
         
-        // Manually add sessions back but mostRecentSessionID is still from saved data
+        // Manually add sessions but skip the one that mostRecentSessionID points to
+        // This simulates a session being lost/corrupted while the reference remains
         loadedRecord.getSessions().clear();
-        loadedRecord.getSessions().add(session1);
-        loadedRecord.getSessions().add(session2);
+        loadedRecord.getSessions().add(session2);  // Only add session2, not session1
         
         // Act - this should recover by using the last session in the list
         Session recovered = loadedRecord.getMostRecentSession();
 
         // Assert
         assertNotNull("Should recover and return a session", recovered);
-        // Should return the last session in the list
+        // Should return the last session in the list since session1 (mostRecentSessionID=1) is missing
         assertEquals("Should recover to last session", 2, recovered.getID());
     }
 

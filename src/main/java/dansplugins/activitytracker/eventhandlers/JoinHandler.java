@@ -38,7 +38,7 @@ public class JoinHandler implements Listener {
             }
             
             Session newSession = sessionFactory.createSession(player);
-            record.getSessions().add(newSession);
+            record.addSession(newSession);
             record.setMostRecentSession(newSession);
         }
     }

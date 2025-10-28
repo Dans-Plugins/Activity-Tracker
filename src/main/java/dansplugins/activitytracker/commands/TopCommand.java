@@ -50,6 +50,7 @@ public class TopCommand extends AbstractPluginCommand {
                 count++;
             } catch (Exception e) {
                 // Skip this record if there's an error
+                System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
                 continue;
             }
         }

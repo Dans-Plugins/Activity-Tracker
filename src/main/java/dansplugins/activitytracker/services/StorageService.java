@@ -165,7 +165,7 @@ public class StorageService {
                     continue;
                 }
                 
-                record.getSessions().add(session);
+                record.addSession(session);
                 successfullyLoaded++;
             } catch (Exception e) {
                 logger.log("ERROR: Failed to load session: " + e.getMessage());
