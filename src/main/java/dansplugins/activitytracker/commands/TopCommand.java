@@ -49,7 +49,7 @@ public class TopCommand extends AbstractPluginCommand {
                 sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getTotalHoursSpent()) + " hours");
                 count++;
             } catch (Exception e) {
-                // Skip this record if there's an error
+                System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
                 System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
                 continue;
             }
