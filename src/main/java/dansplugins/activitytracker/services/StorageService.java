@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
 
 import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
@@ -61,6 +62,7 @@ public class StorageService {
     public void load() {
         loadActivityRecords();
         loadSessions();
+        validateAndRepairData();
     }
 
     public void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
@@ -112,10 +114,34 @@ public class StorageService {
 
         ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ACTIVITY_RECORDS_FILE_NAME);
 
+        int successfullyLoaded = 0;
+        int failedToLoad = 0;
+
         for (Map<String, String> activityRecordsData : data){
-            ActivityRecord record = new ActivityRecord(activityRecordsData);
-            persistentData.addRecord(record);
+            try {
+                ActivityRecord record = new ActivityRecord(activityRecordsData);
+                
+                // Validate the loaded record
+                if (record.getPlayerUUID() == null) {
+                    logger.log("WARNING: Skipping ActivityRecord with null player UUID");
+                    failedToLoad++;
+                    continue;
+                }
+                
+                if (record.getHoursSpentNotIncludingTheCurrentSession() < 0) {
+                    logger.log("WARNING: ActivityRecord for " + record.getPlayerUUID() + " has negative hours spent. Resetting to 0.");
+                    record.setHoursSpent(0);
+                }
+                
+                persistentData.addRecord(record);
+                successfullyLoaded++;
+            } catch (Exception e) {
+                logger.log("ERROR: Failed to load ActivityRecord: " + e.getMessage());
+                failedToLoad++;
+            }
         }
+        
+        logger.log("Loaded " + successfullyLoaded + " activity records successfully. " + failedToLoad + " records failed to load.");
     }
 
     private void loadSessions() {
@@ -125,11 +151,58 @@ public class StorageService {
             return;
         }
 
+        int successfullyLoaded = 0;
+        int failedToLoad = 0;
+
         for (Map<String, String> sessionsData : data) {
-            Session session = new Session(sessionsData, logger);
-            UUID playerUUID = session.getPlayerUUID();
-            ActivityRecord record = persistentData.getActivityRecord(playerUUID);
-            record.getSessions().add(session);
+            try {
+                Session session = new Session(sessionsData, logger);
+                UUID playerUUID = session.getPlayerUUID();
+                ActivityRecord record = persistentData.getActivityRecord(playerUUID);
+                
+                if (record == null) {
+                    logger.log("WARNING: Could not find ActivityRecord for player UUID " + playerUUID + " when loading session. Session will be skipped.");
+                    failedToLoad++;
+                    continue;
+                }
+                
+                record.addSession(session);
+                successfullyLoaded++;
+            } catch (Exception e) {
+                logger.log("ERROR: Failed to load session: " + e.getMessage());
+                failedToLoad++;
+            }
+        }
+        
+        logger.log("Loaded " + successfullyLoaded + " sessions successfully. " + failedToLoad + " sessions failed to load.");
+    }
+
+    private void validateAndRepairData() {
+        logger.log("Validating and repairing data integrity...");
+        int repairedRecords = 0;
+        
+        for (ActivityRecord record : persistentData.getActivityRecords()) {
+            try {
+                // Check if the most recent session exists
+                record.getMostRecentSession();
+            } catch (NoSessionException e) {
+                // The most recent session reference is broken
+                if (record.getSessions().size() > 0) {
+                    // Repair by setting the last session as most recent
+                    Session lastSession = record.getSessions().get(record.getSessions().size() - 1);
+                    record.setMostRecentSession(lastSession);
+                    logger.log("Repaired mostRecentSession reference for player " + record.getPlayerUUID());
+                    repairedRecords++;
+                } else {
+                    logger.log("WARNING: ActivityRecord for player " + record.getPlayerUUID() + " has no sessions");
+                }
+            }
+        }
+        
+        if (repairedRecords > 0) {
+            logger.log("Repaired " + repairedRecords + " activity records with broken session references.");
+        } else {
+            logger.log("Data validation complete. No repairs needed.");
         }
     }
 }

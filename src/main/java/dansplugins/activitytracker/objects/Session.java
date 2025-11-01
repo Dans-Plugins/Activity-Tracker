@@ -108,11 +108,11 @@ public class Session implements Savable {
             saveMap.put("ID", gson.toJson(ID));
             saveMap.put("playerUUID", gson.toJson(playerUUID));
             saveMap.put("loginDate", gson.toJson(loginDate.toString()));
-            saveMap.put("logoutDate", gson.toJson(logoutDate.toString()));
+            saveMap.put("logoutDate", gson.toJson(logoutDate != null ? logoutDate.toString() : "null"));
             saveMap.put("minutesSpent", gson.toJson(minutesSpent));
             saveMap.put("active", gson.toJson(active));
         } catch (Exception e) {
-            logger.log("Something went wrong saving a session.");
+            logger.log("ERROR: Something went wrong saving a session: " + e.getMessage());
         }
 
         return saveMap;
@@ -125,7 +125,14 @@ public class Session implements Savable {
         ID = Integer.parseInt(gson.fromJson(data.get("ID"), String.class));
         playerUUID = UUID.fromString(gson.fromJson(data.get("playerUUID"), String.class));
         loginDate = LocalDateTime.parse(gson.fromJson(data.get("loginDate"), String.class));
-        logoutDate = LocalDateTime.parse(gson.fromJson(data.get("logoutDate"), String.class));
+        
+        String logoutDateStr = gson.fromJson(data.get("logoutDate"), String.class);
+        if (logoutDateStr != null && !logoutDateStr.equals("null")) {
+            logoutDate = LocalDateTime.parse(logoutDateStr);
+        } else {
+            logoutDate = null;
+        }
+        
         minutesSpent = Double.parseDouble(gson.fromJson(data.get("minutesSpent"), String.class));
         active = Boolean.parseBoolean(gson.fromJson(data.get("active"), String.class));
     }
