@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
@@ -31,6 +32,11 @@ public class PersistentData {
     }
 
     public ActivityRecord getActivityRecord(UUID playerUUID) {
+        if (playerUUID == null) {
+            logger.log("WARNING: Attempted to get ActivityRecord with null UUID");
+            return null;
+        }
+        
         for (ActivityRecord record : activityRecords) {
             if (record.getPlayerUUID().equals(playerUUID)) {
                 return record;
@@ -40,9 +46,24 @@ public class PersistentData {
     }
 
     public void addRecord(ActivityRecord recordToAdd) {
-        if (!activityRecords.contains(recordToAdd)) {
-            activityRecords.add(recordToAdd);
+        if (recordToAdd == null) {
+            logger.log("WARNING: Attempted to add null ActivityRecord");
+            return;
         }
+        
+        if (recordToAdd.getPlayerUUID() == null) {
+            logger.log("WARNING: Attempted to add ActivityRecord with null player UUID");
+            return;
+        }
+        
+        // Check if a record for this player already exists
+        ActivityRecord existing = getActivityRecord(recordToAdd.getPlayerUUID());
+        if (existing != null) {
+            logger.log("WARNING: ActivityRecord for player " + recordToAdd.getPlayerUUID() + " already exists. Not adding duplicate.");
+            return;
+        }
+        
+        activityRecords.add(recordToAdd);
     }
 
     public void removeRecord(ActivityRecord recordToRemove) {
@@ -63,11 +84,27 @@ public class PersistentData {
         logger.log("Ending current sessions.");
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActivityRecord record = getActivityRecord(player);
-            try {
-                record.getMostRecentSession().endSession();
+            if (record == null) {
+                logger.log("WARNING: No activity record found for online player " + player.getName());
+                continue;
             }
-            catch (NullPointerException e) {
-                logger.log("No session found for " + player.getName() + ".");
+            
+            try {
+                Session currentSession = record.getMostRecentSession();
+                if (currentSession.isActive()) {
+                    currentSession.endSession();
+                    double totalHoursSpent = record.getHoursSpentNotIncludingTheCurrentSession() + currentSession.getMinutesSpent() / 60;
+                    logger.log(player.getName() + "'s session ended. Total hours spent on the server: " + totalHoursSpent);
+                    record.setHoursSpent(totalHoursSpent);
+                } else {
+                    logger.log("Session for " + player.getName() + " was already ended.");
+                }
+            }
+            catch (NoSessionException e) {
+                logger.log("ERROR: No session found for " + player.getName() + ": " + e.getMessage());
+            }
+            catch (Exception e) {
+                logger.log("ERROR: Failed to end session for " + player.getName() + ": " + e.getMessage());
             }
         }
     }

@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
 import preponderous.ponder.misc.abs.Savable;
 
@@ -43,10 +44,22 @@ public class ActivityRecord implements Savable {
         return sessions;
     }
 
-    public Session getMostRecentSession() {
+    public void addSession(Session session) {
+        if (session != null) {
+            sessions.add(session);
+        }
+    }
+
+    public Session getMostRecentSession() throws NoSessionException {
         Session session = getSession(mostRecentSessionID);
         if (session == null) {
-            throw new NullPointerException("The most recent session was null.");
+            // Try to recover by finding the actual most recent session
+            if (sessions.size() > 0) {
+                session = sessions.get(sessions.size() - 1);
+                mostRecentSessionID = session.getID();
+                return session;
+            }
+            throw new NoSessionException("The most recent session was null and no sessions exist for recovery.");
         }
         return session;
     }
@@ -68,13 +81,17 @@ public class ActivityRecord implements Savable {
                 return getHoursSpentNotIncludingTheCurrentSession();
             }
         }
-        catch (NullPointerException e) {
+        catch (NoSessionException e) {
             return 0;
         }
     }
 
     public void setHoursSpent(double number) {
-        hoursSpent = number;
+        if (number < 0) {
+            hoursSpent = 0;
+        } else {
+            hoursSpent = number;
+        }
     }
 
     public Session getSession(int ID) {
@@ -93,7 +110,7 @@ public class ActivityRecord implements Savable {
         try {
             mostRecentSession = getMostRecentSession();
         }
-        catch (NullPointerException e) {
+        catch (NoSessionException e) {
             sender.sendMessage(ChatColor.RED + "The most recent session was null.");
             return;
         }
@@ -105,7 +122,7 @@ public class ActivityRecord implements Savable {
             try {
                 hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin() / 60;
             }
-            catch (NullPointerException e) {
+            catch (NoSessionException e) {
                 sender.sendMessage(ChatColor.RED + "The most recent session was null.");
                 return;
             }

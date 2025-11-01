@@ -26,16 +26,33 @@ public class TopCommand extends AbstractPluginCommand {
     public boolean execute(CommandSender sender) {
         ArrayList<ActivityRecord> records = activityRecordService.getTopTenRecords();
         sender.sendMessage(ChatColor.AQUA + "=== Most Active Players ===");
+        
+        if (records.isEmpty()) {
+            sender.sendMessage(ChatColor.YELLOW + "No activity records found.");
+            return false;
+        }
+        
         int count = 1;
         for (ActivityRecord record : records) {
             if (record == null) {
                 continue;
             }
-            UUIDChecker uuidChecker = new UUIDChecker();
-            String playerName = uuidChecker.findPlayerNameBasedOnUUID(record.getPlayerUUID());
+            
+            try {
+                UUIDChecker uuidChecker = new UUIDChecker();
+                String playerName = uuidChecker.findPlayerNameBasedOnUUID(record.getPlayerUUID());
+                
+                if (playerName == null || playerName.isEmpty()) {
+                    playerName = record.getPlayerUUID().toString();
+                }
 
-            sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getTotalHoursSpent()) + " hours");
-            count++;
+                sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getTotalHoursSpent()) + " hours");
+                count++;
+            } catch (Exception e) {
+                System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
+                System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
+                continue;
+            }
         }
         return false;
     }
