@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
 
 import dansplugins.activitytracker.ActivityTracker;
 import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
@@ -184,7 +185,7 @@ public class StorageService {
             try {
                 // Check if the most recent session exists
                 record.getMostRecentSession();
-            } catch (NullPointerException e) {
+            } catch (NoSessionException e) {
                 // The most recent session reference is broken
                 if (record.getSessions().size() > 0) {
                     // Repair by setting the last session as most recent

@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
 import preponderous.ponder.misc.abs.Savable;
 
@@ -49,7 +50,7 @@ public class ActivityRecord implements Savable {
         }
     }
 
-    public Session getMostRecentSession() {
+    public Session getMostRecentSession() throws NoSessionException {
         Session session = getSession(mostRecentSessionID);
         if (session == null) {
             // Try to recover by finding the actual most recent session
@@ -58,7 +59,7 @@ public class ActivityRecord implements Savable {
                 mostRecentSessionID = session.getID();
                 return session;
             }
-            throw new NullPointerException("The most recent session was null and no sessions exist for recovery.");
+            throw new NoSessionException("The most recent session was null and no sessions exist for recovery.");
         }
         return session;
     }
@@ -80,7 +81,7 @@ public class ActivityRecord implements Savable {
                 return getHoursSpentNotIncludingTheCurrentSession();
             }
         }
-        catch (NullPointerException e) {
+        catch (NoSessionException e) {
             return 0;
         }
     }
@@ -109,7 +110,7 @@ public class ActivityRecord implements Savable {
         try {
             mostRecentSession = getMostRecentSession();
         }
-        catch (NullPointerException e) {
+        catch (NoSessionException e) {
             sender.sendMessage(ChatColor.RED + "The most recent session was null.");
             return;
         }
@@ -121,7 +122,7 @@ public class ActivityRecord implements Savable {
             try {
                 hours = hoursSpent + getMostRecentSession().getMinutesSinceLogin() / 60;
             }
-            catch (NullPointerException e) {
+            catch (NoSessionException e) {
                 sender.sendMessage(ChatColor.RED + "The most recent session was null.");
                 return;
             }

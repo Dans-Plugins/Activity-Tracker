@@ -1,5 +1,6 @@
 package dansplugins.activitytracker.eventhandlers;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,7 +37,7 @@ public class QuitHandler implements Listener {
         try {
             currentSession = record.getMostRecentSession();
         }
-        catch (NullPointerException e) {
+        catch (NoSessionException e) {
             logger.log("ERROR: The most recent session was null for " + player.getName() + ": " + e.getMessage());
             return;
         }

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
@@ -99,7 +100,7 @@ public class PersistentData {
                     logger.log("Session for " + player.getName() + " was already ended.");
                 }
             }
-            catch (NullPointerException e) {
+            catch (NoSessionException e) {
                 logger.log("ERROR: No session found for " + player.getName() + ": " + e.getMessage());
             }
             catch (Exception e) {

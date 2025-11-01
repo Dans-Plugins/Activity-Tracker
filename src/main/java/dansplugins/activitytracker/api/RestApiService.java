@@ -2,6 +2,7 @@ package dansplugins.activitytracker.api;
 
 import com.google.gson.Gson;
 import dansplugins.activitytracker.data.PersistentData;
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.services.ActivityRecordService;
@@ -161,7 +162,7 @@ public class RestApiService {
             if (!record.getSessions().isEmpty()) {
                 try {
                     mostRecentSession = record.getMostRecentSession();
-                } catch (NullPointerException e) {
+                } catch (NoSessionException e) {
                     // Session list exists but mostRecentSession is null
                     logger.log("Unable to get most recent session for player " + playerUuid + ": " + e.getMessage());
                 }

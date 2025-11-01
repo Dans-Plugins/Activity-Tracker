@@ -1,5 +1,6 @@
 package dansplugins.activitytracker.data;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
@@ -205,7 +206,7 @@ public class PersistentDataTest {
      * This proves the fix works: session time is preserved when properly ended
      */
     @Test
-    public void testServerRestartSessionTimePreservation() throws InterruptedException {
+    public void testServerRestartSessionTimePreservation() throws InterruptedException, NoSessionException {
         // Arrange - Player is online playing
         Session activeSession = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, activeSession);
@@ -241,7 +242,7 @@ public class PersistentDataTest {
      * Test multiple players scenario during server restart
      */
     @Test
-    public void testMultiplePlayersServerRestart() throws InterruptedException {
+    public void testMultiplePlayersServerRestart() throws InterruptedException, NoSessionException {
         // Arrange - Multiple players online
         UUID player1UUID = UUID.randomUUID();
         UUID player2UUID = UUID.randomUUID();

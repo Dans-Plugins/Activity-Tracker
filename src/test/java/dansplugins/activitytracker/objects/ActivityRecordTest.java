@@ -1,5 +1,6 @@
 package dansplugins.activitytracker.objects;
 
+import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.utils.Logger;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class ActivityRecordTest {
     }
 
     @Test
-    public void testActivityRecordCreation() {
+    public void testActivityRecordCreation() throws NoSessionException {
         // Arrange
         Session session = new Session(logger, 1, testPlayerUUID);
         
@@ -179,7 +180,7 @@ public class ActivityRecordTest {
     }
 
     @Test
-    public void testGetMostRecentSession() {
+    public void testGetMostRecentSession() throws NoSessionException {
         // Arrange
         Session session1 = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session1);
@@ -228,7 +229,7 @@ public class ActivityRecordTest {
     }
 
     @Test
-    public void testGetMostRecentSessionRecovery() {
+    public void testGetMostRecentSessionRecovery() throws NoSessionException {
         // Arrange - create a record with sessions and set mostRecentSessionID to non-existent ID
         Session session1 = new Session(logger, 1, testPlayerUUID);
         Session session2 = new Session(logger, 2, testPlayerUUID);
@@ -254,14 +255,14 @@ public class ActivityRecordTest {
         assertEquals("Should recover to last session", 2, recovered.getID());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testGetMostRecentSessionThrowsWhenNoSessions() {
+    @Test(expected = NoSessionException.class)
+    public void testGetMostRecentSessionThrowsWhenNoSessions() throws NoSessionException {
         // Arrange - create a record but clear its sessions
         Session session = new Session(logger, 1, testPlayerUUID);
         ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
         record.getSessions().clear();
         
-        // Act - should throw NullPointerException
+        // Act - should throw NoSessionException
         record.getMostRecentSession();
     }
 }
