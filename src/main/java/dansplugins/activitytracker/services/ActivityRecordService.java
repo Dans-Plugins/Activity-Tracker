@@ -74,4 +74,21 @@ public class ActivityRecordService {
         }
         return toReturn;
     }
+
+    public int getPlayerRank(ActivityRecord playerRecord) {
+        if (playerRecord == null) {
+            return -1;
+        }
+        
+        double playerHours = playerRecord.getTotalHoursSpent();
+        int rank = 1;
+        
+        for (ActivityRecord record : persistentData.getActivityRecords()) {
+            if (record != playerRecord && record.getTotalHoursSpent() > playerHours) {
+                rank++;
+            }
+        }
+        
+        return rank;
+    }
 }

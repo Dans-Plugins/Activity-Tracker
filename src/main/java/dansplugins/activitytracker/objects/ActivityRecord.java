@@ -104,6 +104,10 @@ public class ActivityRecord implements Savable {
     }
 
     public void sendInfoToSender(CommandSender sender) {
+        sendInfoToSender(sender, null);
+    }
+
+    public void sendInfoToSender(CommandSender sender, dansplugins.activitytracker.services.ActivityRecordService activityRecordService) {
         UUIDChecker uuidChecker = new UUIDChecker();
         String playerName = uuidChecker.findPlayerNameBasedOnUUID(playerUUID);
         Session mostRecentSession;
@@ -136,6 +140,15 @@ public class ActivityRecord implements Savable {
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
         sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
+        
+        // Add ranking information if ActivityRecordService is available
+        if (activityRecordService != null) {
+            int rank = activityRecordService.getPlayerRank(this);
+            if (rank > 0) {
+                sender.sendMessage(ChatColor.AQUA + "Activity Ranking: #" + rank);
+            }
+        }
+        
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
             sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogin()/60) + " hours");
