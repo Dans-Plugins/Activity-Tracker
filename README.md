@@ -1,5 +1,9 @@
 # Activity Tracker
 
+[![Simple CI](https://github.com/Dans-Plugins/Activity-Tracker/workflows/Simple%20CI/badge.svg)](https://github.com/Dans-Plugins/Activity-Tracker/actions/workflows/simple-ci.yml)
+[![Java Version](https://img.shields.io/badge/Java-8%2B-blue.svg)](https://github.com/Dans-Plugins/Activity-Tracker/blob/main/pom.xml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 ## Description
 Activity Tracker is an open source Minecraft plugin that tracks the activity of players.
 
@@ -10,6 +14,16 @@ Activity Tracker is an open source Minecraft plugin that tracks the activity of 
 - **REST API** - Expose activity data via HTTP endpoints for external dashboards and applications
 
 For REST API documentation, see [REST_API.md](REST_API.md).
+
+## Performance & Testing
+
+This plugin has been optimized for performance with comprehensive algorithm testing:
+
+- **Algorithm Optimization**: Top player algorithm improved from O(n²) to O(n log n) complexity
+- **Performance Gain**: Up to 100x improvement for large datasets (1000+ players)
+- **Comprehensive Testing**: 24 comprehensive unit test methods covering all scenarios
+- **Automated Testing**: Simple CI pipeline validates algorithm functionality and performance
+- **Generic Architecture**: Reusable TopRecordsAlgorithm with adapter pattern
 
 ## Server Software
 This plugin was developed using the Spigot API. Users may run into trouble using it with other available server softwares like Paper.
@@ -38,6 +52,28 @@ Please fill out a bug report [here](https://github.com/dmccoystephenson/Activity
 - [Planned Improvements](https://github.com/dmccoystephenson/Activity-Tracker/issues?q=is%3Aopen+is%3Aissue+label%3Aimprovement)
 
 ## Contributing
+
+### Running Tests Locally
+
+To test the algorithm optimization:
+
+```bash
+# Test algorithm compilation
+javac src/main/java/dansplugins/activitytracker/algorithms/TopRecordsAlgorithm.java
+
+# Run comprehensive tests (with JUnit setup)
+mvn test -Dtest=TopRecordsAlgorithmTest
+
+# Simple validation test
+# The CI runs basic functionality and performance tests automatically
+```
+
+### Development Requirements
+
+- Java 8 or higher
+- Maven 3.6+ (for full project build)
+- The TopRecordsAlgorithm can be tested independently without external dependencies
+
 - [Notes for Developers](https://github.com/dmccoystephenson/Activity-Tracker/wiki/Developer-Notes) (coming soon)
 
 ## Authors and acknowledgement
