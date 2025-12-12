@@ -250,7 +250,7 @@ public class RestApiService {
             }
 
             double averageHoursPerDay = activityRecordService.calculateAverageDailyActivity(record, days);
-            double totalHours = averageHoursPerDay * days;
+            double totalHours = activityRecordService.calculateTotalHoursInPeriod(record, days);
 
             AverageDailyActivityResponse avgResponse = new AverageDailyActivityResponse(
                     playerUuid.toString(),

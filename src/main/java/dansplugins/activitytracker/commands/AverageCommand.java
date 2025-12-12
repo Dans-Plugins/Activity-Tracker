@@ -88,11 +88,13 @@ public class AverageCommand extends AbstractPluginCommand {
         }
 
         double averageHoursPerDay = activityRecordService.calculateAverageDailyActivity(record, days);
+        double totalHours = activityRecordService.calculateTotalHoursInPeriod(record, days);
 
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Average Daily Activity for " + playerName);
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Period: Last " + days + " day" + (days > 1 ? "s" : ""));
+        sender.sendMessage(ChatColor.AQUA + "Total Hours in Period: " + String.format("%.2f", totalHours));
         sender.sendMessage(ChatColor.AQUA + "Average Hours Per Day: " + String.format("%.2f", averageHoursPerDay));
         sender.sendMessage(ChatColor.AQUA + "=================================");
         return true;

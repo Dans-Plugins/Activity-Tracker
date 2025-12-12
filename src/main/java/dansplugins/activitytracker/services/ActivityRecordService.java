@@ -78,12 +78,27 @@ public class ActivityRecordService {
             return 0.0;
         }
 
+        double totalHours = calculateTotalHoursInPeriod(record, days);
+        return totalHours / days;
+    }
+
+    /**
+     * Calculate total hours played in the specified period
+     * @param record The activity record to analyze
+     * @param days The number of days to calculate the total over
+     * @return Total hours in the period
+     */
+    public double calculateTotalHoursInPeriod(ActivityRecord record, int days) {
+        if (record == null || days <= 0) {
+            return 0.0;
+        }
+
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(days);
         double totalHours = 0.0;
 
         // Sum up hours from sessions within the time period
         for (Session session : record.getSessions()) {
-            if (session.getLoginDate().isAfter(cutoffDate)) {
+            if (!session.getLoginDate().isBefore(cutoffDate)) {
                 if (session.isActive()) {
                     // For active sessions, calculate time since login
                     totalHours += session.getMinutesSinceLogin() / 60.0;
@@ -94,7 +109,6 @@ public class ActivityRecordService {
             }
         }
 
-        // Calculate average
-        return totalHours / days;
+        return totalHours;
     }
 }

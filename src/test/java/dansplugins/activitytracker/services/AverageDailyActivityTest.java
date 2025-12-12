@@ -32,7 +32,7 @@ public class AverageDailyActivityTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         persistentData = new PersistentData(logger);
         sessionFactory = new SessionFactory(logger, persistentData);
         activityRecordFactory = new ActivityRecordFactory(logger, sessionFactory);
