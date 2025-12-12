@@ -58,8 +58,8 @@ public class AverageCommand extends AbstractPluginCommand {
                     return false;
                 }
             } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Invalid number of days. Using default: " + DEFAULT_DAYS);
-                days = DEFAULT_DAYS;
+                sender.sendMessage(ChatColor.RED + "Invalid number of days.");
+                return false;
             }
         }
 

@@ -97,6 +97,7 @@ public class ActivityRecordService {
 
         // Sum up hours from sessions within the time period
         for (Session session : record.getSessions()) {
+            // !isBefore(cutoffDate) means "on or after cutoffDate" - includes sessions from exactly N days ago
             if (!session.getLoginDate().isBefore(cutoffDate)) {
                 if (session.isActive()) {
                     // For active sessions, calculate time since login
