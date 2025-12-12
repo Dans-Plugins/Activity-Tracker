@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.services.ActivityRecordService;
 import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
 
@@ -18,10 +19,12 @@ import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
  */
 public class InfoCommand extends AbstractPluginCommand {
     private final PersistentData persistentData;
+    private final ActivityRecordService activityRecordService;
 
-    public InfoCommand(PersistentData persistentData) {
+    public InfoCommand(PersistentData persistentData, ActivityRecordService activityRecordService) {
         super(new ArrayList<>(Arrays.asList("info")), new ArrayList<>(Arrays.asList("at.info")));
         this.persistentData = persistentData;
+        this.activityRecordService = activityRecordService;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class InfoCommand extends AbstractPluginCommand {
             return false;
         }
 
-        record.sendInfoToSender(sender);
+        record.sendInfoToSender(sender, activityRecordService);
         return true;
     }
 
@@ -57,7 +60,7 @@ public class InfoCommand extends AbstractPluginCommand {
             return false;
         }
 
-        record.sendInfoToSender(sender);
+        record.sendInfoToSender(sender, activityRecordService);
         return true;
     }
 }
