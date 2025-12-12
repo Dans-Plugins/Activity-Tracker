@@ -33,6 +33,8 @@ public class AverageDailyActivityTest {
     private SessionFactory sessionFactory;
     private ActivityRecordFactory activityRecordFactory;
     private ActivityRecordService activityRecordService;
+    private Gson gson;
+    private int sessionIdCounter = 1;
 
     @Before
     public void setUp() {
@@ -41,6 +43,8 @@ public class AverageDailyActivityTest {
         sessionFactory = new SessionFactory(logger, persistentData);
         activityRecordFactory = new ActivityRecordFactory(logger, sessionFactory);
         activityRecordService = new ActivityRecordService(persistentData, activityRecordFactory, logger);
+        gson = new GsonBuilder().setPrettyPrinting().create();
+        sessionIdCounter = 1;
     }
 
     @Test
@@ -115,9 +119,8 @@ public class AverageDailyActivityTest {
      * Helper method to create a session with a specific date for testing
      */
     private Session createSessionWithDate(UUID playerUuid, LocalDateTime loginDate, double minutesSpent, boolean active) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Map<String, String> data = new HashMap<>();
-        data.put("ID", gson.toJson(1));
+        data.put("ID", gson.toJson(sessionIdCounter++));
         data.put("playerUUID", gson.toJson(playerUuid.toString()));
         data.put("loginDate", gson.toJson(loginDate.toString()));
         data.put("logoutDate", gson.toJson(loginDate.plusMinutes((long)minutesSpent).toString()));
