@@ -1,5 +1,7 @@
 package dansplugins.activitytracker.services;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
+import dansplugins.activitytracker.objects.Session;
 
 /**
  * @author Daniel McCoy Stephenson
@@ -62,5 +65,36 @@ public class ActivityRecordService {
         }
         
         return result;
+    }
+
+    /**
+     * Calculate average daily activity for a player over the specified number of days
+     * @param record The activity record to analyze
+     * @param days The number of days to calculate the average over (default: 7)
+     * @return Average hours per day
+     */
+    public double calculateAverageDailyActivity(ActivityRecord record, int days) {
+        if (record == null || days <= 0) {
+            return 0.0;
+        }
+
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(days);
+        double totalHours = 0.0;
+
+        // Sum up hours from sessions within the time period
+        for (Session session : record.getSessions()) {
+            if (session.getLoginDate().isAfter(cutoffDate)) {
+                if (session.isActive()) {
+                    // For active sessions, calculate time since login
+                    totalHours += session.getMinutesSinceLogin() / 60.0;
+                } else {
+                    // For completed sessions, use the stored minutes spent
+                    totalHours += session.getMinutesSpent() / 60.0;
+                }
+            }
+        }
+
+        // Calculate average
+        return totalHours / days;
     }
 }
