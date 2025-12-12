@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 
 import dansplugins.activitytracker.bstats.Metrics;
+import dansplugins.activitytracker.commands.AverageCommand;
 import dansplugins.activitytracker.commands.ConfigCommand;
 import dansplugins.activitytracker.commands.DefaultCommand;
 import dansplugins.activitytracker.commands.HelpCommand;
@@ -155,6 +156,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     private void initializeCommandService() {
         ArrayList<AbstractPluginCommand> commands = new ArrayList<>(Arrays.asList(
+                new AverageCommand(persistentData, activityRecordService),
                 new ConfigCommand(configService),
                 new HelpCommand(),
                 new InfoCommand(persistentData),

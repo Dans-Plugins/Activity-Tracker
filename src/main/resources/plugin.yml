@@ -16,5 +16,7 @@ permissions:
     default: true
   at.stats:
     default: true
+  at.average:
+    default: true
   at.config:
     default: op
