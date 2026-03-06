@@ -18,5 +18,5 @@ permissions:
     default: true
   at.config:
     default: op
-  at.admin:
+  at.list:
     default: op

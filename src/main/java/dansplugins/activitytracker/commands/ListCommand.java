@@ -23,7 +23,7 @@ public class ListCommand extends AbstractPluginCommand {
     private final PersistentData persistentData;
 
     public ListCommand(PersistentData persistentData) {
-        super(new ArrayList<>(Arrays.asList("list")), new ArrayList<>(Arrays.asList("at.admin")));
+        super(new ArrayList<>(Arrays.asList("list")), new ArrayList<>(Arrays.asList("at.list")));
         this.persistentData = persistentData;
     }
 
@@ -49,7 +49,8 @@ public class ListCommand extends AbstractPluginCommand {
             return true;
         }
 
-        sender.sendMessage(ChatColor.AQUA + " === 10 Most Recent Sessions ===");
+        int displayedCount = sortedSessions.size();
+        sender.sendMessage(ChatColor.AQUA + " === Most Recent Sessions (" + displayedCount + "/10) ===");
         
         UUIDChecker uuidChecker = new UUIDChecker();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
