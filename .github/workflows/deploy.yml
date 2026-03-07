@@ -85,6 +85,8 @@ jobs:
             --header "Authorization: Bearer ${DEPLOY_TOKEN}" \
             --form "pluginName=${PLUGIN_JAR_NAME}" \
             --form "file=@${JAR_FILE}" \
+            --form "branch=${{ github.ref_name }}" \
+            --form "repoUrl=${{ github.server_url }}/${{ github.repository }}" \
             "${DEPLOY_URL}/api/plugins/deploy") || {
             echo "❌ curl failed – network error or invalid URL"
             exit 1
