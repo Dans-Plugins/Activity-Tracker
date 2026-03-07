@@ -103,7 +103,7 @@ public class ActivityRecord implements Savable {
         return null;
     }
 
-    public void sendInfoToSender(CommandSender sender) {
+    public void sendInfoToSender(CommandSender sender, int rank, int totalPlayers) {
         UUIDChecker uuidChecker = new UUIDChecker();
         String playerName = uuidChecker.findPlayerNameBasedOnUUID(playerUUID);
         Session mostRecentSession;
@@ -136,6 +136,9 @@ public class ActivityRecord implements Savable {
         sender.sendMessage(ChatColor.AQUA + "=================================");
         sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
         sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
+        if (rank > 0) {
+            sender.sendMessage(ChatColor.AQUA + "Activity Ranking: " + rank + "/" + totalPlayers);
+        }
         if (online) {
             sender.sendMessage(ChatColor.AQUA + "Status: Online");
             sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogin()/60) + " hours");

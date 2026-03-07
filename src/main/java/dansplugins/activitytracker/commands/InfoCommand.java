@@ -37,7 +37,9 @@ public class InfoCommand extends AbstractPluginCommand {
             return false;
         }
 
-        record.sendInfoToSender(sender);
+        int rank = persistentData.getPlayerRank(player.getUniqueId());
+        int totalPlayers = persistentData.getActivityRecords().size();
+        record.sendInfoToSender(sender, rank, totalPlayers);
         return true;
     }
 
@@ -57,7 +59,9 @@ public class InfoCommand extends AbstractPluginCommand {
             return false;
         }
 
-        record.sendInfoToSender(sender);
+        int rank = persistentData.getPlayerRank(playerUUID);
+        int totalPlayers = persistentData.getActivityRecords().size();
+        record.sendInfoToSender(sender, rank, totalPlayers);
         return true;
     }
 }

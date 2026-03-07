@@ -1,6 +1,8 @@
 package dansplugins.activitytracker.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -115,5 +117,26 @@ public class PersistentData {
             count += record.getSessions().size();
         }
         return count;
+    }
+
+    public int getPlayerRank(UUID playerUUID) {
+        if (playerUUID == null) {
+            return -1;
+        }
+
+        ArrayList<ActivityRecord> sortedRecords = new ArrayList<>(activityRecords);
+        Collections.sort(sortedRecords, new Comparator<ActivityRecord>() {
+            @Override
+            public int compare(ActivityRecord r1, ActivityRecord r2) {
+                return Double.compare(r2.getTotalHoursSpent(), r1.getTotalHoursSpent());
+            }
+        });
+
+        for (int i = 0; i < sortedRecords.size(); i++) {
+            if (sortedRecords.get(i).getPlayerUUID().equals(playerUUID)) {
+                return i + 1;
+            }
+        }
+        return -1;
     }
 }
