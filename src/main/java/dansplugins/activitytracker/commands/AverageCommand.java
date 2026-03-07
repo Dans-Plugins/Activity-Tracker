@@ -101,8 +101,8 @@ public class AverageCommand extends AbstractPluginCommand {
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Period: " + 
                           ChatColor.WHITE + "Last " + days + " day" + (days > 1 ? "s" : ""));
         
-        // Total hours with visual bar indicator
-        String totalBar = createBar(totalHours, 168.0); // 168 hours = 7 days max
+        // Total hours with visual bar indicator (scaled to period length)
+        String totalBar = createBar(totalHours, days * 24.0);
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Total:  " + 
                           ChatColor.GREEN + String.format("%.2f", totalHours) + "h " + 
                           ChatColor.DARK_GRAY + totalBar);
