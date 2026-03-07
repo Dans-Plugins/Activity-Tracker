@@ -31,8 +31,14 @@ public class JoinHandler implements Listener {
         boolean assignmentNeeded = activityRecordService.assignActivityRecordToPlayerIfNecessary(player);
         if (!assignmentNeeded) {
             ActivityRecord record = persistentData.getActivityRecord(player);
+            if (record == null) {
+                // This should not happen, but handle it gracefully
+                activityRecordService.assignActivityRecordToPlayerIfNecessary(player);
+                return;
+            }
+            
             Session newSession = sessionFactory.createSession(player);
-            record.getSessions().add(newSession); // TODO: replace with better method
+            record.addSession(newSession);
             record.setMostRecentSession(newSession);
         }
     }

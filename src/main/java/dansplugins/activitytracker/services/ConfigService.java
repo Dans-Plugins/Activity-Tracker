@@ -38,6 +38,12 @@ public class ConfigService {
         if (!getConfig().isSet("debugMode")) {
             getConfig().set("debugMode", false);
         }
+        if (!getConfig().isSet("restApiEnabled")) {
+            getConfig().set("restApiEnabled", false);
+        }
+        if (!getConfig().isSet("restApiPort")) {
+            getConfig().set("restApiPort", 8080);
+        }
         getConfig().options().copyDefaults(true);
         activityTracker.saveConfig();
     }
@@ -49,10 +55,10 @@ public class ConfigService {
             if (option.equalsIgnoreCase("version")) {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
                 return;
-            } else if (option.equalsIgnoreCase("")) { // no integers yet
+            } else if (option.equalsIgnoreCase("restApiPort")) {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
-            } else if (option.equalsIgnoreCase("debugMode")) {
+            } else if (option.equalsIgnoreCase("debugMode") || option.equalsIgnoreCase("restApiEnabled")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) { // no doubles yet
@@ -74,7 +80,9 @@ public class ConfigService {
     public void sendConfigList(CommandSender sender) {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
-                + ", debugMode: " + getString("debugMode"));
+                + ", debugMode: " + getString("debugMode")
+                + ", restApiEnabled: " + getString("restApiEnabled")
+                + ", restApiPort: " + getString("restApiPort"));
     }
 
     public boolean hasBeenAltered() {

@@ -1,7 +1,10 @@
 package dansplugins.activitytracker.services;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import dansplugins.activitytracker.algorithms.TopRecordsAlgorithm;
+import dansplugins.activitytracker.algorithms.ActivityRecordAdapter;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.ChatColor;
@@ -17,11 +20,13 @@ public class ActivityRecordService {
     private final PersistentData persistentData;
     private final ActivityRecordFactory activityRecordFactory;
     private final Logger logger;
+    private final TopRecordsAlgorithm topRecordsAlgorithm;
 
     public ActivityRecordService(PersistentData persistentData, ActivityRecordFactory activityRecordFactory, Logger logger) {
         this.persistentData = persistentData;
         this.activityRecordFactory = activityRecordFactory;
         this.logger = logger;
+        this.topRecordsAlgorithm = new TopRecordsAlgorithm();
     }
 
     public boolean assignActivityRecordToPlayerIfNecessary(Player player) {
@@ -39,39 +44,23 @@ public class ActivityRecordService {
     }
 
     public ArrayList<ActivityRecord> getTopTenRecords() {
-        ArrayList<ActivityRecord> toIgnore = new ArrayList<>();
-        ArrayList<ActivityRecord> toReturn = new ArrayList<>();
-
-        int numRecords = 10; // TODO: make this a config option
-        for (int i = 0; i < numRecords; i++) {
-            ActivityRecord topRecord = getTopRecord(toIgnore);
-            if (topRecord == null) {
-                break;
-            }
-            toReturn.add(topRecord);
-            toIgnore.add(topRecord);
+        ArrayList<ActivityRecord> allRecords = new ArrayList<>(persistentData.getActivityRecords());
+        
+        // Wrap records in adapters for the generic algorithm
+        List<ActivityRecordAdapter> adapters = new ArrayList<>();
+        for (ActivityRecord record : allRecords) {
+            adapters.add(new ActivityRecordAdapter(record));
         }
-
-        return toReturn;
-    }
-
-    public ActivityRecord getTopRecord(ArrayList<ActivityRecord> toIgnore) {
-        logger.log("Attempting to get top record, ignoring " + toIgnore.size() + " records.");
-        ActivityRecord toReturn = null;
-        double max = 0;
-        for (ActivityRecord record : persistentData.getActivityRecords()) {
-            if (toIgnore.contains(record)) {
-                logger.log("Record for " + record.getPlayerUUID().toString() + " is in the ignore list.");
-                continue;
-            }
-            if (record.getTotalHoursSpent() > max) {
-                toReturn = record;
-                max = record.getTotalHoursSpent();
-            }
+        
+        // Use the generic algorithm
+        List<ActivityRecordAdapter> topAdapters = topRecordsAlgorithm.getTopTenRecords(adapters);
+        
+        // Extract the original records
+        ArrayList<ActivityRecord> result = new ArrayList<>();
+        for (ActivityRecordAdapter adapter : topAdapters) {
+            result.add(adapter.getRecord());
         }
-        if (toReturn != null) {
-            logger.log("Record for " + toReturn.getPlayerUUID() + " is the top record currently. " + toIgnore.size() + " records were ignored when performing this search.");
-        }
-        return toReturn;
+        
+        return result;
     }
 }
