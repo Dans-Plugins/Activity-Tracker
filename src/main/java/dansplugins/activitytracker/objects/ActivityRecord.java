@@ -135,8 +135,8 @@ public class ActivityRecord implements Savable {
         sender.sendMessage("");
 
         // Header with player name
-        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + playerName +
-                          ChatColor.RESET + "" + ChatColor.GOLD + " ─ Activity Info");
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + ChatColor.BOLD + playerName +
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Activity Info");
 
         // Number of logins
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Logins:    " +
