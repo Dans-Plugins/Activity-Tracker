@@ -353,4 +353,37 @@ public class PersistentDataTest {
         // Assert
         assertEquals(-1, rank);
     }
+
+    @Test
+    public void testGetPlayerRankTiedPlayers() {
+        // Arrange - two players with the same hours
+        UUID uuid1 = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        UUID uuid3 = UUID.randomUUID();
+
+        Session session1 = new Session(logger, 1, uuid1);
+        Session session2 = new Session(logger, 2, uuid2);
+        Session session3 = new Session(logger, 3, uuid3);
+
+        session1.endSession();
+        session2.endSession();
+        session3.endSession();
+
+        ActivityRecord record1 = new ActivityRecord(uuid1, session1);
+        ActivityRecord record2 = new ActivityRecord(uuid2, session2);
+        ActivityRecord record3 = new ActivityRecord(uuid3, session3);
+
+        record1.setHoursSpent(10.0);
+        record2.setHoursSpent(10.0);
+        record3.setHoursSpent(5.0);
+
+        persistentData.addRecord(record1);
+        persistentData.addRecord(record2);
+        persistentData.addRecord(record3);
+
+        // Act & Assert - tied players share the same rank
+        assertEquals(1, persistentData.getPlayerRank(uuid1)); // 10 hours - rank 1
+        assertEquals(1, persistentData.getPlayerRank(uuid2)); // 10 hours - rank 1 (tied)
+        assertEquals(3, persistentData.getPlayerRank(uuid3)); //  5 hours - rank 3
+    }
 }
