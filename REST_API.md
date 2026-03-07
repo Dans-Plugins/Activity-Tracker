@@ -111,6 +111,41 @@ Get detailed activity information for a specific player.
 }
 ```
 
+### Average Daily Activity
+```
+GET /api/average-daily-activity/{uuid}?days=7
+```
+Get average daily activity for a specific player over a specified period.
+
+**Parameters:**
+- `uuid` (path): Player's UUID
+- `days` (query, optional): Number of days to calculate average over (default: 7)
+
+**Response:**
+```json
+{
+  "playerUuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "playerName": "Steve",
+  "days": 7,
+  "averageHoursPerDay": 3.25,
+  "totalHours": 22.75
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "error": "Player not found"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "error": "Days must be a positive number"
+}
+```
+
 ## OpenAPI Specification
 
 A complete OpenAPI 3.0 specification is available in the `openapi.yaml` file in the plugin repository. You can use this specification with tools like:
@@ -143,6 +178,12 @@ curl http://localhost:8080/api/leaderboard
 
 # Get specific player info
 curl http://localhost:8080/api/players/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+# Get average daily activity for a player (default 7 days)
+curl http://localhost:8080/api/average-daily-activity/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+# Get average daily activity for a player over 30 days
+curl "http://localhost:8080/api/average-daily-activity/a1b2c3d4-e5f6-7890-abcd-ef1234567890?days=30"
 ```
 
 ### Using JavaScript (fetch)
@@ -154,6 +195,11 @@ fetch('http://localhost:8080/api/stats')
 
 // Get leaderboard
 fetch('http://localhost:8080/api/leaderboard')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+// Get average daily activity
+fetch('http://localhost:8080/api/average-daily-activity/a1b2c3d4-e5f6-7890-abcd-ef1234567890?days=7')
   .then(response => response.json())
   .then(data => console.log(data));
 ```
@@ -173,6 +219,13 @@ response = requests.get('http://localhost:8080/api/leaderboard')
 leaderboard = response.json()
 for i, player in enumerate(leaderboard, 1):
     print(f"{i}. {player['playerName']} - {player['hoursPlayed']:.2f} hours")
+
+# Get average daily activity
+response = requests.get('http://localhost:8080/api/average-daily-activity/a1b2c3d4-e5f6-7890-abcd-ef1234567890', 
+                       params={'days': 7})
+avg_activity = response.json()
+print(f"Player: {avg_activity['playerName']}")
+print(f"Average hours per day ({avg_activity['days']} days): {avg_activity['averageHoursPerDay']:.2f}")
 ```
 
 ## Troubleshooting

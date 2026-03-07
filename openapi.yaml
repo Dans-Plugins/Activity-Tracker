@@ -129,6 +129,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/average-daily-activity/{uuid}:
+    get:
+      summary: Get average daily activity for a player
+      description: Calculate and retrieve the average daily activity for a specific player over a specified period
+      operationId: getAverageDailyActivity
+      tags:
+        - Players
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: The UUID of the player
+          schema:
+            type: string
+            format: uuid
+            example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        - name: days
+          in: query
+          required: false
+          description: Number of days to calculate average over (default 7)
+          schema:
+            type: integer
+            minimum: 1
+            default: 7
+            example: 7
+      responses:
+        '200':
+          description: Average daily activity retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AverageDailyActivityResponse'
+        '400':
+          description: Invalid UUID format or days parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     HealthResponse:
@@ -249,6 +294,39 @@ components:
         - totalLogins
         - totalHoursPlayed
         - currentlyOnline
+
+    AverageDailyActivityResponse:
+      type: object
+      properties:
+        playerUuid:
+          type: string
+          format: uuid
+          description: UUID of the player
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        playerName:
+          type: string
+          description: Name of the player
+          example: "Steve"
+        days:
+          type: integer
+          description: Number of days the average was calculated over
+          example: 7
+        averageHoursPerDay:
+          type: number
+          format: double
+          description: Average hours played per day
+          example: 3.25
+        totalHours:
+          type: number
+          format: double
+          description: Total hours played in the specified period
+          example: 22.75
+      required:
+        - playerUuid
+        - playerName
+        - days
+        - averageHoursPerDay
+        - totalHours
 
     ErrorResponse:
       type: object

@@ -258,4 +258,114 @@ public class RestApiServiceTest {
         assertTrue(json.contains("Player1"));
         assertTrue(json.contains("Player2"));
     }
+
+    @Test
+    public void testAverageDailyActivityResponseSerialization() {
+        // Arrange
+        String playerUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+        String playerName = "Steve";
+        int days = 7;
+        double averageHoursPerDay = 3.25;
+        double totalHours = 22.75;
+        AverageDailyActivityResponse response = new AverageDailyActivityResponse(
+            playerUuid, playerName, days, averageHoursPerDay, totalHours
+        );
+
+        // Act
+        String json = gson.toJson(response);
+        AverageDailyActivityResponse deserialized = gson.fromJson(json, AverageDailyActivityResponse.class);
+
+        // Assert
+        assertNotNull(json);
+        assertTrue(json.contains("\"playerUuid\":\"" + playerUuid + "\""));
+        assertTrue(json.contains("\"playerName\":\"" + playerName + "\""));
+        assertTrue(json.contains("\"days\":7"));
+        assertTrue(json.contains("\"averageHoursPerDay\":3.25"));
+        assertTrue(json.contains("\"totalHours\":22.75"));
+        assertEquals(playerUuid, deserialized.getPlayerUuid());
+        assertEquals(playerName, deserialized.getPlayerName());
+        assertEquals(days, deserialized.getDays());
+        assertEquals(averageHoursPerDay, deserialized.getAverageHoursPerDay(), 0.001);
+        assertEquals(totalHours, deserialized.getTotalHours(), 0.001);
+    }
+
+    @Test
+    public void testAverageDailyActivityDataRetrieval() {
+        // Arrange
+        UUID testUuid = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+        int days = 7;
+        double expectedAverage = 3.5;
+        double expectedTotal = 24.5;
+        
+        when(persistentData.getActivityRecord(testUuid)).thenReturn(mockRecord);
+        when(activityRecordService.calculateAverageDailyActivity(mockRecord, days)).thenReturn(expectedAverage);
+        when(activityRecordService.calculateTotalHoursInPeriod(mockRecord, days)).thenReturn(expectedTotal);
+
+        // Act
+        ActivityRecord record = persistentData.getActivityRecord(testUuid);
+        double average = activityRecordService.calculateAverageDailyActivity(record, days);
+        double total = activityRecordService.calculateTotalHoursInPeriod(record, days);
+
+        // Assert
+        assertNotNull(record);
+        assertEquals(expectedAverage, average, 0.001);
+        assertEquals(expectedTotal, total, 0.001);
+        verify(persistentData, times(1)).getActivityRecord(testUuid);
+        verify(activityRecordService, times(1)).calculateAverageDailyActivity(mockRecord, days);
+        verify(activityRecordService, times(1)).calculateTotalHoursInPeriod(mockRecord, days);
+    }
+
+    @Test
+    public void testAverageDailyActivityWithInvalidDays() {
+        // Arrange
+        UUID testUuid = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+        when(persistentData.getActivityRecord(testUuid)).thenReturn(mockRecord);
+        when(activityRecordService.calculateAverageDailyActivity(mockRecord, 0)).thenReturn(0.0);
+        when(activityRecordService.calculateAverageDailyActivity(mockRecord, -1)).thenReturn(0.0);
+
+        // Act
+        double averageZero = activityRecordService.calculateAverageDailyActivity(mockRecord, 0);
+        double averageNegative = activityRecordService.calculateAverageDailyActivity(mockRecord, -1);
+
+        // Assert
+        assertEquals(0.0, averageZero, 0.001);
+        assertEquals(0.0, averageNegative, 0.001);
+    }
+
+    @Test
+    public void testAverageDailyActivityPlayerNotFound() {
+        // Arrange
+        UUID testUuid = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901");
+        when(persistentData.getActivityRecord(testUuid)).thenReturn(null);
+
+        // Act
+        ActivityRecord record = persistentData.getActivityRecord(testUuid);
+
+        // Assert
+        assertNull(record);
+        verify(persistentData, times(1)).getActivityRecord(testUuid);
+    }
+
+    @Test
+    public void testAverageDailyActivityWithDifferentPeriods() {
+        // Arrange
+        UUID testUuid = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+        when(persistentData.getActivityRecord(testUuid)).thenReturn(mockRecord);
+        when(activityRecordService.calculateAverageDailyActivity(mockRecord, 7)).thenReturn(3.5);
+        when(activityRecordService.calculateAverageDailyActivity(mockRecord, 30)).thenReturn(2.0);
+        when(activityRecordService.calculateTotalHoursInPeriod(mockRecord, 7)).thenReturn(24.5);
+        when(activityRecordService.calculateTotalHoursInPeriod(mockRecord, 30)).thenReturn(60.0);
+
+        // Act
+        double average7 = activityRecordService.calculateAverageDailyActivity(mockRecord, 7);
+        double average30 = activityRecordService.calculateAverageDailyActivity(mockRecord, 30);
+        double total7 = activityRecordService.calculateTotalHoursInPeriod(mockRecord, 7);
+        double total30 = activityRecordService.calculateTotalHoursInPeriod(mockRecord, 30);
+
+        // Assert
+        assertEquals(3.5, average7, 0.001);
+        assertEquals(2.0, average30, 0.001);
+        assertEquals(24.5, total7, 0.001);
+        assertEquals(60.0, total30, 0.001);
+    }
 }

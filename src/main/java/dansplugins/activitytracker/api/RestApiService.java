@@ -209,6 +209,60 @@ public class RestApiService {
             return gson.toJson(playerResponse);
         });
 
+        // GET /api/average-daily-activity/:uuid - Get average daily activity for a player
+        Spark.get("/api/average-daily-activity/:uuid", (request, response) -> {
+            String uuidParam = request.params(":uuid");
+            UUID playerUuid;
+
+            try {
+                playerUuid = UUID.fromString(uuidParam);
+            } catch (IllegalArgumentException e) {
+                response.status(400);
+                return gson.toJson(new ErrorResponse("Invalid UUID format"));
+            }
+
+            ActivityRecord record = persistentData.getActivityRecord(playerUuid);
+            if (record == null) {
+                response.status(404);
+                return gson.toJson(new ErrorResponse("Player not found"));
+            }
+
+            // Get days parameter from query string (default: 7)
+            String daysParam = request.queryParams("days");
+            int days = 7;
+            if (daysParam != null) {
+                try {
+                    days = Integer.parseInt(daysParam);
+                    if (days <= 0) {
+                        response.status(400);
+                        return gson.toJson(new ErrorResponse("Days must be a positive number"));
+                    }
+                } catch (NumberFormatException e) {
+                    response.status(400);
+                    return gson.toJson(new ErrorResponse("Invalid days parameter"));
+                }
+            }
+
+            UUIDChecker uuidChecker = new UUIDChecker();
+            String playerName = uuidChecker.findPlayerNameBasedOnUUID(playerUuid);
+            if (playerName == null) {
+                playerName = "Unknown";
+            }
+
+            double averageHoursPerDay = activityRecordService.calculateAverageDailyActivity(record, days);
+            double totalHours = activityRecordService.calculateTotalHoursInPeriod(record, days);
+
+            AverageDailyActivityResponse avgResponse = new AverageDailyActivityResponse(
+                    playerUuid.toString(),
+                    playerName,
+                    days,
+                    averageHoursPerDay,
+                    totalHours
+            );
+
+            return gson.toJson(avgResponse);
+        });
+
         // GET /api/health - Health check endpoint
         Spark.get("/api/health", (request, response) -> {
             return gson.toJson(new HealthResponse("OK", "Activity Tracker REST API"));
