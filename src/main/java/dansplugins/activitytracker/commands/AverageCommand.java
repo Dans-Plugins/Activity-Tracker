@@ -90,13 +90,46 @@ public class AverageCommand extends AbstractPluginCommand {
         double averageHoursPerDay = activityRecordService.calculateAverageDailyActivity(record, days);
         double totalHours = activityRecordService.calculateTotalHoursInPeriod(record, days);
 
-        sender.sendMessage(ChatColor.AQUA + "=================================");
-        sender.sendMessage(ChatColor.AQUA + "Average Daily Activity for " + playerName);
-        sender.sendMessage(ChatColor.AQUA + "=================================");
-        sender.sendMessage(ChatColor.AQUA + "Period: Last " + days + " day" + (days > 1 ? "s" : ""));
-        sender.sendMessage(ChatColor.AQUA + "Total Hours in Period: " + String.format("%.2f", totalHours));
-        sender.sendMessage(ChatColor.AQUA + "Average Hours Per Day: " + String.format("%.2f", averageHoursPerDay));
-        sender.sendMessage(ChatColor.AQUA + "=================================");
+        // Send empty line for visual separation
+        sender.sendMessage("");
+        
+        // Header with player name
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + ChatColor.BOLD + playerName + 
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Average Activity");
+        
+        // Time period
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Period: " + 
+                          ChatColor.WHITE + "Last " + days + " day" + (days > 1 ? "s" : ""));
+        
+        // Total hours with visual bar indicator
+        String totalBar = createBar(totalHours, 168.0); // 168 hours = 7 days max
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Total:  " + 
+                          ChatColor.GREEN + String.format("%.2f", totalHours) + "h " + 
+                          ChatColor.DARK_GRAY + totalBar);
+        
+        // Average hours per day
+        String avgBar = createBar(averageHoursPerDay, 24.0); // 24 hours max per day
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Avg/Day: " + 
+                          ChatColor.AQUA + String.format("%.2f", averageHoursPerDay) + "h " + 
+                          ChatColor.DARK_GRAY + avgBar);
+        
+        // Footer
+        sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
+        
         return true;
+    }
+
+    /**
+     * Creates a visual bar indicator for hours
+     */
+    private String createBar(double value, double max) {
+        int barLength = 10;
+        int filled = (int) Math.min(barLength, (value / max) * barLength);
+        StringBuilder bar = new StringBuilder("[");
+        for (int i = 0; i < barLength; i++) {
+            bar.append(i < filled ? "█" : "░");
+        }
+        bar.append("]");
+        return bar.toString();
     }
 }
