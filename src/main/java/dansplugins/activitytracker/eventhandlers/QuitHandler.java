@@ -1,11 +1,13 @@
 package dansplugins.activitytracker.eventhandlers;
 
 import dansplugins.activitytracker.exceptions.NoSessionException;
+import dansplugins.activitytracker.services.DiscordWebhookService;
 import dansplugins.activitytracker.utils.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.objects.ActivityRecord;
@@ -17,10 +19,16 @@ import dansplugins.activitytracker.objects.Session;
 public class QuitHandler implements Listener {
     private final PersistentData persistentData;
     private final Logger logger;
+    private final DiscordWebhookService discordWebhookService;
+    private final JavaPlugin plugin;
 
-    public QuitHandler(PersistentData persistentData, Logger logger) {
+    private static final String STAFF_PERMISSION = "at.staff";
+
+    public QuitHandler(PersistentData persistentData, Logger logger, DiscordWebhookService discordWebhookService, JavaPlugin plugin) {
         this.persistentData = persistentData;
         this.logger = logger;
+        this.discordWebhookService = discordWebhookService;
+        this.plugin = plugin;
     }
 
     @EventHandler()
@@ -56,5 +64,22 @@ public class QuitHandler implements Listener {
         } catch (Exception e) {
             logger.log("ERROR: Failed to properly end session for " + player.getName() + ": " + e.getMessage());
         }
+
+        sendDiscordQuitNotification(player);
+    }
+
+    private void sendDiscordQuitNotification(Player player) {
+        if (!discordWebhookService.isEnabled()) {
+            return;
+        }
+        if (discordWebhookService.isStaffOnly() && !player.hasPermission(STAFF_PERMISSION)) {
+            return;
+        }
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                discordWebhookService.sendQuitNotification(player.getName());
+            }
+        });
     }
 }
