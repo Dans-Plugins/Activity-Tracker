@@ -1,6 +1,7 @@
 package dansplugins.activitytracker.services;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -30,7 +31,11 @@ public class DiscordWebhookService {
             return false;
         }
         String url = configService.getString("discordWebhookUrl");
-        return url != null && !url.isEmpty();
+        if (url == null) {
+            return false;
+        }
+        String trimmed = url.trim();
+        return !trimmed.isEmpty();
     }
 
     /**
@@ -46,6 +51,9 @@ public class DiscordWebhookService {
      * @param playerName The name of the player who joined.
      */
     public void sendJoinNotification(String playerName) {
+        if (!isEnabled()) {
+            return;
+        }
         String template = configService.getString("discordWebhookJoinMessage");
         if (template == null || template.isEmpty()) {
             return;
@@ -59,6 +67,9 @@ public class DiscordWebhookService {
      * @param playerName The name of the player who quit.
      */
     public void sendQuitNotification(String playerName) {
+        if (!isEnabled()) {
+            return;
+        }
         String template = configService.getString("discordWebhookQuitMessage");
         if (template == null || template.isEmpty()) {
             return;
@@ -73,13 +84,14 @@ public class DiscordWebhookService {
      */
     private void sendWebhookMessage(String content) {
         String webhookUrl = configService.getString("discordWebhookUrl");
-        if (webhookUrl == null || webhookUrl.isEmpty()) {
+        if (webhookUrl == null || webhookUrl.trim().isEmpty()) {
             return;
         }
 
+        HttpURLConnection connection = null;
         try {
-            URL url = new URL(webhookUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL url = new URL(webhookUrl.trim());
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setConnectTimeout(5000);
@@ -100,8 +112,25 @@ public class DiscordWebhookService {
             if (responseCode < 200 || responseCode >= 300) {
                 logger.log("Discord webhook returned error code: " + responseCode);
             }
+
+            // Consume response stream to free up the connection
+            InputStream is = (responseCode >= 200 && responseCode < 300)
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+            if (is != null) {
+                try {
+                    byte[] buffer = new byte[1024];
+                    while (is.read(buffer) != -1) { }
+                } finally {
+                    is.close();
+                }
+            }
         } catch (IOException e) {
             logger.log("Failed to send Discord webhook message: " + e.getMessage());
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 

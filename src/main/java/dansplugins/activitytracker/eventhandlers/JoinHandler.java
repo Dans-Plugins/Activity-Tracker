@@ -60,10 +60,11 @@ public class JoinHandler implements Listener {
         if (discordWebhookService.isStaffOnly() && !player.hasPermission(STAFF_PERMISSION)) {
             return;
         }
+        final String playerName = player.getName();
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                discordWebhookService.sendJoinNotification(player.getName());
+                discordWebhookService.sendJoinNotification(playerName);
             }
         });
     }
