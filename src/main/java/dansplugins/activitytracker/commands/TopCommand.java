@@ -25,36 +25,62 @@ public class TopCommand extends AbstractPluginCommand {
     @Override
     public boolean execute(CommandSender sender) {
         ArrayList<ActivityRecord> records = activityRecordService.getTopTenRecords();
-        sender.sendMessage(ChatColor.AQUA + "=== Most Active Players ===");
+
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Top Players");
         
         if (records.isEmpty()) {
-            sender.sendMessage(ChatColor.YELLOW + "No activity records found.");
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "No activity records found.");
+            sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
             return false;
+        }
+
+        // Find the max hours for bar scaling
+        double maxHours = 0;
+        for (ActivityRecord record : records) {
+            if (record != null && record.getTotalHoursSpent() > maxHours) {
+                maxHours = record.getTotalHoursSpent();
+            }
         }
         
         int count = 1;
+        UUIDChecker uuidChecker = new UUIDChecker();
         for (ActivityRecord record : records) {
             if (record == null) {
                 continue;
             }
             
             try {
-                UUIDChecker uuidChecker = new UUIDChecker();
                 String playerName = uuidChecker.findPlayerNameBasedOnUUID(record.getPlayerUUID());
                 
                 if (playerName == null || playerName.isEmpty()) {
                     playerName = record.getPlayerUUID().toString();
                 }
 
-                sender.sendMessage(ChatColor.AQUA + "" + count + ") " + playerName + " - " + String.format("%.2f", record.getTotalHoursSpent()) + " hours");
+                String bar = createBar(record.getTotalHoursSpent(), maxHours > 0 ? maxHours : 1);
+                sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "#" + count + " " +
+                                  ChatColor.WHITE + playerName + " " +
+                                  ChatColor.GREEN + String.format("%.2f", record.getTotalHoursSpent()) + "h " +
+                                  ChatColor.DARK_GRAY + bar);
                 count++;
             } catch (Exception e) {
-                System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
-                System.err.println("ERROR: Failed to process activity record for UUID " + (record != null ? record.getPlayerUUID() : "unknown") + ": " + e.getMessage());
                 continue;
             }
         }
-        return false;
+        sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
+        return true;
+    }
+
+    private String createBar(double value, double max) {
+        int barLength = 10;
+        int filled = (int) Math.min(barLength, (value / max) * barLength);
+        StringBuilder bar = new StringBuilder("[");
+        for (int i = 0; i < barLength; i++) {
+            bar.append(i < filled ? "\u2588" : "\u2591");
+        }
+        bar.append("]");
+        return bar.toString();
     }
 
     @Override

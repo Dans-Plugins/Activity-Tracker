@@ -25,9 +25,14 @@ public class StatsCommand extends AbstractPluginCommand {
         int uniqueLogins = persistentData.getActivityRecords().size();
         int numLogins = persistentData.getTotalNumberOfLogins();
 
-        sender.sendMessage(ChatColor.AQUA + " === Activity Statistics ===");
-        sender.sendMessage(ChatColor.AQUA + "Unique Logins: " + uniqueLogins);
-        sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + numLogins);
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Statistics");
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Unique Players: " +
+                          ChatColor.GREEN + uniqueLogins);
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Total Logins:   " +
+                          ChatColor.GREEN + numLogins);
+        sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
         return true;
     }
 
