@@ -44,14 +44,18 @@ public class ListCommand extends AbstractPluginCommand {
                 .limit(10)
                 .collect(Collectors.toList());
 
+        int displayedCount = sortedSessions.size();
+
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Recent Sessions (" + displayedCount + ")");
+
         if (sortedSessions.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "No sessions found.");
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "No sessions found.");
+            sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
             return true;
         }
 
-        int displayedCount = sortedSessions.size();
-        sender.sendMessage(ChatColor.AQUA + " === Most Recent Sessions (" + displayedCount + "/10) ===");
-        
         UUIDChecker uuidChecker = new UUIDChecker();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
@@ -63,20 +67,23 @@ public class ListCommand extends AbstractPluginCommand {
             }
             
             String loginTime = session.getLoginDate().format(formatter);
-            String status = session.isActive() ? ChatColor.GREEN + "Active" : ChatColor.RED + "Ended";
+            String status = session.isActive() 
+                ? ChatColor.GREEN + "Active" 
+                : ChatColor.RED + "Ended";
             
-            String sessionInfo;
             if (session.isActive()) {
-                sessionInfo = String.format("%d. %s - Login: %s (%s%s)", 
-                    count, playerName, loginTime, status, ChatColor.AQUA);
+                sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "#" + count + " " +
+                                  ChatColor.WHITE + playerName + ChatColor.GRAY + " - " +
+                                  ChatColor.WHITE + loginTime + " (" + status + ChatColor.GRAY + ")");
             } else {
-                sessionInfo = String.format("%d. %s - Login: %s (%s%s - Duration: %.1f min)", 
-                    count, playerName, loginTime, status, ChatColor.AQUA, session.getMinutesSpent());
+                sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "#" + count + " " +
+                                  ChatColor.WHITE + playerName + ChatColor.GRAY + " - " +
+                                  ChatColor.WHITE + loginTime + " (" + status + ChatColor.GRAY + 
+                                  " - " + ChatColor.WHITE + String.format("%.1f", session.getMinutesSpent()) + " min" + ChatColor.GRAY + ")");
             }
-            
-            sender.sendMessage(ChatColor.AQUA + sessionInfo);
             count++;
         }
+        sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
         
         return true;
     }

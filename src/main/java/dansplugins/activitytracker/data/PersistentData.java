@@ -116,4 +116,35 @@ public class PersistentData {
         }
         return count;
     }
+
+    public int getPlayerRank(UUID playerUUID) {
+        if (playerUUID == null) {
+            return -1;
+        }
+
+        // First, find the target player's total hours
+        double targetTotalHours = -1.0;
+        for (ActivityRecord record : activityRecords) {
+            if (record.getPlayerUUID().equals(playerUUID)) {
+                targetTotalHours = record.getTotalHoursSpent();
+                break;
+            }
+        }
+
+        // If the player does not have an activity record, return -1
+        if (targetTotalHours < 0.0) {
+            return -1;
+        }
+
+        // Count how many players have strictly greater total hours
+        int countGreater = 0;
+        for (ActivityRecord record : activityRecords) {
+            if (record.getTotalHoursSpent() > targetTotalHours) {
+                countGreater++;
+            }
+        }
+
+        // Rank is 1 plus the number of players with more hours
+        return countGreater + 1;
+    }
 }

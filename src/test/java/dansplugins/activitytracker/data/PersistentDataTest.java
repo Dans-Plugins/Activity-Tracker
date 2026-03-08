@@ -283,4 +283,107 @@ public class PersistentDataTest {
         assertFalse("Player 2 session should be ended", session2.isActive());
         assertFalse("Player 3 session should be ended", session3.isActive());
     }
+
+    @Test
+    public void testGetPlayerRankSinglePlayer() {
+        // Arrange
+        Session session = new Session(logger, 1, testPlayerUUID);
+        ActivityRecord record = new ActivityRecord(testPlayerUUID, session);
+        record.setHoursSpent(10.0);
+        session.endSession();
+        persistentData.addRecord(record);
+
+        // Act
+        int rank = persistentData.getPlayerRank(testPlayerUUID);
+
+        // Assert
+        assertEquals(1, rank);
+    }
+
+    @Test
+    public void testGetPlayerRankMultiplePlayers() {
+        // Arrange
+        UUID uuid1 = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        UUID uuid3 = UUID.randomUUID();
+
+        Session session1 = new Session(logger, 1, uuid1);
+        Session session2 = new Session(logger, 2, uuid2);
+        Session session3 = new Session(logger, 3, uuid3);
+
+        session1.endSession();
+        session2.endSession();
+        session3.endSession();
+
+        ActivityRecord record1 = new ActivityRecord(uuid1, session1);
+        ActivityRecord record2 = new ActivityRecord(uuid2, session2);
+        ActivityRecord record3 = new ActivityRecord(uuid3, session3);
+
+        record1.setHoursSpent(5.0);
+        record2.setHoursSpent(15.0);
+        record3.setHoursSpent(10.0);
+
+        persistentData.addRecord(record1);
+        persistentData.addRecord(record2);
+        persistentData.addRecord(record3);
+
+        // Act & Assert - ranked by hours descending
+        assertEquals(1, persistentData.getPlayerRank(uuid2)); // 15 hours - rank 1
+        assertEquals(2, persistentData.getPlayerRank(uuid3)); // 10 hours - rank 2
+        assertEquals(3, persistentData.getPlayerRank(uuid1)); //  5 hours - rank 3
+    }
+
+    @Test
+    public void testGetPlayerRankNonExistentPlayer() {
+        // Arrange
+        UUID nonExistentUUID = UUID.randomUUID();
+
+        // Act
+        int rank = persistentData.getPlayerRank(nonExistentUUID);
+
+        // Assert
+        assertEquals(-1, rank);
+    }
+
+    @Test
+    public void testGetPlayerRankNullUUID() {
+        // Act
+        int rank = persistentData.getPlayerRank(null);
+
+        // Assert
+        assertEquals(-1, rank);
+    }
+
+    @Test
+    public void testGetPlayerRankTiedPlayers() {
+        // Arrange - two players with the same hours
+        UUID uuid1 = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        UUID uuid3 = UUID.randomUUID();
+
+        Session session1 = new Session(logger, 1, uuid1);
+        Session session2 = new Session(logger, 2, uuid2);
+        Session session3 = new Session(logger, 3, uuid3);
+
+        session1.endSession();
+        session2.endSession();
+        session3.endSession();
+
+        ActivityRecord record1 = new ActivityRecord(uuid1, session1);
+        ActivityRecord record2 = new ActivityRecord(uuid2, session2);
+        ActivityRecord record3 = new ActivityRecord(uuid3, session3);
+
+        record1.setHoursSpent(10.0);
+        record2.setHoursSpent(10.0);
+        record3.setHoursSpent(5.0);
+
+        persistentData.addRecord(record1);
+        persistentData.addRecord(record2);
+        persistentData.addRecord(record3);
+
+        // Act & Assert - tied players share the same rank
+        assertEquals(1, persistentData.getPlayerRank(uuid1)); // 10 hours - rank 1
+        assertEquals(1, persistentData.getPlayerRank(uuid2)); // 10 hours - rank 1 (tied)
+        assertEquals(3, persistentData.getPlayerRank(uuid3)); //  5 hours - rank 3
+    }
 }

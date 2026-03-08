@@ -103,7 +103,7 @@ public class ActivityRecord implements Savable {
         return null;
     }
 
-    public void sendInfoToSender(CommandSender sender) {
+    public void sendInfoToSender(CommandSender sender, int rank, int totalPlayers) {
         UUIDChecker uuidChecker = new UUIDChecker();
         String playerName = uuidChecker.findPlayerNameBasedOnUUID(playerUUID);
         Session mostRecentSession;
@@ -131,23 +131,67 @@ public class ActivityRecord implements Savable {
             hours = hoursSpent;
         }
 
-        sender.sendMessage(ChatColor.AQUA + "=================================");
-        sender.sendMessage(ChatColor.AQUA + "Activity Record for " + playerName);
-        sender.sendMessage(ChatColor.AQUA + "=================================");
-        sender.sendMessage(ChatColor.AQUA + "Number of Logins: " + sessions.size());
-        sender.sendMessage(ChatColor.AQUA + "Play Time: " + String.format("%.2f", hours) + " hours");
+        // Send empty line for visual separation
+        sender.sendMessage("");
+
+        // Header with player name
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + ChatColor.BOLD + playerName +
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Activity Info");
+
+        // Number of logins
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Logins:    " +
+                          ChatColor.WHITE + sessions.size());
+
+        // Play time
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Play Time: " +
+                          ChatColor.GREEN + String.format("%.2f", hours) + "h");
+
+        // Activity ranking with visual bar
+        if (rank > 0) {
+            String rankBar = createRankBar(rank, totalPlayers);
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Ranking:   " +
+                              ChatColor.AQUA + rank + "/" + totalPlayers + " " +
+                              ChatColor.DARK_GRAY + rankBar);
+        }
+
+        // Online/offline status
         if (online) {
-            sender.sendMessage(ChatColor.AQUA + "Status: Online");
-            sender.sendMessage(ChatColor.AQUA + "Time Since Login: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogin()/60) + " hours");
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Status:    " +
+                              ChatColor.GREEN + "Online");
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Session:   " +
+                              ChatColor.WHITE + String.format("%.2f", mostRecentSession.getMinutesSinceLogin() / 60) + "h since login");
         }
         else {
-            sender.sendMessage(ChatColor.AQUA + "Status: Offline");
-            sender.sendMessage(ChatColor.AQUA + "Time Since Logout: " + String.format("%.2f", mostRecentSession.getMinutesSinceLogout()/60) + " hours");
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Status:    " +
+                              ChatColor.RED + "Offline");
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Last Seen: " +
+                              ChatColor.WHITE + String.format("%.2f", mostRecentSession.getMinutesSinceLogout() / 60) + "h ago");
         }
+
+        // First recorded login
         if (firstSession != null) {
-            sender.sendMessage(ChatColor.AQUA + "First Recorded Login: " + firstSession.getLoginDate().toString());
+            sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "First Login: " +
+                              ChatColor.WHITE + firstSession.getLoginDate().toString());
         }
-        sender.sendMessage(ChatColor.AQUA + "=================================");
+
+        // Footer
+        sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
+    }
+
+    /**
+     * Creates a visual bar indicator for ranking position.
+     * Higher rank (lower number) shows more filled blocks.
+     */
+    private String createRankBar(int rank, int totalPlayers) {
+        int barLength = 10;
+        int filled = (int) Math.round(((double)(totalPlayers - rank + 1) / totalPlayers) * barLength);
+        filled = Math.max(0, Math.min(barLength, filled));
+        StringBuilder bar = new StringBuilder("[");
+        for (int i = 0; i < barLength; i++) {
+            bar.append(i < filled ? "█" : "░");
+        }
+        bar.append("]");
+        return bar.toString();
     }
 
     @Override

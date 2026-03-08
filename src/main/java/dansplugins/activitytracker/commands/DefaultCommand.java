@@ -22,9 +22,14 @@ public class DefaultCommand extends AbstractPluginCommand {
 
     @Override
     public boolean execute(CommandSender commandSender) {
-        commandSender.sendMessage(ChatColor.AQUA + "Activity Tracker " + activityTracker.getVersion());
-        commandSender.sendMessage(ChatColor.AQUA + "Developed by: Daniel McCoy Stephenson");
-        commandSender.sendMessage(ChatColor.AQUA + "Wiki: https://github.com/Dans-Plugins/Activity-Tracker/wiki");
+        commandSender.sendMessage("");
+        commandSender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
+                                 ChatColor.RESET + ChatColor.GOLD + " ─ v" + activityTracker.getVersion());
+        commandSender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Author: " +
+                                 ChatColor.WHITE + "Daniel McCoy Stephenson");
+        commandSender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Wiki:   " +
+                                 ChatColor.AQUA + "github.com/Dans-Plugins/Activity-Tracker/wiki");
+        commandSender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
         return true;
     }
 

@@ -78,11 +78,18 @@ public class ConfigService {
     }
 
     public void sendConfigList(CommandSender sender) {
-        sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
-        sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
-                + ", debugMode: " + getString("debugMode")
-                + ", restApiEnabled: " + getString("restApiEnabled")
-                + ", restApiPort: " + getString("restApiPort"));
+        sender.sendMessage("");
+        sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
+                          ChatColor.RESET + ChatColor.GOLD + " ─ Config");
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "version:        " +
+                          ChatColor.WHITE + getConfig().getString("version"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "debugMode:      " +
+                          ChatColor.WHITE + getString("debugMode"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiEnabled: " +
+                          ChatColor.WHITE + getString("restApiEnabled"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiPort:    " +
+                          ChatColor.WHITE + getString("restApiPort"));
+        sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
     }
 
     public boolean hasBeenAltered() {
