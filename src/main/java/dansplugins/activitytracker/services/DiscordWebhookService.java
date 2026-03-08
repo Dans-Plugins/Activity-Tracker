@@ -87,11 +87,14 @@ public class DiscordWebhookService {
             connection.setDoOutput(true);
 
             String jsonPayload = "{\"content\": \"" + escapeJson(content) + "\"}";
+            byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
 
             OutputStream os = connection.getOutputStream();
-            byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-            os.close();
+            try {
+                os.write(input, 0, input.length);
+            } finally {
+                os.close();
+            }
 
             int responseCode = connection.getResponseCode();
             if (responseCode < 200 || responseCode >= 300) {
@@ -132,7 +135,7 @@ public class DiscordWebhookService {
                     break;
                 default:
                     if (c < 0x20) {
-                        sb.append(String.format("\\u%04x", (int) c));
+                        sb.append(String.format("\\u%04x", c));
                     } else {
                         sb.append(c);
                     }
