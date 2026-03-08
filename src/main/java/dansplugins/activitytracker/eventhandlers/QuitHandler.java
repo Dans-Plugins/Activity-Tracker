@@ -75,11 +75,15 @@ public class QuitHandler implements Listener {
         if (discordWebhookService.isStaffOnly() && !player.hasPermission(STAFF_PERMISSION)) {
             return;
         }
-        final String playerName = player.getName();
+        final String webhookUrl = discordWebhookService.getWebhookUrl();
+        final String message = discordWebhookService.prepareQuitMessage(player.getName());
+        if (webhookUrl == null || message == null) {
+            return;
+        }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                discordWebhookService.sendQuitNotification(playerName);
+                discordWebhookService.sendWebhookMessage(webhookUrl, message);
             }
         });
     }

@@ -24,6 +24,7 @@ public class DiscordWebhookService {
 
     /**
      * Checks if the Discord webhook feature is enabled and configured.
+     * Must be called from the main server thread.
      * @return true if enabled and a webhook URL is set.
      */
     public boolean isEnabled() {
@@ -40,6 +41,7 @@ public class DiscordWebhookService {
 
     /**
      * Checks if webhooks should only fire for staff members.
+     * Must be called from the main server thread.
      * @return true if staff-only mode is active.
      */
     public boolean isStaffOnly() {
@@ -47,50 +49,62 @@ public class DiscordWebhookService {
     }
 
     /**
-     * Sends a player join notification to the configured Discord webhook.
-     * @param playerName The name of the player who joined.
+     * Returns the configured webhook URL, trimmed.
+     * Must be called from the main server thread.
+     * @return the trimmed webhook URL, or null if not configured.
      */
-    public void sendJoinNotification(String playerName) {
-        if (!isEnabled()) {
-            return;
+    public String getWebhookUrl() {
+        String url = configService.getString("discordWebhookUrl");
+        if (url == null) {
+            return null;
         }
+        String trimmed = url.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    /**
+     * Prepares a join notification message by applying the player name to the configured template.
+     * Must be called from the main server thread.
+     * @param playerName The name of the player who joined.
+     * @return The formatted message, or null if the template is empty/null.
+     */
+    public String prepareJoinMessage(String playerName) {
         String template = configService.getString("discordWebhookJoinMessage");
         if (template == null || template.isEmpty()) {
-            return;
+            return null;
         }
-        String message = template.replace("{player}", playerName);
-        sendWebhookMessage(message);
+        return template.replace("{player}", playerName);
     }
 
     /**
-     * Sends a player quit notification to the configured Discord webhook.
+     * Prepares a quit notification message by applying the player name to the configured template.
+     * Must be called from the main server thread.
      * @param playerName The name of the player who quit.
+     * @return The formatted message, or null if the template is empty/null.
      */
-    public void sendQuitNotification(String playerName) {
-        if (!isEnabled()) {
-            return;
-        }
+    public String prepareQuitMessage(String playerName) {
         String template = configService.getString("discordWebhookQuitMessage");
         if (template == null || template.isEmpty()) {
-            return;
+            return null;
         }
-        String message = template.replace("{player}", playerName);
-        sendWebhookMessage(message);
+        return template.replace("{player}", playerName);
     }
 
     /**
-     * Sends a message to the configured Discord webhook URL.
+     * Sends a message to the specified Discord webhook URL.
+     * This method performs HTTP I/O and should be called from an async task.
+     * Does not access Bukkit APIs.
+     * @param webhookUrl The Discord webhook URL to post to.
      * @param content The message content to send.
      */
-    private void sendWebhookMessage(String content) {
-        String webhookUrl = configService.getString("discordWebhookUrl");
-        if (webhookUrl == null || webhookUrl.trim().isEmpty()) {
+    public void sendWebhookMessage(String webhookUrl, String content) {
+        if (webhookUrl == null || webhookUrl.isEmpty()) {
             return;
         }
 
         HttpURLConnection connection = null;
         try {
-            URL url = new URL(webhookUrl.trim());
+            URL url = new URL(webhookUrl);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");

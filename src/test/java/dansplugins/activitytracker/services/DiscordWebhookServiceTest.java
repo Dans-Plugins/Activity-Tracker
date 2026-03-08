@@ -1,6 +1,7 @@
 package dansplugins.activitytracker.services;
 
 import dansplugins.activitytracker.utils.Logger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,11 +22,17 @@ public class DiscordWebhookServiceTest {
     private Logger logger;
 
     private DiscordWebhookService discordWebhookService;
+    private AutoCloseable mocks;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
         discordWebhookService = new DiscordWebhookService(configService, logger);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mocks.close();
     }
 
     @Test
@@ -77,93 +84,94 @@ public class DiscordWebhookServiceTest {
     }
 
     @Test
-    public void testSendJoinNotificationSkipsWhenDisabled() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(false);
+    public void testGetWebhookUrlReturnsTrimmedUrl() {
+        when(configService.getString("discordWebhookUrl")).thenReturn("  https://discord.com/api/webhooks/test  ");
 
-        discordWebhookService.sendJoinNotification("TestPlayer");
-
-        // Should not attempt to read join message template when disabled
-        verify(configService, never()).getString("discordWebhookJoinMessage");
+        assertEquals("https://discord.com/api/webhooks/test", discordWebhookService.getWebhookUrl());
     }
 
     @Test
-    public void testSendQuitNotificationSkipsWhenDisabled() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(false);
+    public void testGetWebhookUrlReturnsNullWhenEmpty() {
+        when(configService.getString("discordWebhookUrl")).thenReturn("");
 
-        discordWebhookService.sendQuitNotification("TestPlayer");
-
-        // Should not attempt to read quit message template when disabled
-        verify(configService, never()).getString("discordWebhookQuitMessage");
+        assertNull(discordWebhookService.getWebhookUrl());
     }
 
     @Test
-    public void testSendJoinNotificationSkipsWhenTemplateIsEmpty() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(true);
-        when(configService.getString("discordWebhookUrl")).thenReturn("https://discord.com/api/webhooks/test");
-        when(configService.getString("discordWebhookJoinMessage")).thenReturn("");
+    public void testGetWebhookUrlReturnsNullWhenNull() {
+        when(configService.getString("discordWebhookUrl")).thenReturn(null);
 
-        discordWebhookService.sendJoinNotification("TestPlayer");
-
-        // Should check the template but not attempt to fetch URL for sending
-        verify(configService).getString("discordWebhookJoinMessage");
-        verify(configService, times(1)).getString("discordWebhookUrl");
+        assertNull(discordWebhookService.getWebhookUrl());
     }
 
     @Test
-    public void testSendJoinNotificationSkipsWhenTemplateIsNull() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(true);
-        when(configService.getString("discordWebhookUrl")).thenReturn("https://discord.com/api/webhooks/test");
-        when(configService.getString("discordWebhookJoinMessage")).thenReturn(null);
+    public void testGetWebhookUrlReturnsNullWhenWhitespaceOnly() {
+        when(configService.getString("discordWebhookUrl")).thenReturn("   ");
 
-        discordWebhookService.sendJoinNotification("TestPlayer");
-
-        verify(configService).getString("discordWebhookJoinMessage");
-        verify(configService, times(1)).getString("discordWebhookUrl");
+        assertNull(discordWebhookService.getWebhookUrl());
     }
 
     @Test
-    public void testSendQuitNotificationSkipsWhenTemplateIsEmpty() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(true);
-        when(configService.getString("discordWebhookUrl")).thenReturn("https://discord.com/api/webhooks/test");
-        when(configService.getString("discordWebhookQuitMessage")).thenReturn("");
-
-        discordWebhookService.sendQuitNotification("TestPlayer");
-
-        verify(configService).getString("discordWebhookQuitMessage");
-        verify(configService, times(1)).getString("discordWebhookUrl");
-    }
-
-    @Test
-    public void testSendQuitNotificationSkipsWhenTemplateIsNull() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(true);
-        when(configService.getString("discordWebhookUrl")).thenReturn("https://discord.com/api/webhooks/test");
-        when(configService.getString("discordWebhookQuitMessage")).thenReturn(null);
-
-        discordWebhookService.sendQuitNotification("TestPlayer");
-
-        verify(configService).getString("discordWebhookQuitMessage");
-        verify(configService, times(1)).getString("discordWebhookUrl");
-    }
-
-    @Test
-    public void testSendJoinNotificationHandlesInvalidUrl() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(true);
-        when(configService.getString("discordWebhookUrl")).thenReturn("not-a-valid-url");
+    public void testPrepareJoinMessageReplacesPlayerName() {
         when(configService.getString("discordWebhookJoinMessage")).thenReturn("**{player}** joined!");
 
-        discordWebhookService.sendJoinNotification("TestPlayer");
-
-        // Error should be logged gracefully
-        verify(logger).log(contains("Failed to send Discord webhook message"));
+        assertEquals("**TestPlayer** joined!", discordWebhookService.prepareJoinMessage("TestPlayer"));
     }
 
     @Test
-    public void testSendQuitNotificationHandlesInvalidUrl() {
-        when(configService.getBoolean("discordWebhookEnabled")).thenReturn(true);
-        when(configService.getString("discordWebhookUrl")).thenReturn("not-a-valid-url");
+    public void testPrepareJoinMessageReturnsNullWhenTemplateIsEmpty() {
+        when(configService.getString("discordWebhookJoinMessage")).thenReturn("");
+
+        assertNull(discordWebhookService.prepareJoinMessage("TestPlayer"));
+    }
+
+    @Test
+    public void testPrepareJoinMessageReturnsNullWhenTemplateIsNull() {
+        when(configService.getString("discordWebhookJoinMessage")).thenReturn(null);
+
+        assertNull(discordWebhookService.prepareJoinMessage("TestPlayer"));
+    }
+
+    @Test
+    public void testPrepareQuitMessageReplacesPlayerName() {
         when(configService.getString("discordWebhookQuitMessage")).thenReturn("**{player}** left.");
 
-        discordWebhookService.sendQuitNotification("TestPlayer");
+        assertEquals("**TestPlayer** left.", discordWebhookService.prepareQuitMessage("TestPlayer"));
+    }
+
+    @Test
+    public void testPrepareQuitMessageReturnsNullWhenTemplateIsEmpty() {
+        when(configService.getString("discordWebhookQuitMessage")).thenReturn("");
+
+        assertNull(discordWebhookService.prepareQuitMessage("TestPlayer"));
+    }
+
+    @Test
+    public void testPrepareQuitMessageReturnsNullWhenTemplateIsNull() {
+        when(configService.getString("discordWebhookQuitMessage")).thenReturn(null);
+
+        assertNull(discordWebhookService.prepareQuitMessage("TestPlayer"));
+    }
+
+    @Test
+    public void testSendWebhookMessageSkipsWhenUrlIsNull() {
+        discordWebhookService.sendWebhookMessage(null, "test message");
+
+        // No HTTP call should be attempted, no errors logged
+        verifyNoInteractions(logger);
+    }
+
+    @Test
+    public void testSendWebhookMessageSkipsWhenUrlIsEmpty() {
+        discordWebhookService.sendWebhookMessage("", "test message");
+
+        // No HTTP call should be attempted, no errors logged
+        verifyNoInteractions(logger);
+    }
+
+    @Test
+    public void testSendWebhookMessageHandlesInvalidUrl() {
+        discordWebhookService.sendWebhookMessage("not-a-valid-url", "**TestPlayer** joined!");
 
         // Error should be logged gracefully
         verify(logger).log(contains("Failed to send Discord webhook message"));

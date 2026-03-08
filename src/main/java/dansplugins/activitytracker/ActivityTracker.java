@@ -1,6 +1,5 @@
 package dansplugins.activitytracker;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -124,22 +123,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     }
 
     private void initializeConfig() {
-        if (configFileExists()) {
-            performCompatibilityChecks();
-        }
-        else {
-            configService.saveMissingConfigDefaultsIfNotPresent();
-        }
-    }
-
-    private boolean configFileExists() {
-        return new File("./plugins/" + getName() + "/config.yml").exists();
-    }
-
-    private void performCompatibilityChecks() {
-        if (isVersionMismatched()) {
-            configService.saveMissingConfigDefaultsIfNotPresent();
-        }
+        configService.saveMissingConfigDefaultsIfNotPresent();
     }
 
     /**
