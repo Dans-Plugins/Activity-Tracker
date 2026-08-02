@@ -16,6 +16,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - REST API for exposing activity data via HTTP endpoints
 - `/at average` command for viewing average daily activity
 - `/at top` command algorithm optimized to O(n log n)
-- Discord webhook notification support
 - Player activity ranking display in `/at info`
 - Visual bar indicators in command output
