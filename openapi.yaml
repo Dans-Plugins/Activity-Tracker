@@ -10,7 +10,7 @@ info:
     url: https://github.com/Dans-Plugins/Activity-Tracker
   license:
     name: GPL-3.0
-    url: https://github.com/Dans-Plugins/Activity-Tracker/blob/master/LICENSE
+    url: https://github.com/Dans-Plugins/Activity-Tracker/blob/main/LICENSE
 
 servers:
   - url: http://localhost:8080

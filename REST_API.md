@@ -12,8 +12,8 @@ restApiPort: 8080     # Port number for the API server
 ```
 
 You can also configure these settings in-game using the `/at config` command:
-- `/at config restApiEnabled true`
-- `/at config restApiPort 8080`
+- `/at config set restApiEnabled true`
+- `/at config set restApiPort 8080`
 
 ## API Endpoints
 
