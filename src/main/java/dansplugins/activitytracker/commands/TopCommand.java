@@ -16,6 +16,8 @@ import preponderous.ponder.minecraft.bukkit.tools.UUIDChecker;
  */
 public class TopCommand extends AbstractPluginCommand {
     private final ActivityRecordService activityRecordService;
+    private static final int DEFAULT_COUNT = 10;
+    private static final int MAX_COUNT = 100;
 
     public TopCommand(ActivityRecordService activityRecordService) {
         super(new ArrayList<>(Arrays.asList("top")), new ArrayList<>(Arrays.asList("at.top")));
@@ -24,7 +26,11 @@ public class TopCommand extends AbstractPluginCommand {
 
     @Override
     public boolean execute(CommandSender sender) {
-        ArrayList<ActivityRecord> records = activityRecordService.getTopTenRecords();
+        return displayTopRecords(sender, DEFAULT_COUNT);
+    }
+
+    private boolean displayTopRecords(CommandSender sender, int count) {
+        ArrayList<ActivityRecord> records = activityRecordService.getTopRecords(count);
 
         sender.sendMessage("");
         sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
@@ -44,7 +50,7 @@ public class TopCommand extends AbstractPluginCommand {
             }
         }
         
-        int count = 1;
+        int rank = 1;
         UUIDChecker uuidChecker = new UUIDChecker();
         for (ActivityRecord record : records) {
             if (record == null) {
@@ -59,11 +65,11 @@ public class TopCommand extends AbstractPluginCommand {
                 }
 
                 String bar = createBar(record.getTotalHoursSpent(), maxHours > 0 ? maxHours : 1);
-                sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "#" + count + " " +
+                sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "#" + rank + " " +
                                   ChatColor.WHITE + playerName + " " +
                                   ChatColor.GREEN + String.format("%.2f", record.getTotalHoursSpent()) + "h " +
                                   ChatColor.DARK_GRAY + bar);
-                count++;
+                rank++;
             } catch (Exception e) {
                 continue;
             }
@@ -85,6 +91,28 @@ public class TopCommand extends AbstractPluginCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        return execute(sender);
+        if (args.length == 0) {
+            return execute(sender);
+        }
+
+        int count;
+        try {
+            count = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "Invalid number of players. Usage: /at top [number]");
+            return false;
+        }
+
+        if (count <= 0) {
+            sender.sendMessage(ChatColor.RED + "The number of players must be a positive number.");
+            return false;
+        }
+
+        if (count > MAX_COUNT) {
+            sender.sendMessage(ChatColor.RED + "You can view at most " + MAX_COUNT + " players at a time.");
+            return false;
+        }
+
+        return displayTopRecords(sender, count);
     }
 }

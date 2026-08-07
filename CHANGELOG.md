@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Optional number argument for `/at top` (e.g. `/at top 25`), defaulting to 10 and capped at 100
 - DPC conventions alignment: CONTRIBUTING.md, USER_GUIDE.md, COMMANDS.md, CONFIG.md, CHANGELOG.md
 - CI workflow (build.yml) following DPC conventions
 

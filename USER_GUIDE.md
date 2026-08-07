@@ -24,7 +24,7 @@ Run `/at info <playerName>` to see the activity record for a specific player.
 
 ### Checking the Leaderboard
 
-Run `/at top` to see the top 10 most active players by total hours played.
+Run `/at top` to see the top 10 most active players by total hours played, or `/at top <number>` to see a different number of players (up to 100).
 
 ### Viewing Server-Wide Statistics
 
