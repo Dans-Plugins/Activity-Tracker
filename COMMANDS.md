@@ -33,11 +33,14 @@ All commands use the base command `/at` (or `/activitytracker`).
 **Example:** `/at average Notch 14`  
 **Defaults:** Current player, 7 days
 
-### /at top
+### /at top [number]
 
-**Description:** Displays the top 10 most active players by total hours played, with visual bar indicators.  
+**Description:** Displays the most active players by total hours played, with visual bar indicators.  
 **Permission:** `at.top`  
-**Usage:** `/at top`
+**Usage:** `/at top` or `/at top <number>`  
+**Example:** `/at top 25`  
+**Defaults:** 10 players  
+**Limits:** The number must be between 1 and 100
 
 ### /at stats
 
