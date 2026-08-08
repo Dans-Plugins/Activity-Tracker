@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - DPC conventions alignment: CONTRIBUTING.md, USER_GUIDE.md, COMMANDS.md, CONFIG.md, CHANGELOG.md
 - CI workflow (build.yml) following DPC conventions
 
+### Fixed
+- JUnit 4 test classes are now executed by Surefire (`junit-vintage-engine` added), raising the suite from 47 to 125 tests
+- Test failures now fail the CI build; the `ci-test` profile no longer sets `maven.test.failure.ignore`
+- `TopRecordsAlgorithmTest` complexity check now counts comparator invocations instead of measuring wall-clock time, removing a timing-related flake
+
 ## [1.3.0]
 
 ### Added
