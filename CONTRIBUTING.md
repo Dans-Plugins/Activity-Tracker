@@ -49,7 +49,7 @@ Issues are grouped into [milestones](https://github.com/Dans-Plugins/Activity-Tr
 
 ### Command Output
 
-User-facing strings are written directly in the command classes under `src/main/java/dansplugins/activitytracker/commands/`. Follow [COMMAND_OUTPUT_STYLE.md](COMMAND_OUTPUT_STYLE.md) when adding or changing any of them, so output stays consistent across commands.
+User-facing strings are written directly in the classes that send them — mostly the command classes under `src/main/java/dansplugins/activitytracker/commands/`, and also `ActivityRecord`, `ActivityRecordService` and `ConfigService`. Follow [COMMAND_OUTPUT_STYLE.md](COMMAND_OUTPUT_STYLE.md) when adding or changing any of them, so output stays consistent across commands.
 
 ## Testing
 

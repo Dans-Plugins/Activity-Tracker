@@ -163,7 +163,7 @@ Get average daily activity for a specific player over a specified period.
 }
 ```
 
-### Unknown Endpoints
+## Unknown Endpoints
 
 Any request to a path that is not listed above is answered with a 404 and a JSON body:
 
