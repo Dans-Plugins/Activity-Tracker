@@ -104,6 +104,13 @@ Get detailed activity information for a specific player.
 }
 ```
 
+**Error Response (400):**
+```json
+{
+  "error": "Invalid UUID format"
+}
+```
+
 **Error Response (404):**
 ```json
 {
@@ -139,10 +146,30 @@ Get average daily activity for a specific player over a specified period.
 }
 ```
 
-**Error Response (400):**
+**Error Responses (400):**
+```json
+{
+  "error": "Invalid UUID format"
+}
+```
 ```json
 {
   "error": "Days must be a positive number"
+}
+```
+```json
+{
+  "error": "Invalid days parameter"
+}
+```
+
+### Unknown Endpoints
+
+Any request to a path that is not listed above is answered with a 404 and a JSON body:
+
+```json
+{
+  "error": "Endpoint not found"
 }
 ```
 
