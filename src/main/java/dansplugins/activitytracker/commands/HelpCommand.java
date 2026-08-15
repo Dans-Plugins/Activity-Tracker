@@ -27,6 +27,7 @@ public class HelpCommand extends AbstractPluginCommand {
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at info (playerName) " + ChatColor.GRAY + "- View a player's activity record.");
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at list " + ChatColor.GRAY + "- View the 10 most recent sessions (admin only).");
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at top " + ChatColor.GRAY + "- View the most active players.");
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at top (number) " + ChatColor.GRAY + "- View a set number of active players.");
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at stats " + ChatColor.GRAY + "- View activity stats for the server.");
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at average [player] [days] " + ChatColor.GRAY + "- Avg daily activity (default: 7 days).");
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.AQUA + "/at config " + ChatColor.GRAY + "- Show or set config options.");

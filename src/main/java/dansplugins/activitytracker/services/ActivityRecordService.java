@@ -46,23 +46,33 @@ public class ActivityRecordService {
     }
 
     public ArrayList<ActivityRecord> getTopTenRecords() {
+        return getTopRecords(10);
+    }
+
+    /**
+     * Get the top records sorted by total hours played (descending)
+     * @param count The number of records to return
+     * @return List of the top records, or fewer if less than count records exist
+     * @throws IllegalArgumentException if count is negative
+     */
+    public ArrayList<ActivityRecord> getTopRecords(int count) {
         ArrayList<ActivityRecord> allRecords = new ArrayList<>(persistentData.getActivityRecords());
-        
+
         // Wrap records in adapters for the generic algorithm
         List<ActivityRecordAdapter> adapters = new ArrayList<>();
         for (ActivityRecord record : allRecords) {
             adapters.add(new ActivityRecordAdapter(record));
         }
-        
+
         // Use the generic algorithm
-        List<ActivityRecordAdapter> topAdapters = topRecordsAlgorithm.getTopTenRecords(adapters);
-        
+        List<ActivityRecordAdapter> topAdapters = topRecordsAlgorithm.getTopRecords(adapters, count);
+
         // Extract the original records
         ArrayList<ActivityRecord> result = new ArrayList<>();
         for (ActivityRecordAdapter adapter : topAdapters) {
             result.add(adapter.getRecord());
         }
-        
+
         return result;
     }
 

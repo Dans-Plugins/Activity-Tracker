@@ -388,29 +388,42 @@ class TopRecordsAlgorithmTest {
     @DisplayName("Should maintain O(n log n) complexity with increasing sizes")
     void testGetTopRecords_ComplexityValidation() {
         int[] sizes = {100, 500, 1000, 2000};
-        long[] times = new long[sizes.length];
-        
+        long[] comparisons = new long[sizes.length];
+
+        // Comparisons are counted rather than timed, so the result is deterministic
+        // and independent of JIT warm-up, GC and machine load.
         for (int i = 0; i < sizes.length; i++) {
-            List<MockScorable> records = createMockRecords(sizes[i]);
-            
-            long startTime = System.nanoTime();
-            List<MockScorable> result = algorithm.getTopRecords(records, 10);
-            long endTime = System.nanoTime();
-            
-            times[i] = endTime - startTime;
+            long[] scoreReads = new long[1];
+            List<CountingScorable> records = createCountingRecords(sizes[i], scoreReads);
+
+            scoreReads[0] = 0;
+            List<CountingScorable> result = algorithm.getTopRecords(records, 10);
+
+            // The comparator reads one score from each of the two records it compares.
+            comparisons[i] = scoreReads[0] / 2;
             assertEquals(10, result.size());
         }
-        
-        // Verify that time doesn't grow quadratically
-        // For O(n log n), time ratio should be roughly (n2/n1) * log(n2)/log(n1)
+
+        // A comparison sort with O(n log n) behaviour needs on the order of n * log2(n)
+        // comparisons on random input; a quadratic one needs on the order of n^2 / 2.
+        // The factor of two absorbs differences between JDK sort implementations while
+        // staying far below the quadratic count (4950 comparisons at n=100).
+        for (int i = 0; i < sizes.length; i++) {
+            double bound = 2 * sizes[i] * (Math.log(sizes[i]) / Math.log(2));
+            assertTrue(comparisons[i] <= bound,
+                "Comparison count suggests worse than O(n log n) for n=" + sizes[i] + ": "
+                    + comparisons[i] + " vs bound " + bound);
+        }
+
+        // Verify that the comparison count doesn't grow quadratically.
+        // For O(n log n), the ratio should be roughly (n2/n1) * log(n2)/log(n1).
         for (int i = 1; i < sizes.length; i++) {
             double sizeRatio = (double) sizes[i] / sizes[i-1];
-            double expectedTimeRatio = sizeRatio * (Math.log(sizes[i]) / Math.log(sizes[i-1]));
-            double actualTimeRatio = (double) times[i] / times[i-1];
-            
-            // Allow for some variance, but it shouldn't be quadratic growth
-            assertTrue(actualTimeRatio < expectedTimeRatio * 3, 
-                "Time complexity appears worse than O(n log n): " + actualTimeRatio + " vs expected " + expectedTimeRatio);
+            double expectedRatio = sizeRatio * (Math.log(sizes[i]) / Math.log(sizes[i-1]));
+            double actualRatio = (double) comparisons[i] / comparisons[i-1];
+
+            assertTrue(actualRatio < expectedRatio * 1.5,
+                "Comparison growth appears worse than O(n log n): " + actualRatio + " vs expected " + expectedRatio);
         }
     }
     
@@ -463,6 +476,44 @@ class TopRecordsAlgorithmTest {
         return records;
     }
     
+    /**
+     * Helper method to create Scorable objects that count how often their score is read.
+     * Scores are drawn from a fixed seed so the resulting comparison count is reproducible.
+     */
+    private List<CountingScorable> createCountingRecords(int count, long[] scoreReads) {
+        List<CountingScorable> records = new ArrayList<>();
+        Random random = new Random(42); // Fixed seed for reproducible results
+        for (int i = 0; i < count; i++) {
+            records.add(new CountingScorable(random.nextDouble() * count, scoreReads));
+        }
+        return records;
+    }
+
+    /**
+     * Scorable implementation that records every score read, allowing the number of
+     * comparator invocations to be measured deterministically.
+     */
+    private static class CountingScorable implements TopRecordsAlgorithm.Scorable {
+        private final double score;
+        private final long[] scoreReads;
+
+        public CountingScorable(double score, long[] scoreReads) {
+            this.score = score;
+            this.scoreReads = scoreReads;
+        }
+
+        @Override
+        public double getScore() {
+            scoreReads[0]++;
+            return score;
+        }
+
+        @Override
+        public String toString() {
+            return "CountingScorable{score=" + score + "}";
+        }
+    }
+
     /**
      * Mock implementation of Scorable for testing purposes.
      */
