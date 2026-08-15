@@ -228,10 +228,15 @@ The footer uses 25 horizontal line characters (`─`) after the corner character
 
 ```
 ┌─ Activity Tracker ─ Config
-│ version:        1.3.0
-│ debugMode:      false
-│ restApiEnabled: false
-│ restApiPort:    8080
+│ version:                   1.3.0
+│ debugMode:                 false
+│ restApiEnabled:            false
+│ restApiPort:               8080
+│ discordWebhookEnabled:     false
+│ discordWebhookUrl:
+│ discordWebhookStaffOnly:   false
+│ discordWebhookJoinMessage: ⚔️ **{player}** has joined the server!
+│ discordWebhookQuitMessage: 👋 **{player}** has left the server.
 └─────────────────────────
 ```
 
@@ -255,13 +260,15 @@ When multiple labels appear in a block, right-pad shorter labels with spaces to 
 │ Status:    Online
 ```
 
-For config options, use consistent padding:
+For config options, use consistent padding. Every label is right-padded to the width of the longest option name plus one space, so all values start in the same column:
 
 ```
-│ version:        1.3.0
-│ debugMode:      false
-│ restApiEnabled: false
-│ restApiPort:    8080
+│ version:                   1.3.0
+│ debugMode:                 false
+│ restApiEnabled:            false
+│ restApiPort:               8080
+│ discordWebhookStaffOnly:   false
+│ discordWebhookJoinMessage: ⚔️ **{player}** has joined the server!
 ```
 
 ## Adapting for Other Projects

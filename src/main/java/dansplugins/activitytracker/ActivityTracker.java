@@ -1,6 +1,5 @@
 package dansplugins.activitytracker;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,6 +8,7 @@ import dansplugins.activitytracker.factories.ActivityRecordFactory;
 import dansplugins.activitytracker.factories.SessionFactory;
 import dansplugins.activitytracker.services.ActivityRecordService;
 import dansplugins.activitytracker.services.ConfigService;
+import dansplugins.activitytracker.services.DiscordWebhookService;
 import dansplugins.activitytracker.services.StorageService;
 import dansplugins.activitytracker.api.RestApiService;
 import dansplugins.activitytracker.utils.Logger;
@@ -48,6 +48,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private final SessionFactory sessionFactory = new SessionFactory(logger, persistentData);
     private final ActivityRecordFactory activityRecordFactory = new ActivityRecordFactory(logger, sessionFactory);
     private final ActivityRecordService activityRecordService = new ActivityRecordService(persistentData, activityRecordFactory, logger);
+    private final DiscordWebhookService discordWebhookService = new DiscordWebhookService(configService, logger);
     private RestApiService restApiService;
 
     /**
@@ -122,22 +123,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     }
 
     private void initializeConfig() {
-        if (configFileExists()) {
-            performCompatibilityChecks();
-        }
-        else {
-            configService.saveMissingConfigDefaultsIfNotPresent();
-        }
-    }
-
-    private boolean configFileExists() {
-        return new File("./plugins/" + getName() + "/config.yml").exists();
-    }
-
-    private void performCompatibilityChecks() {
-        if (isVersionMismatched()) {
-            configService.saveMissingConfigDefaultsIfNotPresent();
-        }
+        configService.saveMissingConfigDefaultsIfNotPresent();
     }
 
     /**
@@ -146,8 +132,8 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private void registerEventHandlers() {
         EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry();
         ArrayList<Listener> listeners = new ArrayList<>(Arrays.asList(
-                new JoinHandler(activityRecordService, persistentData, sessionFactory),
-                new QuitHandler(persistentData, logger)
+                new JoinHandler(activityRecordService, persistentData, sessionFactory, discordWebhookService, this),
+                new QuitHandler(persistentData, logger, discordWebhookService, this)
         ));
         eventHandlerRegistry.registerEventHandlers(listeners, this);
     }

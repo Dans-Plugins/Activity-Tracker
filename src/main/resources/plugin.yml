@@ -22,3 +22,5 @@ permissions:
     default: op
   at.list:
     default: op
+  at.staff:
+    default: op
