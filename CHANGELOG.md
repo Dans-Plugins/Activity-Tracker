@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Optional Discord webhook notifications for player join and quit events, configured through `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage` and `discordWebhookQuitMessage`. Disabled by default. When `discordWebhookStaffOnly` is enabled, only players holding the new `at.staff` permission (default `op`) trigger a notification. The HTTP request is performed off the main server thread; no Bukkit API is touched asynchronously.
+
 ### Fixed
+
+- Config defaults are now written on every startup rather than only when the config file is absent or its `version` key is mismatched. Existing servers whose config version already matched never received newly added keys, so new options silently defaulted without appearing in `config.yml`.
 
 - The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 

@@ -43,3 +43,63 @@ restApiEnabled: false
 ```yaml
 restApiPort: 8080
 ```
+
+## discordWebhookEnabled
+
+**Type:** boolean  
+**Default:** `false`  
+**Description:** Enables Discord webhook notifications when players join or leave the server. Notifications are only sent when this is `true` **and** `discordWebhookUrl` is set to a non-empty value.
+
+**Example:**
+
+```yaml
+discordWebhookEnabled: false
+```
+
+## discordWebhookUrl
+
+**Type:** string  
+**Default:** `""`  
+**Description:** The Discord webhook URL that join and quit notifications are posted to. Leave empty to disable notifications regardless of `discordWebhookEnabled`. Surrounding whitespace is ignored.
+
+**Example:**
+
+```yaml
+discordWebhookUrl: "https://discord.com/api/webhooks/123456789/abcdef"
+```
+
+## discordWebhookStaffOnly
+
+**Type:** boolean  
+**Default:** `false`  
+**Description:** Restricts join and quit notifications to players holding the `at.staff` permission (default `op`). When `false`, notifications are sent for every player.
+
+**Example:**
+
+```yaml
+discordWebhookStaffOnly: false
+```
+
+## discordWebhookJoinMessage
+
+**Type:** string  
+**Default:** `⚔️ **{player}** has joined the server!`  
+**Description:** The message template posted when a player joins. The `{player}` placeholder is replaced with the player's name. Discord markdown is supported. An empty value suppresses join notifications.
+
+**Example:**
+
+```yaml
+discordWebhookJoinMessage: "⚔️ **{player}** has joined the server!"
+```
+
+## discordWebhookQuitMessage
+
+**Type:** string  
+**Default:** `👋 **{player}** has left the server.`  
+**Description:** The message template posted when a player leaves. The `{player}` placeholder is replaced with the player's name. Discord markdown is supported. An empty value suppresses quit notifications.
+
+**Example:**
+
+```yaml
+discordWebhookQuitMessage: "👋 **{player}** has left the server."
+```

@@ -49,3 +49,4 @@ Operators can run `/at config show` to view current settings and `/at config set
 | `at.average` | `true` | View average daily activity |
 | `at.config` | `op` | View and modify plugin configuration |
 | `at.list` | `op` | View recent player sessions |
+| `at.staff` | `op` | Marks a player as staff for Discord webhook staff-only notifications |

@@ -97,24 +97,24 @@ public class ConfigService {
         sender.sendMessage("");
         sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
                           ChatColor.RESET + ChatColor.GOLD + " ─ Config");
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "version:                  " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "version:                   " +
                           ChatColor.WHITE + getConfig().getString("version"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "debugMode:                " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "debugMode:                 " +
                           ChatColor.WHITE + getString("debugMode"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiEnabled:           " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiEnabled:            " +
                           ChatColor.WHITE + getString("restApiEnabled"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiPort:              " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiPort:               " +
                           ChatColor.WHITE + getString("restApiPort"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookEnabled:    " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookEnabled:     " +
                           ChatColor.WHITE + getString("discordWebhookEnabled"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookUrl:        " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookUrl:         " +
                           ChatColor.WHITE + getString("discordWebhookUrl"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookStaffOnly:  " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookStaffOnly:   " +
                           ChatColor.WHITE + getString("discordWebhookStaffOnly"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookJoinMessage:" +
-                          ChatColor.WHITE + " " + getString("discordWebhookJoinMessage"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookQuitMessage:" +
-                          ChatColor.WHITE + " " + getString("discordWebhookQuitMessage"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookJoinMessage: " +
+                          ChatColor.WHITE + getString("discordWebhookJoinMessage"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookQuitMessage: " +
+                          ChatColor.WHITE + getString("discordWebhookQuitMessage"));
         sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
     }
 

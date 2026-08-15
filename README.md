@@ -6,7 +6,7 @@
 
 ## Description
 
-Activity Tracker is a Minecraft plugin that tracks the activity of players. It records login sessions and play time, provides leaderboards, detailed per-player statistics, and an optional REST API for exposing activity data to external applications.
+Activity Tracker is a Minecraft plugin that tracks the activity of players. It records login sessions and play time, provides leaderboards, detailed per-player statistics, optional Discord webhook notifications for player join and quit events, and an optional REST API for exposing activity data to external applications.
 
 ## Installation
 
