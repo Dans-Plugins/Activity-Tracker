@@ -229,25 +229,21 @@ class TopRecordsAlgorithmTest {
     @MethodSource("provideDatasetSizes")
     @DisplayName("Should handle various dataset sizes efficiently")
     void testGetTopRecords_VariousDatasetSizes(int datasetSize, int topCount) {
-        List<MockScorable> records = createMockRecords(datasetSize);
-        
-        long startTime = System.nanoTime();
-        List<MockScorable> result = algorithm.getTopRecords(records, topCount);
-        long endTime = System.nanoTime();
-        
-        long duration = (endTime - startTime) / 1_000_000; // milliseconds
-        
+        long[] scoreReads = new long[1];
+        List<CountingScorable> records = createCountingRecords(datasetSize, scoreReads);
+
+        scoreReads[0] = 0;
+        List<CountingScorable> result = algorithm.getTopRecords(records, topCount);
+        long comparisons = scoreReads[0] / 2;
+
         assertEquals(Math.min(topCount, datasetSize), result.size());
-        
+
         // Verify sorting
         for (int i = 0; i < result.size() - 1; i++) {
             assertTrue(result.get(i).getScore() >= result.get(i + 1).getScore());
         }
-        
-        // Performance should be reasonable - allow more time for larger datasets
-        long maxTime = Math.max(100, datasetSize / 100); // Scale with dataset size
-        assertTrue(duration < maxTime, 
-            "Algorithm took too long for dataset size " + datasetSize + ": " + duration + "ms");
+
+        assertWithinNLogNBound(datasetSize, comparisons);
     }
     
     private static Stream<Arguments> provideDatasetSizes() {
@@ -346,42 +342,40 @@ class TopRecordsAlgorithmTest {
     @DisplayName("Should handle large datasets efficiently")
     void testGetTopRecords_LargeDataset() {
         // Test with 1000 records to ensure O(n log n) performance
-        List<MockScorable> records = createMockRecords(1000);
-        
-        long startTime = System.nanoTime();
-        List<MockScorable> result = algorithm.getTopRecords(records, 10);
-        long endTime = System.nanoTime();
-        
+        long[] scoreReads = new long[1];
+        List<CountingScorable> records = createCountingRecords(1000, scoreReads);
+
+        scoreReads[0] = 0;
+        List<CountingScorable> result = algorithm.getTopRecords(records, 10);
+        long comparisons = scoreReads[0] / 2;
+
         assertEquals(10, result.size());
         // Verify sorting
         for (int i = 0; i < 9; i++) {
             assertTrue(result.get(i).getScore() >= result.get(i + 1).getScore());
         }
-        
-        // Performance should be reasonable (less than 100ms for 1000 records)
-        long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
-        assertTrue(duration < 100, "Algorithm took too long: " + duration + "ms");
+
+        assertWithinNLogNBound(1000, comparisons);
     }
     
     @Test
     @DisplayName("Should handle very large datasets efficiently")
     void testGetTopRecords_VeryLargeDataset() {
         // Test with 5000 records for stress testing
-        List<MockScorable> records = createMockRecords(5000);
-        
-        long startTime = System.nanoTime();
-        List<MockScorable> result = algorithm.getTopRecords(records, 25);
-        long endTime = System.nanoTime();
-        
+        long[] scoreReads = new long[1];
+        List<CountingScorable> records = createCountingRecords(5000, scoreReads);
+
+        scoreReads[0] = 0;
+        List<CountingScorable> result = algorithm.getTopRecords(records, 25);
+        long comparisons = scoreReads[0] / 2;
+
         assertEquals(25, result.size());
         // Verify sorting
         for (int i = 0; i < 24; i++) {
             assertTrue(result.get(i).getScore() >= result.get(i + 1).getScore());
         }
-        
-        // Performance should still be reasonable (less than 500ms for 5000 records)
-        long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
-        assertTrue(duration < 500, "Algorithm took too long for large dataset: " + duration + "ms");
+
+        assertWithinNLogNBound(5000, comparisons);
     }
     
     @Test
@@ -404,15 +398,8 @@ class TopRecordsAlgorithmTest {
             assertEquals(10, result.size());
         }
 
-        // A comparison sort with O(n log n) behaviour needs on the order of n * log2(n)
-        // comparisons on random input; a quadratic one needs on the order of n^2 / 2.
-        // The factor of two absorbs differences between JDK sort implementations while
-        // staying far below the quadratic count (4950 comparisons at n=100).
         for (int i = 0; i < sizes.length; i++) {
-            double bound = 2 * sizes[i] * (Math.log(sizes[i]) / Math.log(2));
-            assertTrue(comparisons[i] <= bound,
-                "Comparison count suggests worse than O(n log n) for n=" + sizes[i] + ": "
-                    + comparisons[i] + " vs bound " + bound);
+            assertWithinNLogNBound(sizes[i], comparisons[i]);
         }
 
         // Verify that the comparison count doesn't grow quadratically.
@@ -487,6 +474,24 @@ class TopRecordsAlgorithmTest {
             records.add(new CountingScorable(random.nextDouble() * count, scoreReads));
         }
         return records;
+    }
+
+    /**
+     * Asserts that the comparator invocations observed for a dataset of the given size stay
+     * within an O(n log n) bound.
+     *
+     * A comparison sort with O(n log n) behaviour needs on the order of n * log2(n)
+     * comparisons on random input; a quadratic one needs on the order of n^2 / 2. The factor
+     * of two absorbs differences between JDK sort implementations while staying far below the
+     * quadratic count (4950 comparisons at n=100). Counting comparisons rather than measuring
+     * elapsed time keeps the assertion deterministic and independent of JIT warm-up, GC and
+     * machine load.
+     */
+    private static void assertWithinNLogNBound(int size, long comparisons) {
+        double bound = 2 * size * (Math.log(size) / Math.log(2));
+        assertTrue(comparisons <= bound,
+            "Comparison count suggests worse than O(n log n) for n=" + size + ": "
+                + comparisons + " vs bound " + bound);
     }
 
     /**
