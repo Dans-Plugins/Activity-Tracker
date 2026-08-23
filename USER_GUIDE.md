@@ -42,6 +42,7 @@ Operators can run `/at config show` to view current settings and `/at config set
 
 | Permission | Default | Description |
 |------------|---------|-------------|
+| `at.default` | `true` | View the plugin version and basic information with `/at` |
 | `at.help` | `true` | Access the help command |
 | `at.info` | `true` | View activity info for yourself or others |
 | `at.top` | `true` | View the top players leaderboard |

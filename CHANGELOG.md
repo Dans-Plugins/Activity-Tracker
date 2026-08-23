@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/at` now honours the `at.default` permission that `COMMANDS.md` documents for it. The node was declared by `DefaultCommand` but never registered in `plugin.yml` and never checked, because the no-argument path is invoked directly instead of through Ponder's `CommandService`. It is now declared with a default of `true`, so every player keeps access unless a server operator negates it.
+- `TopRecordsAlgorithmTest` no longer gates on elapsed wall-clock time. The three remaining timing assertions now count comparator invocations against an `n log n` bound, the approach already used by the complexity check, so a loaded CI runner can no longer fail the suite for reasons unrelated to the algorithm.
 - The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 
 ## [2.0.0-SNAPSHOT-8-8-2026] – 2026-08-08
