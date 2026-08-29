@@ -15,6 +15,10 @@ import preponderous.ponder.minecraft.bukkit.abs.AbstractPluginCommand;
 public class DefaultCommand extends AbstractPluginCommand {
     private static final String PERMISSION = "at.default";
 
+    /**
+     * Already carries the "v" prefix, which ActivityTracker#getVersion() attaches, so the header
+     * below must not add another one.
+     */
     private final String version;
 
     public DefaultCommand(ActivityTracker activityTracker) {
@@ -41,7 +45,7 @@ public class DefaultCommand extends AbstractPluginCommand {
 
         commandSender.sendMessage("");
         commandSender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
-                                 ChatColor.RESET + ChatColor.GOLD + " ─ v" + version);
+                                 ChatColor.RESET + ChatColor.GOLD + " ─ " + version);
         commandSender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Author: " +
                                  ChatColor.WHITE + "Daniel McCoy Stephenson");
         commandSender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "Wiki:   " +
