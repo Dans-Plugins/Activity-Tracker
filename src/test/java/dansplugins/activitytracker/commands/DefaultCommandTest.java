@@ -1,5 +1,6 @@
 package dansplugins.activitytracker.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,12 +63,16 @@ class DefaultCommandTest {
     }
 
     @Test
-    @DisplayName("Should include the plugin version in the header")
+    @DisplayName("Should render the header with the version exactly as ActivityTracker supplies it")
     void testExecute_WithPermission_IncludesVersion() {
         when(sender.hasPermission("at.default")).thenReturn(true);
 
         defaultCommand.execute(sender);
 
-        verify(sender).sendMessage(contains("v2.0.0"));
+        // The version already carries its own "v" prefix, so the header must not add a second one.
+        // Asserted on the whole line rather than a substring, since "vv2.0.0" also contains "v2.0.0".
+        String expectedHeader = ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD +
+                                "Activity Tracker" + ChatColor.RESET + ChatColor.GOLD + " ─ v2.0.0";
+        verify(sender).sendMessage(expectedHeader);
     }
 }
