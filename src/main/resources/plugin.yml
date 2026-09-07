@@ -8,6 +8,8 @@ commands:
   at:
 
 permissions:
+  at.default:
+    default: true
   at.help:
     default: true
   at.info:
