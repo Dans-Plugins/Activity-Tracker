@@ -44,6 +44,21 @@ public class ConfigService {
         if (!getConfig().isSet("restApiPort")) {
             getConfig().set("restApiPort", 8080);
         }
+        if (!getConfig().isSet("discordWebhookEnabled")) {
+            getConfig().set("discordWebhookEnabled", false);
+        }
+        if (!getConfig().isSet("discordWebhookUrl")) {
+            getConfig().set("discordWebhookUrl", "");
+        }
+        if (!getConfig().isSet("discordWebhookStaffOnly")) {
+            getConfig().set("discordWebhookStaffOnly", false);
+        }
+        if (!getConfig().isSet("discordWebhookJoinMessage")) {
+            getConfig().set("discordWebhookJoinMessage", "\u2694\uFE0F **{player}** has joined the server!");
+        }
+        if (!getConfig().isSet("discordWebhookQuitMessage")) {
+            getConfig().set("discordWebhookQuitMessage", "\uD83D\uDC4B **{player}** has left the server.");
+        }
         getConfig().options().copyDefaults(true);
         activityTracker.saveConfig();
     }
@@ -58,7 +73,8 @@ public class ConfigService {
             } else if (option.equalsIgnoreCase("restApiPort")) {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
-            } else if (option.equalsIgnoreCase("debugMode") || option.equalsIgnoreCase("restApiEnabled")) {
+            } else if (option.equalsIgnoreCase("debugMode") || option.equalsIgnoreCase("restApiEnabled")
+                        || option.equalsIgnoreCase("discordWebhookEnabled") || option.equalsIgnoreCase("discordWebhookStaffOnly")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) { // no doubles yet
@@ -81,14 +97,24 @@ public class ConfigService {
         sender.sendMessage("");
         sender.sendMessage(ChatColor.GOLD + "┌─ " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Activity Tracker" +
                           ChatColor.RESET + ChatColor.GOLD + " ─ Config");
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "version:        " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "version:                   " +
                           ChatColor.WHITE + getConfig().getString("version"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "debugMode:      " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "debugMode:                 " +
                           ChatColor.WHITE + getString("debugMode"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiEnabled: " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiEnabled:            " +
                           ChatColor.WHITE + getString("restApiEnabled"));
-        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiPort:    " +
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "restApiPort:               " +
                           ChatColor.WHITE + getString("restApiPort"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookEnabled:     " +
+                          ChatColor.WHITE + getString("discordWebhookEnabled"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookUrl:         " +
+                          ChatColor.WHITE + getString("discordWebhookUrl"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookStaffOnly:   " +
+                          ChatColor.WHITE + getString("discordWebhookStaffOnly"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookJoinMessage: " +
+                          ChatColor.WHITE + getString("discordWebhookJoinMessage"));
+        sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "discordWebhookQuitMessage: " +
+                          ChatColor.WHITE + getString("discordWebhookQuitMessage"));
         sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
     }
 
