@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- The plugin now reports usage events — `startup` on enable, `command` on each of its commands — to the author's trace server so it is known which plugins are in use. Events carry the plugin name, the event name, and the plugin version or command name; nothing about players or the server. Reporting runs off the main thread, never delays a tick, drops silently when the server is unreachable, and is turned off with `usage-reporting.enabled: false` in `config.yml` (or `/at config set usage-reporting.enabled false`). The plugin now ships a bundled `config.yml` carrying the plugin's key, so reporting is active out of the box unless turned off — including on servers upgraded from a version before the `usage-reporting` block existed, whose `config.yml` is never overwritten: the plugin reads the bundled defaults for any key the file lacks, and writes them into the file on the next startup as it already does for every other option
 - Optional Discord webhook notifications for player join and quit events, configured through `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage` and `discordWebhookQuitMessage`. Disabled by default. When `discordWebhookStaffOnly` is enabled, only players holding the new `at.staff` permission (default `op`) trigger a notification. The HTTP request is performed off the main server thread; no Bukkit API is touched asynchronously.
 
 ### Fixed

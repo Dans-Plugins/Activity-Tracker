@@ -2,6 +2,7 @@ package dansplugins.activitytracker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.ActivityRecordFactory;
@@ -10,6 +11,7 @@ import dansplugins.activitytracker.services.ActivityRecordService;
 import dansplugins.activitytracker.services.ConfigService;
 import dansplugins.activitytracker.services.DiscordWebhookService;
 import dansplugins.activitytracker.services.StorageService;
+import dansplugins.activitytracker.trace.TraceClient;
 import dansplugins.activitytracker.api.RestApiService;
 import dansplugins.activitytracker.utils.Logger;
 import dansplugins.activitytracker.utils.Scheduler;
@@ -51,6 +53,10 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private final DiscordWebhookService discordWebhookService = new DiscordWebhookService(configService, logger);
     private RestApiService restApiService;
 
+    // A no-op until the config has been read, so a command arriving before
+    // onEnable() finishes has something safe to report to.
+    private TraceClient trace = TraceClient.disabled();
+
     /**
      * This runs when the server starts.
      */
@@ -62,6 +68,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
         storageService.load();
         scheduler.scheduleAutosave();
         handlebStatsIntegration();
+        startUsageReporting();
         startRestApiIfEnabled();
     }
 
@@ -70,6 +77,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     @Override
     public void onDisable() {
+        trace.close();
         stopRestApi();
         persistentData.endCurrentSessions();
         storageService.save();
@@ -85,6 +93,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
         if (args.length == 0) {
             DefaultCommand defaultCommand = new DefaultCommand(this);
             return defaultCommand.execute(sender);
@@ -123,6 +132,10 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     }
 
     private void initializeConfig() {
+        // Writes the bundled config.yml on a fresh install only; an existing file is
+        // left alone and Bukkit serves the jar's copy as the defaults for any key it
+        // lacks (which is how the usage-reporting block reaches upgraded servers).
+        saveDefaultConfig();
         configService.saveMissingConfigDefaultsIfNotPresent();
     }
 
@@ -157,6 +170,18 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private void handlebStatsIntegration() {
         int pluginId = 12983;
         new Metrics(this, pluginId);
+    }
+
+    /**
+     * Usage reporting: one event now, one per command; see config.yml.
+     */
+    private void startUsageReporting() {
+        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
+                .key(configService.getUsageReportingKey())
+                .enabled(configService.isUsageReportingEnabled())
+                .logger(getLogger())
+                .build();
+        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
     }
 
     private void startRestApiIfEnabled() {
