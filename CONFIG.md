@@ -150,4 +150,4 @@ author's [trace](https://github.com/Stephenson-Software/trace-client-java) serve
 plugins are actually in use. An event carries the plugin's name, the event name (`startup` or
 `command`), and either the plugin version or the command name — nothing about players, the world, or
 the server. Sending happens off the main thread, never delays a tick, and is dropped silently if the
-server cannot be reached. Set `usage-reporting.enabled` to `false` to turn it off.
+server cannot be reached. Set `usage-reporting.enabled` to `false` to turn it off, or turn it off for every plugin on the server at once with `enabled: false` in `plugins/trace/config.yml` (created on first start) or the environment variable `TRACE_USAGE_REPORTING=off` / `DO_NOT_TRACK=1`. The plugin says on every startup whether reporting is on. Details: https://github.com/Stephenson-Software/trace#usage-reporting

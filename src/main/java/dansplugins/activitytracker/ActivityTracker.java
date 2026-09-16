@@ -173,15 +173,39 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     }
 
     /**
-     * Usage reporting: one event now, one per command; see config.yml.
+     * Usage reporting: one event now, one per command; see config.yml. The
+     * usage-reporting block is already on disk by now: initializeConfig() copies
+     * the bundled defaults into config.yml and saves it on every enable. The
+     * server-wide switch, plugins/trace/config.yml, is created by the client if
+     * it is missing and honoured if it says enabled: false.
      */
     private void startUsageReporting() {
         trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
+                .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
+        getLogger().info(usageReportingNotice(getName(), trace.disabledReason()));
         trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+    }
+
+    /**
+     * The one console line, every startup, that says whether usage reporting is
+     * on, what is sent, and how to turn it off.
+     *
+     * @param pluginName the name this plugin reports as
+     * @param disabledReason {@link TraceClient#disabledReason()}: null when reporting is on
+     */
+    static String usageReportingNotice(String pluginName, String disabledReason) {
+        if (disabledReason != null) {
+            return "Usage reporting is off (" + disabledReason + ").";
+        }
+        return "Usage reporting is on: " + pluginName + " sends its name, version and command names to "
+                + "https://trace.danielstephenson.dev - nothing about players or the server. "
+                + "Turn it off with usage-reporting.enabled: false in this plugin's config.yml, "
+                + "or for every plugin with enabled: false in plugins/trace/config.yml. "
+                + "Details: https://github.com/Stephenson-Software/trace#usage-reporting";
     }
 
     private void startRestApiIfEnabled() {
