@@ -180,6 +180,8 @@ A complete OpenAPI 3.0 specification is available in the `openapi.yaml` file in 
 - [Postman](https://www.postman.com/) - API testing and development
 - Code generators for various programming languages
 
+The spec's `info.version` is the version of the plugin release that last changed the API contract (paths, methods, request or response shapes), not the current plugin version. It is bumped together with `pom.xml` only in a release that changes the API; releases that leave the API untouched do not move it.
+
 ## CORS Support
 
 The API includes CORS (Cross-Origin Resource Sharing) headers, allowing it to be accessed from web applications running on different domains.
