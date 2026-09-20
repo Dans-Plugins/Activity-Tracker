@@ -12,7 +12,7 @@ Activity Tracker is a Minecraft plugin that tracks the activity of players. It r
 
 ### First Time Installation
 
-1. Download the plugin from the [releases page](https://github.com/Dans-Plugins/Activity-Tracker/releases).
+1. Download the plugin from [SpigotMC](https://www.spigotmc.org/resources/activity-tracker.96724/) or the [releases page](https://github.com/Dans-Plugins/Activity-Tracker/releases).
 2. Place the JAR in the `plugins` folder of your Spigot server.
 3. Restart your server.
 
