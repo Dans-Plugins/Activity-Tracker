@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `openapi.yaml` no longer declares `info.version: 1.2.0`, a release in which none of the documented endpoints existed. It now reads `1.3.0`, the release that introduced the REST API and the last one to change its contract, and the convention is recorded next to the field and in `REST_API.md`: the value tracks the plugin release that last changed the API's paths, methods or shapes, and is bumped together with `pom.xml` only in such a release.
+- `pom.xml` no longer declares `spark-core`, `gson`, `slf4j-simple`, `junit` and `mockito-core` twice, nor the `mockito.version` property; `junit.version` and `junit4.version`, two names for the same `4.13.2`, are collapsed into `junit4.version`. Maven was already resolving each pair to its first occurrence while warning `duplicate declaration of version`, so the resolved dependency tree is unchanged — the fix removes the warnings and the risk of a future bump to the ignored second copy silently doing nothing.
+
+## [1.4.0] – 2026-09-19
+
+Released after `2.0.0-SNAPSHOT-8-8-2026`: version numbering returned to the `1.x` line with this release, so `1.4.0` is the newer of the two despite sorting lower.
+
 ### Added
 
 - Usage reporting is now disclosed instead of quiet: the plugin prints one line on every startup saying whether reporting is on (and, if not, why), a server-wide switch `plugins/trace/config.yml` is created on first start and turns reporting off for every plugin that reports to trace when set to `enabled: false`, the environment variables `TRACE_USAGE_REPORTING=off` and `DO_NOT_TRACK=1` are honoured, and the README gains a `Usage reporting` section that says what is sent, what is not, and every way to turn it off. The vendored trace client is 0.2.0. Nothing about what is sent has changed. Details: https://github.com/Stephenson-Software/trace#usage-reporting
@@ -14,8 +23,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- `openapi.yaml` no longer declares `info.version: 1.2.0`, a release in which none of the documented endpoints existed. It now reads `1.3.0`, the release that introduced the REST API and the last one to change its contract, and the convention is recorded next to the field and in `REST_API.md`: the value tracks the plugin release that last changed the API's paths, methods or shapes, and is bumped together with `pom.xml` only in such a release.
-- `pom.xml` no longer declares `spark-core`, `gson`, `slf4j-simple`, `junit` and `mockito-core` twice, nor the `mockito.version` property; `junit.version` and `junit4.version`, two names for the same `4.13.2`, are collapsed into `junit4.version`. Maven was already resolving each pair to its first occurrence while warning `duplicate declaration of version`, so the resolved dependency tree is unchanged — the fix removes the warnings and the risk of a future bump to the ignored second copy silently doing nothing.
 - The `/at` header no longer prints the plugin version with a doubled `v` (`vv2.0.0-SNAPSHOT-8-8-2026`). `ActivityTracker#getVersion()` already attaches the `v` prefix, and `DefaultCommand` was prepending a second one; the literal has been dropped from the header. The value stored in `config.yml` and the version-mismatch check are untouched, so no upgrade behaviour changes.
 - `/at` now honours the `at.default` permission that `COMMANDS.md` documents for it. The node was declared by `DefaultCommand` but never registered in `plugin.yml` and never checked, because the no-argument path is invoked directly instead of through Ponder's `CommandService`. It is now declared with a default of `true`, so every player keeps access unless a server operator negates it.
 - `TopRecordsAlgorithmTest` no longer gates on elapsed wall-clock time. The three remaining timing assertions now count comparator invocations against an `n log n` bound, the approach already used by the complexity check, so a loaded CI runner can no longer fail the suite for reasons unrelated to the algorithm.
