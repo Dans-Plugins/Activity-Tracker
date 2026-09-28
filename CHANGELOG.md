@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The vendored trace client is now 0.3.0. `plugins/trace/config.yml` can now carry a `tags:` block whose entries are added to every usage event reported by the plugins on that server, with an event's own tag winning on a key clash; release test servers write `ci: "true"` there so their boots are left out of real-installation figures. A server without a `tags:` block reports exactly as before. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.3.0.
+
 ### Fixed
 
 - `openapi.yaml` no longer declares `info.version: 1.2.0`, a release in which none of the documented endpoints existed. It now reads `1.3.0`, the release that introduced the REST API and the last one to change its contract, and the convention is recorded next to the field and in `REST_API.md`: the value tracks the plugin release that last changed the API's paths, methods or shapes, and is bumped together with `pom.xml` only in such a release.
