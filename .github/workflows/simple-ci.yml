@@ -87,9 +87,10 @@ jobs:
         import dansplugins.activitytracker.algorithms.TopRecordsAlgorithm;
 
         class ScorableItem implements TopRecordsAlgorithm.Scorable {
+            static long scoreReads = 0;
             private double score;
             public ScorableItem(double score) { this.score = score; }
-            public double getScore() { return score; }
+            public double getScore() { scoreReads++; return score; }
         }
 
         public class PerformanceTest {
@@ -103,14 +104,16 @@ jobs:
                     records.add(new ScorableItem(random.nextDouble() * 100));
                 }
                 
-                long startTime = System.nanoTime();
+                // Comparisons are counted rather than timed, so the check is deterministic
+                // and independent of runner load. The comparator reads two scores per call.
+                ScorableItem.scoreReads = 0;
                 List<ScorableItem> top10 = algorithm.getTopTenRecords(records);
-                long endTime = System.nanoTime();
-                
-                long duration = (endTime - startTime) / 1_000_000; // milliseconds
+                long comparisons = ScorableItem.scoreReads / 2;
+                int n = records.size();
+                double bound = 2 * n * (Math.log(n) / Math.log(2));
                 
                 System.out.println("Performance test with 1000 records:");
-                System.out.println("Execution time: " + duration + "ms");
+                System.out.println("Comparisons: " + comparisons + " (O(n log n) bound: " + (long) bound + ")");
                 System.out.println("Top 10 results found: " + top10.size());
                 
                 // Verify results are sorted
@@ -122,7 +125,7 @@ jobs:
                     }
                 }
                 
-                if (sorted && top10.size() == 10 && duration < 100) {
+                if (sorted && top10.size() == 10 && comparisons <= bound) {
                     System.out.println("✅ Performance test PASSED");
                 } else {
                     System.out.println("❌ Performance test FAILED");
