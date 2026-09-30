@@ -180,14 +180,14 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      * it is missing and honoured if it says enabled: false.
      */
     private void startUsageReporting() {
-        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
+        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
                 .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
         getLogger().info(usageReportingNotice(getName(), trace.disabledReason()));
-        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+        trace.report("startup");
     }
 
     /**
