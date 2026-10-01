@@ -25,7 +25,7 @@ This document demonstrates the testing setup and what the tests would verify whe
 ### 4. Performance Testing
 - ✅ Large dataset efficiency (1000 records)
 - ✅ O(n log n) complexity verification by comparator-invocation count
-- ✅ Performance under 100ms for 1000 records
+- ✅ Comparator invocations within the O(n log n) bound for 1000 records (Simple CI)
 
 ### 5. API Compatibility
 - ✅ getTopTenRecords() convenience method
