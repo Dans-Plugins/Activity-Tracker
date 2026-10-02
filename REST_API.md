@@ -96,13 +96,15 @@ Get detailed activity information for a specific player.
   "totalLogins": 87,
   "totalHoursPlayed": 123.45,
   "currentlyOnline": true,
-  "firstLogin": "2023-01-15T14:30:00",
-  "lastLogin": "2023-10-26T10:15:00",
-  "lastLogout": null,
-  "hoursSinceLogin": 2.5,
-  "hoursSinceLogout": null
+  "firstLogin": "2023-01-15T14:30:00.512",
+  "lastLogin": "2023-10-26T10:15:00.087",
+  "hoursSinceLogin": 2.5
 }
 ```
+
+Fields with no value are left out of the response rather than sent as `null`. For an online player, `lastLogout` and `hoursSinceLogout` are absent (the current session has not ended); for an offline player, `hoursSinceLogin` is absent and `hoursSinceLogout` is present. `firstLogin`, `lastLogin` and `lastLogout` are absent for a player with no recorded sessions.
+
+Timestamps are the server's local date and time in ISO-8601 form with no time-zone offset (for example `2023-10-26T10:15:00.087`). They may include fractional seconds.
 
 **Error Response (400):**
 ```json
@@ -170,6 +172,16 @@ Any request to a path that is not listed above is answered with a 404 and a JSON
 ```json
 {
   "error": "Endpoint not found"
+}
+```
+
+## Server Errors
+
+An unexpected error while handling a request is answered with a 500 and a JSON body:
+
+```json
+{
+  "error": "Internal server error"
 }
 ```
 

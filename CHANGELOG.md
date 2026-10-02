@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `REST_API.md` no longer shows `"lastLogout": null` and `"hoursSinceLogout": null` in the `GET /api/players/{uuid}` example. The API omits fields with no value rather than sending `null`, and the page now says so, says which fields are absent for online, offline and session-less players, and describes the timestamp format (server-local ISO-8601, no offset, possibly with fractional seconds). It also documents the `500` `{"error": "Internal server error"}` response.
 - `openapi.yaml` no longer declares `info.version: 1.2.0`, a release in which none of the documented endpoints existed. It now reads `1.3.0`, the release that introduced the REST API and the last one to change its contract, and the convention is recorded next to the field and in `REST_API.md`: the value tracks the plugin release that last changed the API's paths, methods or shapes, and is bumped together with `pom.xml` only in such a release.
 - `pom.xml` no longer declares `spark-core`, `gson`, `slf4j-simple`, `junit` and `mockito-core` twice, nor the `mockito.version` property; `junit.version` and `junit4.version`, two names for the same `4.13.2`, are collapsed into `junit4.version`. Maven was already resolving each pair to its first occurrence while warning `duplicate declaration of version`, so the resolved dependency tree is unchanged — the fix removes the warnings and the risk of a future bump to the ignored second copy silently doing nothing.
 

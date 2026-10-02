@@ -125,6 +125,10 @@ public class RestApiServiceTest {
         assertTrue(json.contains("\"playerUuid\""));
         assertTrue(json.contains("\"playerName\":\"Steve\""));
         assertTrue(json.contains("\"currentlyOnline\":true"));
+        // Null fields are omitted, not sent as null (REST_API.md documents this)
+        assertFalse(json.contains("\"lastLogout\""));
+        assertFalse(json.contains("\"hoursSinceLogout\""));
+        assertTrue(json.contains("\"hoursSinceLogin\":2.5"));
         assertEquals(response.getPlayerUuid(), deserialized.getPlayerUuid());
         assertEquals(response.getPlayerName(), deserialized.getPlayerName());
         assertEquals(response.getTotalLogins(), deserialized.getTotalLogins());
