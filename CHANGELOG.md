@@ -6,16 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.6.0] – 2026-10-07
+
+### Added
+
+- Minecraft 26.3 is now a supported version: it is listed in `minecraft-versions.json` and the README, so every stable release is booted on a 26.3 server before it is published and every build checks the plugin's API use against it.
+
 ### Changed
 
+- The vendored trace client is now 0.5.0. Every usage event carries a random server ID as the `install` tag — the `server-id` line the client appends to `plugins/trace/config.yml` on first run — so servers can be counted rather than events. The ID identifies no person, account or IP address, and deleting the line produces a new one. The startup notice, the `config.yml` comment, `CONFIG.md` and the README's usage-reporting section now say the ID is sent instead of saying nothing about the server is sent. Opting out works exactly as before.
 - The usage-reporting "Details" link (startup notice, `config.yml` and the docs) now points at https://danielstephenson.dev/usage-reporting, a public page; the previous link led to a private repository and returned 404 for everyone. The vendored trace client is now 0.6.1, which carries the same link in the `plugins/trace/config.yml` header it writes. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.6.1.
-- The vendored trace client is now 0.3.0. `plugins/trace/config.yml` can now carry a `tags:` block whose entries are added to every usage event reported by the plugins on that server, with an event's own tag winning on a key clash; release test servers write `ci: "true"` there so their boots are left out of real-installation figures. A server without a `tags:` block reports exactly as before. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.3.0.
 
 ### Fixed
 
 - `REST_API.md` no longer shows `"lastLogout": null` and `"hoursSinceLogout": null` in the `GET /api/players/{uuid}` example. The API omits fields with no value rather than sending `null`, and the page now says so, says which fields are absent for online, offline and session-less players, and describes the timestamp format (server-local ISO-8601, no offset, possibly with fractional seconds). It also documents the `500` `{"error": "Internal server error"}` response.
+
+## [1.5.0] – 2026-10-02
+
+### Added
+
+- The supported Minecraft versions are now declared in `minecraft-versions.json` (1.19.4, 1.21.11 and 26.2) and listed in the README. Every stable release candidate is booted on a server of each, and the build checks that the plugin only uses Bukkit API that exists on all of them.
+
+### Changed
+
+- The vendored trace client is now 0.3.0. `plugins/trace/config.yml` can now carry a `tags:` block whose entries are added to every usage event reported by the plugins on that server, with an event's own tag winning on a key clash; release test servers write `ci: "true"` there so their boots are left out of real-installation figures. A server without a `tags:` block reports exactly as before. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.3.0.
+- The vendored trace client is now 0.4.0, which adds the plugin version as the `version` tag on every usage event, commands included. Previously only `startup` carried it.
+
+### Fixed
+
 - `openapi.yaml` no longer declares `info.version: 1.2.0`, a release in which none of the documented endpoints existed. It now reads `1.3.0`, the release that introduced the REST API and the last one to change its contract, and the convention is recorded next to the field and in `REST_API.md`: the value tracks the plugin release that last changed the API's paths, methods or shapes, and is bumped together with `pom.xml` only in such a release.
 - `pom.xml` no longer declares `spark-core`, `gson`, `slf4j-simple`, `junit` and `mockito-core` twice, nor the `mockito.version` property; `junit.version` and `junit4.version`, two names for the same `4.13.2`, are collapsed into `junit4.version`. Maven was already resolving each pair to its first occurrence while warning `duplicate declaration of version`, so the resolved dependency tree is unchanged — the fix removes the warnings and the risk of a future bump to the ignored second copy silently doing nothing.
+- The `Simple CI` large-dataset step no longer asserts a wall-clock bound (`duration < 100` ms), which a loaded runner could exceed for reasons unrelated to the algorithm. It now bounds comparator invocations by `2·n·log2(n)`, as `TopRecordsAlgorithmTest` already does; the sorting-order and result-size assertions are unchanged.
 
 ## [1.4.0] – 2026-09-19
 
