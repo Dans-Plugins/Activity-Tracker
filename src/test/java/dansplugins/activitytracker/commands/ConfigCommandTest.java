@@ -1,5 +1,6 @@
 package dansplugins.activitytracker.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +70,7 @@ class ConfigCommandTest {
         boolean result = configCommand.execute(sender, new String[]{"set", "debugMode"});
 
         assertFalse(result);
-        verify(sender).sendMessage(contains("Usage:"));
+        verify(sender).sendMessage(ChatColor.RED + "Usage: /at config set (option) (value)");
         verify(configService, never()).setConfigOption(anyString(), anyString(), any(CommandSender.class));
     }
 

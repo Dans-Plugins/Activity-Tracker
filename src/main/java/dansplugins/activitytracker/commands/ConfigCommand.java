@@ -34,7 +34,7 @@ public class ConfigCommand extends AbstractPluginCommand {
         }
         else if (args[0].equalsIgnoreCase("set")) {
             if (args.length < 3) {
-                sender.sendMessage(ChatColor.RED + "Usage: /c config set (option) (value)");
+                sender.sendMessage(ChatColor.RED + "Usage: /at config set (option) (value)");
                 return false;
             }
             String option = args[1];
