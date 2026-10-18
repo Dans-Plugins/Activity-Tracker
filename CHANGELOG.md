@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `/at config set` with a missing option or value now replies `Usage: /at config set (option) (value)`. It previously named `/c config set`, a command this plugin does not handle.
+
 ## [1.6.0] – 2026-10-07
 
 ### Added
