@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-- A Spigot-based Minecraft server (1.13 or higher)
-- Java 8 or higher
+- A Spigot-based Minecraft server on one of the versions listed under [Supported Minecraft Versions](README.md#supported-minecraft-versions)
+- The Java version that your Minecraft server version requires (the plugin itself needs Java 8 or higher)
 
 ## First Steps
 
-1. Download the Activity Tracker JAR from the [releases page](https://github.com/Dans-Plugins/Activity-Tracker/releases).
+1. Download the Activity Tracker JAR from [SpigotMC](https://www.spigotmc.org/resources/activity-tracker.96724/) or the [releases page](https://github.com/Dans-Plugins/Activity-Tracker/releases).
 2. Place the JAR into your server's `plugins` folder.
 3. Restart the server.
 4. Activity Tracker will begin tracking player sessions automatically.
@@ -16,7 +16,7 @@
 
 ### Viewing Your Own Activity
 
-Run `/at info` in-game to see your total play time, login count, and last session details.
+Run `/at info` in-game to see your login count, total play time, ranking, online status (hours since login if online, or hours since last seen if offline), and first login date.
 
 ### Viewing Another Player's Activity
 
@@ -32,7 +32,7 @@ Run `/at stats` to see overall server statistics such as total unique players an
 
 ### Checking Average Daily Activity
 
-Run `/at average` to see your average daily play time over the last 7 days, or `/at average <playerName> <days>` for a specific player and time range.
+Run `/at average` to see your average daily play time over the last 7 days, `/at average <playerName>` for another player over the last 7 days, or `/at average <playerName> <days>` for a specific player and time range.
 
 ### Managing Configuration
 

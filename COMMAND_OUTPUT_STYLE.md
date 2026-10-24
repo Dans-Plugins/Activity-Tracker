@@ -237,6 +237,9 @@ The footer uses 25 horizontal line characters (`─`) after the corner character
 │ discordWebhookStaffOnly:   false
 │ discordWebhookJoinMessage: ⚔️ **{player}** has joined the server!
 │ discordWebhookQuitMessage: 👋 **{player}** has left the server.
+│ usage-reporting.enabled:   true
+│ usage-reporting.endpoint:  https://trace.danielstephenson.dev
+│ usage-reporting.key:       KyNSegoT_nZHAj3gCynhLWV1KWwOwK1Fy4qHqt3PeGc
 └─────────────────────────
 ```
 
