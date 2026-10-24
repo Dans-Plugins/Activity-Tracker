@@ -20,7 +20,7 @@ All commands use the base command `/at` (or `/activitytracker`).
 
 ### /at info [playerName]
 
-**Description:** Displays the activity record for yourself or a specified player, including total play time, login count, and last session details.  
+**Description:** Displays the activity record for yourself or a specified player, including login count, total play time, ranking, online status (hours since login if online, or hours since last seen if offline), and first login date.  
 **Permission:** `at.info`  
 **Usage:** `/at info` or `/at info <playerName>`  
 **Example:** `/at info Notch`
@@ -29,7 +29,7 @@ All commands use the base command `/at` (or `/activitytracker`).
 
 **Description:** Shows the average daily play time for a player over a given number of days.  
 **Permission:** `at.average`  
-**Usage:** `/at average` or `/at average <playerName> <days>`  
+**Usage:** `/at average`, `/at average <playerName>` or `/at average <playerName> <days>`  
 **Example:** `/at average Notch 14`  
 **Defaults:** Current player, 7 days
 
