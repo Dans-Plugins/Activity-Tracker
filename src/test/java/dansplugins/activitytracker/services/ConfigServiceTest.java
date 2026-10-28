@@ -1,5 +1,7 @@
 package dansplugins.activitytracker.services;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,5 +106,42 @@ class ConfigServiceTest {
         assertFalse(configService.isUsageReportingEnabled());
         assertEquals("http://localhost:8080", configService.getUsageReportingEndpoint());
         assertEquals("abc", configService.getUsageReportingKey());
+    }
+
+    @Test
+    void setConfigOption_rejectsANonIntegerPortAndLeavesTheConfigUnchanged() throws Exception {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.loadFromString("restApiPort: 8080\n");
+        CommandSender sender = mock(CommandSender.class);
+
+        // ActivityTracker is null here, so reaching saveConfig() would throw.
+        configServiceOver(onDisk).setConfigOption("restApiPort", "abc", sender);
+
+        assertEquals(8080, onDisk.getInt("restApiPort"));
+        verify(sender).sendMessage(ChatColor.RED + "restApiPort must be a whole number.");
+    }
+
+    @Test
+    void setConfigOption_rejectsANonBooleanValueAndLeavesTheConfigUnchanged() throws Exception {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.loadFromString("restApiEnabled: true\nusage-reporting:\n  enabled: true\n");
+        CommandSender sender = mock(CommandSender.class);
+
+        configServiceOver(onDisk).setConfigOption("restApiEnabled", "yes", sender);
+        configServiceOver(onDisk).setConfigOption("usage-reporting.enabled", "off", sender);
+
+        assertTrue(onDisk.getBoolean("restApiEnabled"));
+        assertTrue(onDisk.getBoolean("usage-reporting.enabled"));
+        verify(sender).sendMessage(ChatColor.RED + "restApiEnabled must be true or false.");
+        verify(sender).sendMessage(ChatColor.RED + "usage-reporting.enabled must be true or false.");
+    }
+
+    private static ConfigService configServiceOver(FileConfiguration onDisk) {
+        return new ConfigService(null) {
+            @Override
+            public FileConfiguration getConfig() {
+                return onDisk;
+            }
+        };
     }
 }
