@@ -79,11 +79,23 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
                 return;
             } else if (option.equalsIgnoreCase("restApiPort")) {
-                getConfig().set(option, Integer.parseInt(value));
+                int port;
+                try {
+                    port = Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(ChatColor.RED + option + " must be a whole number.");
+                    return;
+                }
+                getConfig().set(option, port);
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode") || option.equalsIgnoreCase("restApiEnabled")
                         || option.equalsIgnoreCase("discordWebhookEnabled") || option.equalsIgnoreCase("discordWebhookStaffOnly")
                         || option.equalsIgnoreCase(USAGE_REPORTING_ENABLED_KEY)) {
+                // Boolean.parseBoolean reads anything but "true" as false, so check first.
+                if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
+                    sender.sendMessage(ChatColor.RED + option + " must be true or false.");
+                    return;
+                }
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("")) { // no doubles yet
