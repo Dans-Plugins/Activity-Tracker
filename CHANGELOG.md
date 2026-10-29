@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Usage reporting now counts a `command` event only when a player runs the command; console, command-block and plugin-dispatched commands are no longer reported.
+
 ### Fixed
 
 - `/at config set` with a missing option or value now replies `Usage: /at config set (option) (value)`. It previously named `/c config set`, a command this plugin does not handle.

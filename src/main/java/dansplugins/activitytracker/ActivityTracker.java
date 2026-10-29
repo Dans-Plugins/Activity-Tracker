@@ -17,6 +17,7 @@ import dansplugins.activitytracker.utils.Logger;
 import dansplugins.activitytracker.utils.Scheduler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import dansplugins.activitytracker.bstats.Metrics;
@@ -93,7 +94,10 @@ public final class ActivityTracker extends PonderBukkitPlugin {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
+        // console, command-block and plugin-dispatched commands are not counted
+        if (sender instanceof Player) {
+            trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
+        }
         if (args.length == 0) {
             DefaultCommand defaultCommand = new DefaultCommand(this);
             return defaultCommand.execute(sender);
