@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpServer;
 import dansplugins.activitytracker.utils.Logger;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -219,7 +218,6 @@ public class DiscordWebhookServiceTest {
     }
 
     @Test
-    @Ignore("escapeJson passes a Character to %04x and throws IllegalFormatConversionException; see issue #155")
     public void testSendWebhookMessageEscapesControlCharacters() throws Exception {
         String url = startServer(204);
 
