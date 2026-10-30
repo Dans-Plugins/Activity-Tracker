@@ -178,7 +178,7 @@ public class DiscordWebhookService {
                     break;
                 default:
                     if (c < 0x20) {
-                        sb.append(String.format("\\u%04x", c));
+                        sb.append(String.format("\\u%04x", (int) c));
                     } else {
                         sb.append(c);
                     }
