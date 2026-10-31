@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `/at config set` with a missing option or value now replies `Usage: /at config set (option) (value)`. It previously named `/c config set`, a command this plugin does not handle.
 - `/at config set` now rejects an invalid value and leaves the config unchanged: a non-integer `restApiPort` replies `restApiPort must be a whole number.` instead of failing with an internal error, and a boolean option given anything other than `true` or `false` replies `<option> must be true or false.` instead of silently storing `false`.
+- `/at config set` now stores every word of the value. It previously kept only the first, so `/at config set discordWebhookJoinMessage Welcome back {player}!` stored `Welcome`.
 - A Discord webhook join or quit message containing a control character (for example `\a` in a YAML double-quoted template) is now sent with that character escaped as `\u0007`. It previously failed with an `IllegalFormatConversionException` and the message was not sent.
 - `USER_GUIDE.md` no longer lists Spigot 1.13 as the minimum server version; it points at the README's supported versions (1.19.4 onwards) instead.
 

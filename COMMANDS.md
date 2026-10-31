@@ -64,7 +64,7 @@ All commands use the base command `/at` (or `/activitytracker`).
 
 ### /at config set \<option\> \<value\>
 
-**Description:** Modifies a plugin configuration option. Boolean options accept only `true` or `false`, and `restApiPort` accepts only a whole number; any other value is rejected and the option is left unchanged.  
+**Description:** Modifies a plugin configuration option. Boolean options accept only `true` or `false`, and `restApiPort` accepts only a whole number; any other value is rejected and the option is left unchanged. The value is everything after the option name, so it may contain spaces.  
 **Permission:** `at.config`  
 **Usage:** `/at config set <option> <value>`  
-**Example:** `/at config set debugMode true`
+**Example:** `/at config set debugMode true`, `/at config set discordWebhookJoinMessage Welcome back {player}!`
