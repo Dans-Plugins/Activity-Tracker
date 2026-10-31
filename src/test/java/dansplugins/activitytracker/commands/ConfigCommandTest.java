@@ -65,6 +65,16 @@ class ConfigCommandTest {
     }
 
     @Test
+    @DisplayName("Should pass every word of a multi-word value to ConfigService")
+    void testExecute_SetWithMultiWordValue_JoinsValue() {
+        boolean result = configCommand.execute(sender,
+                new String[]{"set", "discordWebhookJoinMessage", "Welcome", "back", "{player}!"});
+
+        assertTrue(result);
+        verify(configService).setConfigOption("discordWebhookJoinMessage", "Welcome back {player}!", sender);
+    }
+
+    @Test
     @DisplayName("Should send usage when set is missing its value")
     void testExecute_SetWithoutValue_SendsUsage() {
         boolean result = configCommand.execute(sender, new String[]{"set", "debugMode"});

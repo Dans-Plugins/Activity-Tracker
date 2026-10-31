@@ -39,7 +39,8 @@ public class ConfigCommand extends AbstractPluginCommand {
             }
             String option = args[1];
 
-            String value = args[2];
+            // String options such as the Discord message templates span several words.
+            String value = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
 
             configService.setConfigOption(option, value, sender);
             return true;
