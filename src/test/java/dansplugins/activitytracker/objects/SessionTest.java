@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,6 +43,37 @@ public class SessionTest {
         assertNotNull(session.getLoginDate());
         assertNull(session.getLogoutDate());
         assertEquals(0.0, session.getMinutesSpent(), 0.001);
+    }
+
+    @Test
+    public void testCloseUnfinishedClosesAnActiveSessionWithNoTimeCredited() {
+        // Arrange
+        Session session = new Session(logger, 1, testPlayerUUID);
+
+        // Act
+        boolean closed = session.closeUnfinished();
+
+        // Assert
+        assertTrue("An active session should be closed", closed);
+        assertFalse(session.isActive());
+        assertEquals("Logout should fall back to the login time", session.getLoginDate(), session.getLogoutDate());
+        assertEquals(0.0, session.getMinutesSpent(), 0.001);
+        assertTrue("Minutes since logout should be readable", session.getMinutesSinceLogout() >= 0);
+    }
+
+    @Test
+    public void testCloseUnfinishedLeavesAnEndedSessionAlone() {
+        // Arrange
+        Session session = new Session(logger, 1, testPlayerUUID);
+        session.endSession();
+        LocalDateTime logoutDate = session.getLogoutDate();
+
+        // Act
+        boolean closed = session.closeUnfinished();
+
+        // Assert
+        assertFalse("An ended session should not be closed again", closed);
+        assertEquals(logoutDate, session.getLogoutDate());
     }
 
     @Test

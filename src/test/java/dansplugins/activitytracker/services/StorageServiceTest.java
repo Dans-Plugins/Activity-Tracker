@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -147,7 +148,8 @@ class StorageServiceTest {
         assertEquals(4.25, loadedFirst.getHoursSpentNotIncludingTheCurrentSession(), 0.001);
         assertEquals(2, loadedFirst.getSessions().size());
         assertEquals(2, loadedFirst.getMostRecentSession().getID());
-        assertTrue(loadedFirst.getMostRecentSession().isActive());
+        // Stored as active, so it is closed on load; see testLoad_SessionLeftActiveByCrashIsClosed
+        assertFalse(loadedFirst.getMostRecentSession().isActive());
         assertFalse(loadedFirst.getSession(1).isActive());
         assertNotNull(loadedFirst.getSession(1).getLogoutDate());
 
@@ -304,6 +306,70 @@ class StorageServiceTest {
         assertNotNull(loaded);
         assertTrue(loaded.getSessions().isEmpty());
         verify(logger).log("WARNING: ActivityRecord for player " + playerUUID + " has no sessions");
+    }
+
+    @Test
+    @DisplayName("Should close a session a crash left active, crediting no time and keeping it closed across saves")
+    void testLoad_SessionLeftActiveByCrashIsClosed() throws NoSessionException {
+        UUID playerUUID = UUID.randomUUID();
+        LocalDateTime loginDate = LocalDateTime.now().minusHours(5);
+        Session unfinished = new Session(logger, 1, playerUUID);
+        ActivityRecord record = new ActivityRecord(playerUUID, unfinished);
+        record.setHoursSpent(2.0);
+        storageService.writeOutFiles(Collections.singletonList(record.save()), ACTIVITY_RECORDS_FILE_NAME);
+        Map<String, String> sessionData = unfinished.save();
+        sessionData.put("loginDate", "\"" + loginDate + "\"");
+        storageService.writeOutFiles(Collections.singletonList(sessionData), SESSIONS_FILE_NAME);
+
+        storageService.load();
+
+        ActivityRecord loaded = persistentData.getActivityRecord(playerUUID);
+        Session closed = loaded.getMostRecentSession();
+        assertFalse(closed.isActive());
+        assertEquals(loginDate, closed.getLogoutDate());
+        assertEquals(0, closed.getMinutesSpent(), 0.001);
+        assertEquals(2.0, loaded.getTotalHoursSpent(), 0.001);
+        assertEquals(300, closed.getMinutesSinceLogout(), 1);
+        verify(logger).log("Closed 1 sessions left active by an unclean shutdown.");
+
+        storageService.save();
+        storageService.load();
+
+        Session reloaded = persistentData.getActivityRecord(playerUUID).getMostRecentSession();
+        assertFalse(reloaded.isActive());
+        assertEquals(loginDate, reloaded.getLogoutDate());
+    }
+
+    @Test
+    @DisplayName("Should also close an older session a crash left active behind a finished one")
+    void testLoad_OlderSessionLeftActiveByCrashIsClosed() throws NoSessionException {
+        UUID playerUUID = UUID.randomUUID();
+        ActivityRecord record = recordWithEndedSession(playerUUID, 1, 1.0);
+        Session unfinished = new Session(logger, 2, playerUUID);
+        record.addSession(unfinished);
+        Session latest = new Session(logger, 3, playerUUID);
+        latest.endSession();
+        record.addSession(latest);
+        record.setMostRecentSession(latest);
+        persistentData.addRecord(record);
+
+        storageService.save();
+        storageService.load();
+
+        ActivityRecord loaded = persistentData.getActivityRecord(playerUUID);
+        assertFalse(loaded.getSession(2).isActive());
+        assertEquals(3, loaded.getMostRecentSession().getID());
+    }
+
+    @Test
+    @DisplayName("Should report no closed sessions after a clean shutdown")
+    void testLoad_NoSessionLeftActive() {
+        persistentData.addRecord(recordWithEndedSession(UUID.randomUUID(), 1, 1.0));
+
+        storageService.save();
+        storageService.load();
+
+        verify(logger, never()).log(contains("left active by an unclean shutdown"));
     }
 
     private ActivityRecord recordWithEndedSession(UUID playerUUID, int sessionID, double hours) {
