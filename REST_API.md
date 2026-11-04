@@ -104,6 +104,8 @@ Get detailed activity information for a specific player.
 
 Fields with no value are left out of the response rather than sent as `null`. For an online player, `lastLogout` and `hoursSinceLogout` are absent (the current session has not ended); for an offline player, `hoursSinceLogin` is absent and `hoursSinceLogout` is present. `firstLogin`, `lastLogin` and `lastLogout` are absent for a player with no recorded sessions.
 
+A session the server never saw end, because it crashed or was killed, is closed the next time the plugin loads with no time credited. Its `lastLogout` equals its `lastLogin`, so for that player `hoursSinceLogout` counts from the login rather than from when they actually left.
+
 Timestamps are the server's local date and time in ISO-8601 form with no time-zone offset (for example `2023-10-26T10:15:00.087`). They may include fractional seconds.
 
 **Error Response (400):**
