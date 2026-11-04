@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Sessions left active by a server crash are now closed when the plugin loads its data, with no time credited because when the player left is unknown. Until now such a session stayed active: `/at info` failed with an internal error and `GET /api/players/{uuid}` with a 500 for an offline player, the player's hours kept rising until they next logged in, and `/at average` counted the session as still running. Its login time is used as the last-seen time.
 - `/at config set` with a missing option or value now replies `Usage: /at config set (option) (value)`. It previously named `/c config set`, a command this plugin does not handle.
 - `/at config set` now rejects an invalid value and leaves the config unchanged: a non-integer `restApiPort` replies `restApiPort must be a whole number.` instead of failing with an internal error, and a boolean option given anything other than `true` or `false` replies `<option> must be true or false.` instead of silently storing `false`.
 - `/at config set` now stores every word of the value. It previously kept only the first, so `/at config set discordWebhookJoinMessage Welcome back {player}!` stored `Welcome`.

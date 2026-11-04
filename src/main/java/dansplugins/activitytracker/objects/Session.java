@@ -76,6 +76,22 @@ public class Session implements Savable {
         return true;
     }
 
+    /**
+     * Closes a session whose end was never recorded because the server stopped
+     * without a clean shutdown. When the player left is unknown, so the login
+     * time stands in for the logout and no time is credited.
+     * @return Whether the session was active and has been closed.
+     */
+    public boolean closeUnfinished() {
+        if (!active) {
+            return false;
+        }
+        logoutDate = loginDate;
+        minutesSpent = 0;
+        setActive(false);
+        return true;
+    }
+
     public double getMinutesSinceLogin() {
         return calculateMinutesSinceDateTime(loginDate);
     }

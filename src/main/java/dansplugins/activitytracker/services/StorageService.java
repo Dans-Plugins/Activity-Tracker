@@ -63,6 +63,7 @@ public class StorageService {
         loadActivityRecords();
         loadSessions();
         validateAndRepairData();
+        closeSessionsLeftActive();
     }
 
     public void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
@@ -203,6 +204,27 @@ public class StorageService {
             logger.log("Repaired " + repairedRecords + " activity records with broken session references.");
         } else {
             logger.log("Data validation complete. No repairs needed.");
+        }
+    }
+
+    /**
+     * A clean shutdown ends every session before saving, so a session stored as
+     * active belongs to a server that stopped without one, and its player is no
+     * longer in it.
+     */
+    private void closeSessionsLeftActive() {
+        int closedSessions = 0;
+
+        for (ActivityRecord record : persistentData.getActivityRecords()) {
+            for (Session session : record.getSessions()) {
+                if (session.closeUnfinished()) {
+                    closedSessions++;
+                }
+            }
+        }
+
+        if (closedSessions > 0) {
+            logger.log("Closed " + closedSessions + " sessions left active by an unclean shutdown.");
         }
     }
 }
