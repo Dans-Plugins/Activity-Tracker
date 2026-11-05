@@ -6,18 +6,58 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Changed
+### Fixed
 
-- Usage reporting now counts a `command` event only when a player runs the command; console, command-block and plugin-dispatched commands are no longer reported.
+- Players online during a `/reload` or a plugin-manager reload now get a new session when the plugin enables, with no Discord join notification. No join event fires for them, so until their next login their time was not counted, and `/at info` showed inflated play time because it added the time since login from their ended session to hours that already included that session.
+
+## [1.8.0] – 2026-11-05
 
 ### Fixed
 
 - Sessions left active by a server crash are now closed when the plugin loads its data, with no time credited because when the player left is unknown. Until now such a session stayed active: `/at info` failed with an internal error and `GET /api/players/{uuid}` with a 500 for an offline player, the player's hours kept rising until they next logged in, and `/at average` counted the session as still running. Its login time is used as the last-seen time.
-- `/at config set` with a missing option or value now replies `Usage: /at config set (option) (value)`. It previously named `/c config set`, a command this plugin does not handle.
-- `/at config set` now rejects an invalid value and leaves the config unchanged: a non-integer `restApiPort` replies `restApiPort must be a whole number.` instead of failing with an internal error, and a boolean option given anything other than `true` or `false` replies `<option> must be true or false.` instead of silently storing `false`.
+
+## [1.7.3] – 2026-11-01
+
+### Fixed
+
 - `/at config set` now stores every word of the value. It previously kept only the first, so `/at config set discordWebhookJoinMessage Welcome back {player}!` stored `Welcome`.
+
+## [1.7.2] – 2026-10-31
+
+### Fixed
+
 - A Discord webhook join or quit message containing a control character (for example `\a` in a YAML double-quoted template) is now sent with that character escaped as `\u0007`. It previously failed with an `IllegalFormatConversionException` and the message was not sent.
+
+## [1.7.1] – 2026-10-30
+
+### Changed
+
+- Usage reporting now counts a `command` event only when a player runs the command; console, command-block and plugin-dispatched commands are no longer reported.
+
+## [1.7.0] – 2026-10-29
+
+### Changed
+
+- The vendored trace client is now 0.7.0, which coalesces repeated events: the first is sent at once, repeats within 60 seconds are sent as one counted event, and `startup` is never held back.
+
+### Fixed
+
+- `/at config set` now rejects an invalid value and leaves the config unchanged: a non-integer `restApiPort` replies `restApiPort must be a whole number.` instead of failing with an internal error, and a boolean option given anything other than `true` or `false` replies `<option> must be true or false.` instead of silently storing `false`.
+
+## [1.6.3] – 2026-10-25
+
+### Fixed
+
+- `/at config set` with a missing option or value now replies `Usage: /at config set (option) (value)`. It previously named `/c config set`, a command this plugin does not handle.
 - `USER_GUIDE.md` no longer lists Spigot 1.13 as the minimum server version; it points at the README's supported versions (1.19.4 onwards) instead.
+
+## [1.6.2] – 2026-10-17
+
+No user-facing changes: this release added tests only.
+
+## [1.6.1] – 2026-10-14
+
+No user-facing changes: this release added tests and cut the `[1.5.0]` and `[1.6.0]` sections of this file.
 
 ## [1.6.0] – 2026-10-07
 

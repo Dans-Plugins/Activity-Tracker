@@ -52,6 +52,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private final ActivityRecordFactory activityRecordFactory = new ActivityRecordFactory(logger, sessionFactory);
     private final ActivityRecordService activityRecordService = new ActivityRecordService(persistentData, activityRecordFactory, logger);
     private final DiscordWebhookService discordWebhookService = new DiscordWebhookService(configService, logger);
+    private final JoinHandler joinHandler = new JoinHandler(activityRecordService, persistentData, sessionFactory, discordWebhookService, this);
     private RestApiService restApiService;
 
     // A no-op until the config has been read, so a command arriving before
@@ -67,6 +68,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
         registerEventHandlers();
         initializeCommandService();
         storageService.load();
+        joinHandler.startSessions(getServer().getOnlinePlayers());
         scheduler.scheduleAutosave();
         handlebStatsIntegration();
         startUsageReporting();
@@ -149,7 +151,7 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     private void registerEventHandlers() {
         EventHandlerRegistry eventHandlerRegistry = new EventHandlerRegistry();
         ArrayList<Listener> listeners = new ArrayList<>(Arrays.asList(
-                new JoinHandler(activityRecordService, persistentData, sessionFactory, discordWebhookService, this),
+                joinHandler,
                 new QuitHandler(persistentData, logger, discordWebhookService, this)
         ));
         eventHandlerRegistry.registerEventHandlers(listeners, this);

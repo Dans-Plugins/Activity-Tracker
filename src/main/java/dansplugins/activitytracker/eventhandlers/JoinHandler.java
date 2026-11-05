@@ -1,5 +1,7 @@
 package dansplugins.activitytracker.eventhandlers;
 
+import java.util.Collection;
+
 import dansplugins.activitytracker.data.PersistentData;
 import dansplugins.activitytracker.factories.SessionFactory;
 import dansplugins.activitytracker.services.DiscordWebhookService;
@@ -36,21 +38,40 @@ public class JoinHandler implements Listener {
     @EventHandler()
     public void handle(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        if (startSession(player)) {
+            sendDiscordJoinNotification(player);
+        }
+    }
+
+    /**
+     * Opens a session for each player already on the server. No join event fires
+     * for them after a reload, and none of them has joined, so no notification is sent.
+     * @param players The players who are online.
+     */
+    public void startSessions(Collection<? extends Player> players) {
+        for (Player player : players) {
+            startSession(player);
+        }
+    }
+
+    /**
+     * @return Whether the player's record now has a new session.
+     */
+    private boolean startSession(Player player) {
         boolean assignmentNeeded = activityRecordService.assignActivityRecordToPlayerIfNecessary(player);
         if (!assignmentNeeded) {
             ActivityRecord record = persistentData.getActivityRecord(player);
             if (record == null) {
                 // This should not happen, but handle it gracefully
                 activityRecordService.assignActivityRecordToPlayerIfNecessary(player);
-                return;
+                return false;
             }
-            
+
             Session newSession = sessionFactory.createSession(player);
             record.addSession(newSession);
             record.setMostRecentSession(newSession);
         }
-
-        sendDiscordJoinNotification(player);
+        return true;
     }
 
     private void sendDiscordJoinNotification(Player player) {
