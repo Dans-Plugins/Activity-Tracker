@@ -14,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +29,8 @@ import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for JoinHandler.
- * Covers session creation for returning players and the gates in front of the Discord join notification.
+ * Covers session creation for returning players, sessions opened for players already online when data
+ * is loaded, and the gates in front of the Discord join notification.
  * The asynchronous webhook dispatch itself is not exercised: JavaPlugin.getServer() is final and
  * cannot be stubbed with the default Mockito mock maker.
  *
@@ -138,5 +141,62 @@ class JoinHandlerTest {
 
         verify(discordWebhookService).prepareJoinMessage("Steve");
         verify(discordWebhookService, never()).sendWebhookMessage(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("Should open a running session for a player online when data is loaded")
+    void testStartSessions_OnlinePlayerWithEndedSession_HasRunningSession() throws Exception {
+        Session endedSession = new Session(logger, 1, player.getUniqueId());
+        endedSession.endSession();
+        ActivityRecord record = new ActivityRecord(player.getUniqueId(), endedSession);
+        Session newSession = new Session(logger, 2, player.getUniqueId());
+        when(activityRecordService.assignActivityRecordToPlayerIfNecessary(player)).thenReturn(false);
+        when(persistentData.getActivityRecord(player)).thenReturn(record);
+        when(sessionFactory.createSession(player)).thenReturn(newSession);
+
+        joinHandler.startSessions(Collections.singletonList(player));
+
+        assertEquals(2, record.getSessions().size());
+        assertSame(newSession, record.getMostRecentSession());
+        assertTrue(record.getMostRecentSession().isActive());
+    }
+
+    @Test
+    @DisplayName("Should open a session for every online player")
+    void testStartSessions_SeveralPlayers_OpensOneSessionEach() {
+        Player otherPlayer = mock(Player.class);
+        ActivityRecord record = mock(ActivityRecord.class);
+        ActivityRecord otherRecord = mock(ActivityRecord.class);
+        Session session = new Session(logger, 2, player.getUniqueId());
+        Session otherSession = new Session(logger, 3, UUID.randomUUID());
+        when(persistentData.getActivityRecord(player)).thenReturn(record);
+        when(persistentData.getActivityRecord(otherPlayer)).thenReturn(otherRecord);
+        when(sessionFactory.createSession(player)).thenReturn(session);
+        when(sessionFactory.createSession(otherPlayer)).thenReturn(otherSession);
+
+        joinHandler.startSessions(Arrays.asList(player, otherPlayer));
+
+        verify(record).addSession(session);
+        verify(otherRecord).addSession(otherSession);
+    }
+
+    @Test
+    @DisplayName("Should not send a join notification for a player who was already online")
+    void testStartSessions_WebhookEnabled_NoNotification() {
+        when(activityRecordService.assignActivityRecordToPlayerIfNecessary(player)).thenReturn(true);
+        when(discordWebhookService.isEnabled()).thenReturn(true);
+
+        joinHandler.startSessions(Collections.singletonList(player));
+
+        verify(discordWebhookService, never()).isEnabled();
+    }
+
+    @Test
+    @DisplayName("Should do nothing when no one is online")
+    void testStartSessions_NoPlayers_DoesNothing() {
+        joinHandler.startSessions(Collections.<Player>emptyList());
+
+        verify(activityRecordService, never()).assignActivityRecordToPlayerIfNecessary(any(Player.class));
+        verify(sessionFactory, never()).createSession(any(Player.class));
     }
 }
