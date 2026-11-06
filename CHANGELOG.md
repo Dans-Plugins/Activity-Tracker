@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- A server stopping while the plugin saves can no longer leave `activityRecords.json` or `sessions.json` partly written: each file is now written to a temporary file and renamed into place. Save failures are now always printed to the console.
+- An empty or malformed `activityRecords.json` or `sessions.json` no longer stops the plugin from enabling, and no longer costs the stored data. Previously the load failed, and the save at shutdown then replaced the files, which erased every session even if only the records file was damaged. Both files are now copied to `<file>.unreadable` first, the console prints an error regardless of `debugMode`, and the plugin starts without the unreadable data. `USER_GUIDE.md` explains how to restore the copies.
 - Players online during a `/reload` or a plugin-manager reload now get a new session when the plugin enables, with no Discord join notification. No join event fires for them, so until their next login their time was not counted, and `/at info` showed inflated play time because it added the time since login from their ended session to hours that already included that session.
 
 ## [1.8.0] – 2026-11-05
