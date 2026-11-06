@@ -13,10 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import dansplugins.activitytracker.data.PersistentData;
@@ -370,6 +373,137 @@ class StorageServiceTest {
         storageService.load();
 
         verify(logger, never()).log(contains("left active by an unclean shutdown"));
+    }
+
+    @Test
+    @DisplayName("Should leave a data file valid and remove the temporary file after a save")
+    void testSave_LeavesNoTemporaryFile() throws IOException {
+        UUID playerUUID = UUID.randomUUID();
+        persistentData.addRecord(recordWithEndedSession(playerUUID, 1, 1.0));
+        storageService.save();
+        persistentData.addRecord(recordWithEndedSession(UUID.randomUUID(), 2, 1.0));
+
+        storageService.save();
+
+        assertEquals(2, storageService.loadDataFromFilename(dataFile(ACTIVITY_RECORDS_FILE_NAME).getPath()).size());
+        assertEquals(new HashSet<>(Arrays.asList(ACTIVITY_RECORDS_FILE_NAME, SESSIONS_FILE_NAME)), dataDirectoryContents());
+    }
+
+    @Test
+    @DisplayName("Should keep the previous file and report the failure when a save cannot be written")
+    void testWriteOutFiles_FailureKeepsPreviousFile() throws IOException {
+        assertTrue(DATA_DIR.mkdir());
+        String previousSave = "[{\"ID\":\"1\"}]";
+        Files.write(dataFile(SESSIONS_FILE_NAME).toPath(), previousSave.getBytes(StandardCharsets.UTF_8));
+        // A directory in the temporary file's place makes the write fail
+        assertTrue(dataFile(SESSIONS_FILE_NAME + ".tmp").mkdir());
+
+        storageService.writeOutFiles(new ArrayList<>(), SESSIONS_FILE_NAME);
+
+        assertEquals(previousSave, readDataFile(SESSIONS_FILE_NAME));
+        verify(logger).error(contains("Failed to save " + SESSIONS_FILE_NAME));
+    }
+
+    @Test
+    @DisplayName("Should report a save failure even though debug mode is off")
+    void testSave_NoPluginsDirectory_ReportsFailure() {
+        assertTrue(PLUGINS_DIR.delete());
+
+        storageService.save();
+
+        verify(logger).error(contains("Failed to save " + ACTIVITY_RECORDS_FILE_NAME));
+        verify(logger).error(contains("Failed to save " + SESSIONS_FILE_NAME));
+    }
+
+    @Test
+    @DisplayName("Should load nothing from a truncated records file and keep both data files for restoring")
+    void testLoad_TruncatedRecordsFile() throws IOException {
+        persistentData.addRecord(recordWithEndedSession(UUID.randomUUID(), 1, 1.0));
+        storageService.save();
+        String sessions = readDataFile(SESSIONS_FILE_NAME);
+        String truncated = readDataFile(ACTIVITY_RECORDS_FILE_NAME).substring(0, 20);
+        Files.write(dataFile(ACTIVITY_RECORDS_FILE_NAME).toPath(), truncated.getBytes(StandardCharsets.UTF_8));
+
+        storageService.load();
+
+        assertTrue(persistentData.getActivityRecords().isEmpty());
+        assertEquals(truncated, readDataFile(ACTIVITY_RECORDS_FILE_NAME + ".unreadable"));
+        assertEquals(sessions, readDataFile(SESSIONS_FILE_NAME + ".unreadable"));
+        verify(logger).error(contains("Could not read " + ACTIVITY_RECORDS_FILE_NAME));
+    }
+
+    @Test
+    @DisplayName("Should keep the stored data through the save that follows loading a truncated file")
+    void testLoad_TruncatedRecordsFile_SurvivesNextSave() throws IOException {
+        persistentData.addRecord(recordWithEndedSession(UUID.randomUUID(), 1, 3.5));
+        storageService.save();
+        String sessions = readDataFile(SESSIONS_FILE_NAME);
+        String truncated = readDataFile(ACTIVITY_RECORDS_FILE_NAME).substring(0, 20);
+        Files.write(dataFile(ACTIVITY_RECORDS_FILE_NAME).toPath(), truncated.getBytes(StandardCharsets.UTF_8));
+
+        storageService.load();
+        storageService.save();
+
+        // The stored sessions now belong to no loaded record, so this save empties sessions.json
+        assertEquals("[]", readDataFile(SESSIONS_FILE_NAME));
+        assertEquals(sessions, readDataFile(SESSIONS_FILE_NAME + ".unreadable"));
+        assertEquals(truncated, readDataFile(ACTIVITY_RECORDS_FILE_NAME + ".unreadable"));
+    }
+
+    @Test
+    @DisplayName("Should keep one copy of each file when both are damaged in the same load")
+    void testLoad_BothFilesDamaged_OneCopyEach() throws IOException {
+        assertTrue(DATA_DIR.mkdir());
+        Files.write(dataFile(ACTIVITY_RECORDS_FILE_NAME).toPath(), "[{".getBytes(StandardCharsets.UTF_8));
+        Files.write(dataFile(SESSIONS_FILE_NAME).toPath(), new byte[0]);
+
+        storageService.load();
+
+        assertEquals(new HashSet<>(Arrays.asList(
+                ACTIVITY_RECORDS_FILE_NAME, SESSIONS_FILE_NAME,
+                ACTIVITY_RECORDS_FILE_NAME + ".unreadable", SESSIONS_FILE_NAME + ".unreadable")),
+                dataDirectoryContents());
+    }
+
+    @Test
+    @DisplayName("Should keep the records and set the file aside when only the sessions file is empty")
+    void testLoad_EmptySessionsFile() throws IOException {
+        UUID playerUUID = UUID.randomUUID();
+        persistentData.addRecord(recordWithEndedSession(playerUUID, 1, 2.0));
+        storageService.save();
+        Files.write(dataFile(SESSIONS_FILE_NAME).toPath(), new byte[0]);
+
+        storageService.load();
+
+        assertEquals(2.0, persistentData.getActivityRecord(playerUUID).getHoursSpentNotIncludingTheCurrentSession(), 0.001);
+        assertEquals("", readDataFile(SESSIONS_FILE_NAME + ".unreadable"));
+        verify(logger).error(contains("Could not read " + SESSIONS_FILE_NAME));
+    }
+
+    @Test
+    @DisplayName("Should keep an earlier preserved copy when a later load also finds a damaged file")
+    void testLoad_DoesNotOverwriteEarlierPreservedCopy() throws IOException {
+        Files.createDirectory(DATA_DIR.toPath());
+        Files.write(dataFile(SESSIONS_FILE_NAME).toPath(), "first".getBytes(StandardCharsets.UTF_8));
+        storageService.load();
+        Files.write(dataFile(SESSIONS_FILE_NAME).toPath(), "second".getBytes(StandardCharsets.UTF_8));
+
+        storageService.load();
+
+        assertEquals("first", readDataFile(SESSIONS_FILE_NAME + ".unreadable"));
+        assertEquals("second", readDataFile(SESSIONS_FILE_NAME + ".unreadable.1"));
+    }
+
+    private File dataFile(String name) {
+        return new File(DATA_DIR, name);
+    }
+
+    private String readDataFile(String name) throws IOException {
+        return new String(Files.readAllBytes(dataFile(name).toPath()), StandardCharsets.UTF_8);
+    }
+
+    private Set<String> dataDirectoryContents() {
+        return new HashSet<>(Arrays.asList(DATA_DIR.list()));
     }
 
     private ActivityRecord recordWithEndedSession(UUID playerUUID, int sessionID, double hours) {

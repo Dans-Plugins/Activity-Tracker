@@ -38,6 +38,12 @@ Run `/at average` to see your average daily play time over the last 7 days, `/at
 
 Operators can run `/at config show` to view current settings and `/at config set <option> <value>` to change them. See [CONFIG.md](CONFIG.md) for details on all configuration options.
 
+### Restoring Data After an Unreadable File
+
+Activity data is stored in `activityRecords.json` and `sessions.json` in `plugins/ActivityTracker/`. If either file cannot be read when the plugin loads, the console prints `[Activity Tracker] ERROR: Could not read <file>`, the plugin starts without that file's contents, and both files are copied first to `<file>.unreadable` (or `<file>.unreadable.1`, and so on, if that name is taken).
+
+To recover, stop the server, repair the damaged copy if you can, and rename the copies back to `activityRecords.json` and `sessions.json`. This replaces anything recorded since the error.
+
 ## Permissions
 
 | Permission | Default | Description |

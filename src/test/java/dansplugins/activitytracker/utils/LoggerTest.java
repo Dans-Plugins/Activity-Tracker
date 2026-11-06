@@ -70,4 +70,12 @@ class LoggerTest {
 
         assertEquals("[Activity Tracker] second" + System.lineSeparator(), output.toString());
     }
+
+    @Test
+    @DisplayName("error prints the prefixed message when debug mode is disabled")
+    void errorPrintsWhenDebugDisabled() {
+        logger.error("Could not read a file.");
+
+        assertEquals("[Activity Tracker] ERROR: Could not read a file." + System.lineSeparator(), output.toString());
+    }
 }

@@ -23,4 +23,11 @@ public class Logger {
             System.out.println("[Activity Tracker] " + message);
         }
     }
+
+    /**
+     * Prints a problem a server owner has to act on, whether or not debug mode is on.
+     */
+    public void error(String message) {
+        System.out.println("[Activity Tracker] ERROR: " + message);
+    }
 }

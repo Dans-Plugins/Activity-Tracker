@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
@@ -39,10 +42,13 @@ public class StorageService {
     private final static String FILE_PATH = "./plugins/ActivityTracker/";
     private final static String ACTIVITY_RECORDS_FILE_NAME = "activityRecords.json";
     private final static String SESSIONS_FILE_NAME = "sessions.json";
+    private final static String TEMPORARY_FILE_SUFFIX = ".tmp";
+    private final static String PRESERVED_FILE_SUFFIX = ".unreadable";
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private boolean dataFilesPreserved = false;
 
     public StorageService(ConfigService configService, ActivityTracker activityTracker, PersistentData persistentData, Logger logger) {
         this.configService = configService;
@@ -60,35 +66,86 @@ public class StorageService {
     }
 
     public void load() {
+        dataFilesPreserved = false;
         loadActivityRecords();
         loadSessions();
         validateAndRepairData();
         closeSessionsLeftActive();
     }
 
+    /**
+     * Writes to a temporary file and renames it over the data file, so a server
+     * stopping mid-save leaves the previous save in place rather than a partial one.
+     */
     public void writeOutFiles(List<Map<String, String>> saveData, String fileName) {
         try {
             File parentFolder = new File(FILE_PATH);
             parentFolder.mkdir();
             File file = new File(FILE_PATH, fileName);
-            file.createNewFile();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            outputStreamWriter.write(gson.toJson(saveData));
-            outputStreamWriter.close();
-        } catch(IOException e) {
-            System.out.println("ERROR: " + e.toString());
+            File temporaryFile = new File(FILE_PATH, fileName + TEMPORARY_FILE_SUFFIX);
+            try (FileOutputStream outputStream = new FileOutputStream(temporaryFile);
+                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                outputStreamWriter.write(gson.toJson(saveData));
+                outputStreamWriter.flush();
+                outputStream.getFD().sync();
+            }
+            Files.move(temporaryFile.toPath(), file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException e) {
+            logger.error("Failed to save " + fileName + ": " + e);
         }
     }
 
     public ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
-        try{
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
-            return gson.fromJson(reader, LIST_MAP_TYPE);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8))) {
+            ArrayList<HashMap<String, String>> data = gson.fromJson(reader, LIST_MAP_TYPE);
+            if (data != null) {
+                return data;
+            }
+            reportUnreadableFile(filename, "it has no content");
         } catch (FileNotFoundException e) {
             // Fail silently because this can actually happen in normal use
+        } catch (IOException | JsonParseException e) {
+            reportUnreadableFile(filename, e.getMessage());
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * Loading carries on without the file, and the next save replaces it. Both
+     * data files are copied first: with the records gone, that save would also
+     * drop every stored session, because sessions are saved through their records.
+     */
+    private void reportUnreadableFile(String filename, String reason) {
+        logger.error("Could not read " + new File(filename).getName() + ": " + reason);
+        if (dataFilesPreserved) {
+            return;
+        }
+        dataFilesPreserved = true;
+        preserveFile(ACTIVITY_RECORDS_FILE_NAME);
+        preserveFile(SESSIONS_FILE_NAME);
+    }
+
+    private void preserveFile(String fileName) {
+        File file = new File(FILE_PATH, fileName);
+        if (!file.exists()) {
+            return;
+        }
+        try {
+            File copy = findUnusedPreservedFile(fileName);
+            Files.copy(file.toPath(), copy.toPath());
+            logger.error("Kept a copy of " + fileName + " as " + copy.getName() + ".");
+        } catch (IOException e) {
+            logger.error("Failed to keep a copy of " + fileName + ": " + e);
+        }
+    }
+
+    private File findUnusedPreservedFile(String fileName) {
+        File candidate = new File(FILE_PATH, fileName + PRESERVED_FILE_SUFFIX);
+        for (int number = 1; candidate.exists(); number++) {
+            candidate = new File(FILE_PATH, fileName + PRESERVED_FILE_SUFFIX + "." + number);
+        }
+        return candidate;
     }
 
     private void saveActivityRecords() {
