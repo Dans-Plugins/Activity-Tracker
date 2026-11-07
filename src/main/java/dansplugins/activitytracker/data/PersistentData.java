@@ -59,7 +59,7 @@ public class PersistentData {
         // Check if a record for this player already exists
         ActivityRecord existing = getActivityRecord(recordToAdd.getPlayerUUID());
         if (existing != null) {
-            logger.log("WARNING: ActivityRecord for player " + recordToAdd.getPlayerUUID() + " already exists. Not adding duplicate.");
+            logger.error("ActivityRecord for player " + recordToAdd.getPlayerUUID() + " already exists. Not adding duplicate.");
             return;
         }
         
@@ -85,7 +85,7 @@ public class PersistentData {
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActivityRecord record = getActivityRecord(player);
             if (record == null) {
-                logger.log("WARNING: No activity record found for online player " + player.getName());
+                logger.error("No activity record found for online player " + player.getName());
                 continue;
             }
             
@@ -101,10 +101,10 @@ public class PersistentData {
                 }
             }
             catch (NoSessionException e) {
-                logger.log("ERROR: No session found for " + player.getName() + ": " + e.getMessage());
+                logger.error("No session found for " + player.getName() + ": " + e.getMessage());
             }
             catch (Exception e) {
-                logger.log("ERROR: Failed to end session for " + player.getName() + ": " + e.getMessage());
+                logger.error("Failed to end session for " + player.getName() + ": " + e.getMessage());
             }
         }
     }

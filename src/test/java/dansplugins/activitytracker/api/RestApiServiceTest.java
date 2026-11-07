@@ -11,10 +11,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.net.HttpURLConnection;
+import java.net.ServerSocket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
 /**
@@ -54,6 +58,43 @@ public class RestApiServiceTest {
 
         // Assert
         assertNotNull(service);
+    }
+
+    /**
+     * Without Spark's init exception handler replaced, this test does not fail: the port
+     * conflict calls System.exit(100) and takes the test JVM down.
+     */
+    @Test
+    public void testStartOnBoundPortReportsFailureAndDoesNotExit() throws Exception {
+        try (ServerSocket taken = new ServerSocket(0)) {
+            int boundPort = taken.getLocalPort();
+            RestApiService service = new RestApiService(persistentData, activityRecordService, logger, boundPort);
+
+            service.start();
+
+            verify(logger).error(contains("Failed to start REST API on port " + boundPort));
+            verify(logger, never()).log("REST API started on port " + boundPort);
+        }
+    }
+
+    @Test
+    public void testStartOnFreePortServesRequestsAfterAFailedStart() throws Exception {
+        int freePort;
+        try (ServerSocket taken = new ServerSocket(0)) {
+            freePort = taken.getLocalPort();
+            new RestApiService(persistentData, activityRecordService, logger, freePort).start();
+        }
+        RestApiService service = new RestApiService(persistentData, activityRecordService, logger, freePort);
+
+        service.start();
+
+        try {
+            verify(logger).log("REST API started on port " + freePort);
+            HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + freePort + "/api/health").openConnection();
+            assertEquals(200, connection.getResponseCode());
+        } finally {
+            service.stop();
+        }
     }
 
     @Test

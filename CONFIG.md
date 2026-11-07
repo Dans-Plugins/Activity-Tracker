@@ -12,7 +12,7 @@ Configuration is stored in `plugins/ActivityTracker/config.yml`. Options can als
 
 **Type:** boolean  
 **Default:** `false`  
-**Description:** Enables debug logging to the server console. Useful for troubleshooting issues.
+**Description:** Enables debug logging to the server console. Useful for troubleshooting issues. Failures that need your attention are printed with `[Activity Tracker] ERROR:` whether this is on or off.
 
 **Example:**
 

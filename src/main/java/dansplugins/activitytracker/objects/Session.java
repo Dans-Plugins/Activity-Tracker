@@ -128,7 +128,7 @@ public class Session implements Savable {
             saveMap.put("minutesSpent", gson.toJson(minutesSpent));
             saveMap.put("active", gson.toJson(active));
         } catch (Exception e) {
-            logger.log("ERROR: Something went wrong saving a session: " + e.getMessage());
+            logger.error("Something went wrong saving a session: " + e.getMessage());
         }
 
         return saveMap;

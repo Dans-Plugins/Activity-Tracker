@@ -274,7 +274,7 @@ print(f"Average hours per day ({avg_activity['days']} days): {avg_activity['aver
 ## Troubleshooting
 
 ### Port Already in Use
-If you get an error that the port is already in use, either:
+If the port is already in use, the console prints `[Activity Tracker] ERROR: Failed to start REST API on port <port>`. The server and the rest of the plugin keep running, and the API stays off until the plugin is next enabled. Either:
 1. Change the `restApiPort` configuration to a different port
 2. Stop the other service using that port
 

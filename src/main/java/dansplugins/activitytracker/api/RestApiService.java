@@ -14,6 +14,7 @@ import spark.Spark;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * REST API service for exposing player activity data
@@ -44,15 +45,26 @@ public class RestApiService {
             return;
         }
 
+        // Spark binds the port on its own thread, so a port conflict never reaches the catch
+        // below. Without this handler, Spark calls System.exit and stops the Minecraft server.
+        AtomicReference<Exception> startFailure = new AtomicReference<>();
         try {
+            Spark.initExceptionHandler(startFailure::set);
             Spark.port(port);
             setupRoutes();
             Spark.awaitInitialization();
-            running = true;
-            logger.log("REST API started on port " + port);
         } catch (Exception e) {
-            logger.log("Failed to start REST API: " + e.getMessage());
+            startFailure.set(e);
         }
+
+        if (startFailure.get() != null) {
+            logger.error("Failed to start REST API on port " + port + ": " + startFailure.get().getMessage());
+            stopServer();
+            return;
+        }
+
+        running = true;
+        logger.log("REST API started on port " + port);
     }
 
     /**
@@ -63,6 +75,10 @@ public class RestApiService {
             return;
         }
 
+        stopServer();
+    }
+
+    private void stopServer() {
         try {
             Spark.stop();
             Spark.awaitStop();

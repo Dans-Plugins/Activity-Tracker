@@ -194,7 +194,7 @@ public class StorageService {
                 persistentData.addRecord(record);
                 successfullyLoaded++;
             } catch (Exception e) {
-                logger.log("ERROR: Failed to load ActivityRecord: " + e.getMessage());
+                logger.error("Failed to load ActivityRecord: " + e.getMessage());
                 failedToLoad++;
             }
         }
@@ -219,7 +219,7 @@ public class StorageService {
                 ActivityRecord record = persistentData.getActivityRecord(playerUUID);
                 
                 if (record == null) {
-                    logger.log("WARNING: Could not find ActivityRecord for player UUID " + playerUUID + " when loading session. Session will be skipped.");
+                    logger.error("Could not find ActivityRecord for player UUID " + playerUUID + " when loading session. Session will be skipped.");
                     failedToLoad++;
                     continue;
                 }
@@ -227,7 +227,7 @@ public class StorageService {
                 record.addSession(session);
                 successfullyLoaded++;
             } catch (Exception e) {
-                logger.log("ERROR: Failed to load session: " + e.getMessage());
+                logger.error("Failed to load session: " + e.getMessage());
                 failedToLoad++;
             }
         }
