@@ -101,7 +101,7 @@ class QuitHandlerTest {
 
         quitHandler.handle(new PlayerQuitEvent(player, "left"));
 
-        verify(logger).log(contains("ERROR: Failed to properly end session for Steve: boom"));
+        verify(logger).error("Failed to properly end session for Steve: boom");
         assertEquals(2.0, record.getHoursSpentNotIncludingTheCurrentSession(), 0.0001);
         verify(discordWebhookService).isEnabled();
     }
@@ -113,7 +113,7 @@ class QuitHandlerTest {
 
         quitHandler.handle(new PlayerQuitEvent(player, "left"));
 
-        verify(logger).log(contains("ERROR: No activity record found for Steve on logout."));
+        verify(logger).error("No activity record found for Steve on logout.");
         verify(discordWebhookService, never()).isEnabled();
     }
 
@@ -126,7 +126,7 @@ class QuitHandlerTest {
 
         quitHandler.handle(new PlayerQuitEvent(player, "left"));
 
-        verify(logger).log(contains("ERROR: The most recent session was null for Steve: none"));
+        verify(logger).error("The most recent session was null for Steve: none");
         verify(record, never()).setHoursSpent(anyDouble());
         verify(discordWebhookService, never()).isEnabled();
     }

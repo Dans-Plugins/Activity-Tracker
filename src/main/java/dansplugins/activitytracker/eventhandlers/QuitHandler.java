@@ -37,7 +37,7 @@ public class QuitHandler implements Listener {
         ActivityRecord record = persistentData.getActivityRecord(player);
         
         if (record == null) {
-            logger.log("ERROR: No activity record found for " + player.getName() + " on logout.");
+            logger.error("No activity record found for " + player.getName() + " on logout.");
             return;
         }
         
@@ -46,7 +46,7 @@ public class QuitHandler implements Listener {
             currentSession = record.getMostRecentSession();
         }
         catch (NoSessionException e) {
-            logger.log("ERROR: The most recent session was null for " + player.getName() + ": " + e.getMessage());
+            logger.error("The most recent session was null for " + player.getName() + ": " + e.getMessage());
             return;
         }
         
@@ -62,7 +62,7 @@ public class QuitHandler implements Listener {
                 logger.log("WARNING: Session for " + player.getName() + " was already ended.");
             }
         } catch (Exception e) {
-            logger.log("ERROR: Failed to properly end session for " + player.getName() + ": " + e.getMessage());
+            logger.error("Failed to properly end session for " + player.getName() + ": " + e.getMessage());
         }
 
         sendDiscordQuitNotification(player);

@@ -6,12 +6,15 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for Session
@@ -29,6 +32,18 @@ public class SessionTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         testPlayerUUID = UUID.randomUUID();
+    }
+
+    @Test
+    public void testSaveReportsFailureRegardlessOfDebugMode() throws Exception {
+        Session session = new Session(logger, 1, testPlayerUUID);
+        Field loginDate = Session.class.getDeclaredField("loginDate");
+        loginDate.setAccessible(true);
+        loginDate.set(session, null);
+
+        session.save();
+
+        verify(logger).error(contains("Something went wrong saving a session"));
     }
 
     @Test

@@ -4,14 +4,24 @@ import dansplugins.activitytracker.exceptions.NoSessionException;
 import dansplugins.activitytracker.objects.ActivityRecord;
 import dansplugins.activitytracker.objects.Session;
 import dansplugins.activitytracker.utils.Logger;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for PersistentData
@@ -385,5 +395,74 @@ public class PersistentDataTest {
         assertEquals(1, persistentData.getPlayerRank(uuid1)); // 10 hours - rank 1
         assertEquals(1, persistentData.getPlayerRank(uuid2)); // 10 hours - rank 1 (tied)
         assertEquals(3, persistentData.getPlayerRank(uuid3)); //  5 hours - rank 3
+    }
+
+    @Test
+    public void testAddRecordReportsDroppedDuplicate() {
+        persistentData.addRecord(new ActivityRecord(testPlayerUUID, new Session(logger, 1, testPlayerUUID)));
+
+        persistentData.addRecord(new ActivityRecord(testPlayerUUID, new Session(logger, 2, testPlayerUUID)));
+
+        verify(logger).error("ActivityRecord for player " + testPlayerUUID + " already exists. Not adding duplicate.");
+    }
+
+    @Test
+    public void testEndCurrentSessionsReportsOnlinePlayerWithNoRecord() throws Exception {
+        endCurrentSessionsWithOnlinePlayer();
+
+        verify(logger).error("No activity record found for online player Steve");
+    }
+
+    @Test
+    public void testEndCurrentSessionsReportsMissingSession() throws Exception {
+        ActivityRecord record = mock(ActivityRecord.class);
+        when(record.getPlayerUUID()).thenReturn(testPlayerUUID);
+        when(record.getMostRecentSession()).thenThrow(new NoSessionException("none"));
+        persistentData.addRecord(record);
+
+        endCurrentSessionsWithOnlinePlayer();
+
+        verify(logger).error("No session found for Steve: none");
+    }
+
+    @Test
+    public void testEndCurrentSessionsReportsSessionThatCouldNotBeEnded() throws Exception {
+        Session session = mock(Session.class);
+        when(session.isActive()).thenReturn(true);
+        doThrow(new IllegalStateException("boom")).when(session).endSession();
+        ActivityRecord record = mock(ActivityRecord.class);
+        when(record.getPlayerUUID()).thenReturn(testPlayerUUID);
+        when(record.getMostRecentSession()).thenReturn(session);
+        persistentData.addRecord(record);
+
+        endCurrentSessionsWithOnlinePlayer();
+
+        verify(logger).error("Failed to end session for Steve: boom");
+    }
+
+    /**
+     * Bukkit.getOnlinePlayers() reads a static Server, so a mock Server is installed into
+     * Bukkit's static field for the call and the previous value is restored afterwards.
+     */
+    private void endCurrentSessionsWithOnlinePlayer() throws Exception {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.getUniqueId()).thenReturn(testPlayerUUID);
+        Server server = mock(Server.class);
+        doReturn(Collections.singletonList(player)).when(server).getOnlinePlayers();
+
+        Server previousServer = Bukkit.getServer();
+        setBukkitServer(server);
+        try {
+            persistentData.endCurrentSessions();
+        } finally {
+            setBukkitServer(previousServer);
+        }
+    }
+
+    private static void setBukkitServer(Server server) throws Exception {
+        Field field = Bukkit.class.getDeclaredField("server");
+        field.setAccessible(true);
+        field.set(null, server);
     }
 }

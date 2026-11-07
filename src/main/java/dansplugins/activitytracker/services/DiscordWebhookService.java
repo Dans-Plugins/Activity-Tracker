@@ -124,7 +124,7 @@ public class DiscordWebhookService {
 
             int responseCode = connection.getResponseCode();
             if (responseCode < 200 || responseCode >= 300) {
-                logger.log("Discord webhook returned error code: " + responseCode);
+                logger.error("Discord webhook returned error code: " + responseCode);
             }
 
             // Consume response stream to free up the connection
@@ -140,7 +140,7 @@ public class DiscordWebhookService {
                 }
             }
         } catch (IOException e) {
-            logger.log("Failed to send Discord webhook message: " + e.getMessage());
+            logger.error("Failed to send Discord webhook message: " + e.getMessage());
         } finally {
             if (connection != null) {
                 connection.disconnect();

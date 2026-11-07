@@ -191,7 +191,7 @@ public class DiscordWebhookServiceTest {
         discordWebhookService.sendWebhookMessage("not-a-valid-url", "**TestPlayer** joined!");
 
         // Error should be logged gracefully
-        verify(logger).log(contains("Failed to send Discord webhook message"));
+        verify(logger).error(contains("Failed to send Discord webhook message"));
     }
 
     @Test
@@ -244,7 +244,7 @@ public class DiscordWebhookServiceTest {
         discordWebhookService.sendWebhookMessage(url, "**TestPlayer** joined!");
 
         assertEquals(1, receivedBodies.size());
-        verify(logger).log("Discord webhook returned error code: 400");
+        verify(logger).error("Discord webhook returned error code: 400");
     }
 
     /**

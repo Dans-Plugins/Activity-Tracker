@@ -225,7 +225,7 @@ class StorageServiceTest {
         // rather than by the null-UUID check that follows construction
         assertEquals(1, persistentData.getActivityRecords().size());
         assertNotNull(persistentData.getActivityRecord(validUUID));
-        verify(logger).log(contains("ERROR: Failed to load ActivityRecord"));
+        verify(logger).error(contains("Failed to load ActivityRecord"));
         verify(logger, never()).log("WARNING: Skipping ActivityRecord with null player UUID");
         verify(logger).log("Loaded 1 activity records successfully. 1 records failed to load.");
     }
@@ -246,7 +246,7 @@ class StorageServiceTest {
 
         assertEquals(1, persistentData.getActivityRecord(owner).getSessions().size());
         assertNull(persistentData.getActivityRecord(orphanOwner));
-        verify(logger).log("WARNING: Could not find ActivityRecord for player UUID " + orphanOwner
+        verify(logger).error("Could not find ActivityRecord for player UUID " + orphanOwner
                 + " when loading session. Session will be skipped.");
         verify(logger).log("Loaded 1 sessions successfully. 1 sessions failed to load.");
     }
@@ -267,7 +267,7 @@ class StorageServiceTest {
         storageService.load();
 
         assertEquals(1, persistentData.getActivityRecord(owner).getSessions().size());
-        verify(logger).log(contains("ERROR: Failed to load session"));
+        verify(logger).error(contains("Failed to load session"));
         verify(logger).log("Loaded 1 sessions successfully. 1 sessions failed to load.");
     }
 
