@@ -15,6 +15,8 @@ You can also configure these settings in-game using the `/at config` command:
 - `/at config set restApiEnabled true`
 - `/at config set restApiPort 8080`
 
+Both settings are read only when the plugin is enabled, so restart the server after changing either of them; the API does not start, stop or move to the new port until then.
+
 ## API Endpoints
 
 ### Health Check

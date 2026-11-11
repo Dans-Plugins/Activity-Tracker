@@ -2,6 +2,16 @@
 
 Configuration is stored in `plugins/ActivityTracker/config.yml`. Options can also be changed in-game with `/at config set <option> <value>`.
 
+## When changes take effect
+
+The plugin reads `config.yml` from disk only when it is enabled (server start or restart). Edit the file while the server is stopped: an edit made while it is running is not picked up, and the next `/at config set` writes the plugin's in-memory settings back to the file, replacing the edit.
+
+A value changed with `/at config set` is saved straight away, but not every option is re-read straight away:
+
+| Takes effect immediately | Takes effect the next time the plugin is enabled |
+|--------------------------|--------------------------------------------------|
+| `debugMode`, `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage`, `discordWebhookQuitMessage` | `restApiEnabled`, `restApiPort`, `usage-reporting.enabled`, `usage-reporting.endpoint`, `usage-reporting.key` |
+
 ## version
 
 **Type:** string  
