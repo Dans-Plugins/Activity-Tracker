@@ -21,6 +21,10 @@ public class ConfigService {
     private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
     private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
     private static final String DEFAULT_USAGE_REPORTING_ENDPOINT = "https://trace.danielstephenson.dev";
+    private static final String[] READ_ONLY_ON_ENABLE = {
+            "restApiEnabled", "restApiPort",
+            USAGE_REPORTING_ENABLED_KEY, USAGE_REPORTING_ENDPOINT_KEY, USAGE_REPORTING_KEY_KEY
+    };
 
     private final ActivityTracker activityTracker;
 
@@ -106,8 +110,12 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.GREEN + "String set.");
             }
 
+            if (isReadOnlyOnEnable(option)) {
+                sender.sendMessage(ChatColor.YELLOW + "Restart the server for this change to take effect.");
+            }
+
             // save
-            activityTracker.saveConfig();
+            saveConfig();
             altered = true;
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
@@ -143,6 +151,26 @@ public class ConfigService {
         sender.sendMessage(ChatColor.GOLD + "│ " + ChatColor.GRAY + "usage-reporting.key:       " +
                           ChatColor.WHITE + getUsageReportingKey());
         sender.sendMessage(ChatColor.GOLD + "└─────────────────────────");
+    }
+
+    /**
+     * The options ActivityTracker reads only in onEnable (startRestApiIfEnabled
+     * and startUsageReporting), so a change made with /at config set is saved
+     * but not applied until the plugin is next enabled. Keep in step with the
+     * "When changes take effect" table in CONFIG.md.
+     */
+    private static boolean isReadOnlyOnEnable(String option) {
+        for (String key : READ_ONLY_ON_ENABLE) {
+            if (key.equalsIgnoreCase(option)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Overridable so tests can exercise a successful set without a plugin instance. */
+    protected void saveConfig() {
+        activityTracker.saveConfig();
     }
 
     public boolean hasBeenAltered() {
