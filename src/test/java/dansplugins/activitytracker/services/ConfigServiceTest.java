@@ -136,6 +136,69 @@ class ConfigServiceTest {
         verify(sender).sendMessage(ChatColor.RED + "usage-reporting.enabled must be true or false.");
     }
 
+    private static final String RESTART_HINT = ChatColor.YELLOW + "Restart the server for this change to take effect.";
+
+    @Test
+    void setConfigOption_tellsTheSenderToRestartForOptionsReadOnlyOnEnable() throws Exception {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.loadFromString("restApiEnabled: false\nrestApiPort: 8080\nusage-reporting:\n  enabled: true\n"
+                + "  endpoint: https://trace.danielstephenson.dev\n  key: abc\n");
+        ConfigService service = savingConfigServiceOver(onDisk);
+
+        CommandSender portSender = mock(CommandSender.class);
+        service.setConfigOption("restApiPort", "9090", portSender);
+        assertEquals(9090, onDisk.getInt("restApiPort"));
+        verify(portSender).sendMessage(ChatColor.GREEN + "Integer set.");
+        verify(portSender).sendMessage(RESTART_HINT);
+
+        for (String option : new String[]{"restApiEnabled", "usage-reporting.enabled"}) {
+            CommandSender sender = mock(CommandSender.class);
+            service.setConfigOption(option, "true", sender);
+            verify(sender).sendMessage(ChatColor.GREEN + "Boolean set.");
+            verify(sender).sendMessage(RESTART_HINT);
+        }
+
+        for (String option : new String[]{"usage-reporting.endpoint", "usage-reporting.key"}) {
+            CommandSender sender = mock(CommandSender.class);
+            service.setConfigOption(option, "changed", sender);
+            assertEquals("changed", onDisk.getString(option));
+            verify(sender).sendMessage(ChatColor.GREEN + "String set.");
+            verify(sender).sendMessage(RESTART_HINT);
+        }
+    }
+
+    @Test
+    void setConfigOption_doesNotAskForARestartForOptionsReadWhenUsed() throws Exception {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.loadFromString("debugMode: false\ndiscordWebhookUrl: ''\n");
+        ConfigService service = savingConfigServiceOver(onDisk);
+
+        CommandSender debugSender = mock(CommandSender.class);
+        service.setConfigOption("debugMode", "true", debugSender);
+        assertTrue(onDisk.getBoolean("debugMode"));
+        verify(debugSender).sendMessage(ChatColor.GREEN + "Boolean set.");
+        verify(debugSender, never()).sendMessage(RESTART_HINT);
+
+        CommandSender urlSender = mock(CommandSender.class);
+        service.setConfigOption("discordWebhookUrl", "https://example.invalid/hook", urlSender);
+        verify(urlSender).sendMessage(ChatColor.GREEN + "String set.");
+        verify(urlSender, never()).sendMessage(RESTART_HINT);
+    }
+
+    /** A ConfigService whose successful sets save nowhere, since there is no plugin instance. */
+    private static ConfigService savingConfigServiceOver(FileConfiguration onDisk) {
+        return new ConfigService(null) {
+            @Override
+            public FileConfiguration getConfig() {
+                return onDisk;
+            }
+
+            @Override
+            protected void saveConfig() {
+            }
+        };
+    }
+
     private static ConfigService configServiceOver(FileConfiguration onDisk) {
         return new ConfigService(null) {
             @Override

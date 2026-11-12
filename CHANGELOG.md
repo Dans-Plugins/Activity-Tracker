@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- `/at config set` now adds `Restart the server for this change to take effect.` to its reply when the option is `restApiEnabled`, `restApiPort` or one of the `usage-reporting.*` options. These are read only when the plugin is enabled, so the plain `set.` reply read as if the change was already in effect.
+
 ## [1.10.0] – 2026-11-08
 
 ### Fixed
