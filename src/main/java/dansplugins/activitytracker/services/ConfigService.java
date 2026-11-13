@@ -21,6 +21,8 @@ public class ConfigService {
     private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
     private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
     private static final String DEFAULT_USAGE_REPORTING_ENDPOINT = "https://trace.danielstephenson.dev";
+    private static final int MIN_PORT = 1;
+    private static final int MAX_PORT = 65535;
     private static final String[] READ_ONLY_ON_ENABLE = {
             "restApiEnabled", "restApiPort",
             USAGE_REPORTING_ENABLED_KEY, USAGE_REPORTING_ENDPOINT_KEY, USAGE_REPORTING_KEY_KEY
@@ -88,6 +90,11 @@ public class ConfigService {
                     port = Integer.parseInt(value);
                 } catch (NumberFormatException e) {
                     sender.sendMessage(ChatColor.RED + option + " must be a whole number.");
+                    return;
+                }
+                // 0 would make Spark listen on a random port; anything else outside the range fails to bind.
+                if (port < MIN_PORT || port > MAX_PORT) {
+                    sender.sendMessage(ChatColor.RED + option + " must be between " + MIN_PORT + " and " + MAX_PORT + ".");
                     return;
                 }
                 getConfig().set(option, port);

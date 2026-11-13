@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `/at config set` now adds `Restart the server for this change to take effect.` to its reply when the option is `restApiEnabled`, `restApiPort` or one of the `usage-reporting.*` options. These are read only when the plugin is enabled, so the plain `set.` reply read as if the change was already in effect.
 
+### Fixed
+
+- `/at config set restApiPort` now refuses a port outside 1–65535 with `restApiPort must be between 1 and 65535.` and leaves the setting unchanged. Previously any whole number was saved, and the REST API then failed to start (or, for `0`, listened on a random port) after the restart.
+
 ## [1.10.0] – 2026-11-08
 
 ### Fixed
