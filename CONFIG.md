@@ -46,7 +46,7 @@ restApiEnabled: false
 
 **Type:** integer  
 **Default:** `8080`  
-**Description:** The port number the REST API server listens on when enabled. Change this if port 8080 is already in use on your server.
+**Description:** The port number the REST API server listens on when enabled, from `1` to `65535`. Change this if port 8080 is already in use on your server. `/at config set` refuses a value outside that range and leaves the setting unchanged.
 
 **Example:**
 

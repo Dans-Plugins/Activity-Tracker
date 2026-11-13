@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -119,6 +120,33 @@ class ConfigServiceTest {
 
         assertEquals(8080, onDisk.getInt("restApiPort"));
         verify(sender).sendMessage(ChatColor.RED + "restApiPort must be a whole number.");
+    }
+
+    @Test
+    void setConfigOption_rejectsAPortOutsideTheValidRangeAndLeavesTheConfigUnchanged() throws Exception {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.loadFromString("restApiPort: 8080\n");
+        CommandSender sender = mock(CommandSender.class);
+
+        // ActivityTracker is null here, so reaching saveConfig() would throw.
+        configServiceOver(onDisk).setConfigOption("restApiPort", "0", sender);
+        configServiceOver(onDisk).setConfigOption("restApiPort", "-1", sender);
+        configServiceOver(onDisk).setConfigOption("restApiPort", "65536", sender);
+
+        assertEquals(8080, onDisk.getInt("restApiPort"));
+        verify(sender, times(3)).sendMessage(ChatColor.RED + "restApiPort must be between 1 and 65535.");
+    }
+
+    @Test
+    void setConfigOption_acceptsTheEndsOfThePortRange() throws Exception {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.loadFromString("restApiPort: 8080\n");
+        ConfigService service = savingConfigServiceOver(onDisk);
+
+        service.setConfigOption("restApiPort", "1", mock(CommandSender.class));
+        assertEquals(1, onDisk.getInt("restApiPort"));
+        service.setConfigOption("restApiPort", "65535", mock(CommandSender.class));
+        assertEquals(65535, onDisk.getInt("restApiPort"));
     }
 
     @Test
