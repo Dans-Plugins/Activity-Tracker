@@ -32,7 +32,9 @@ Run `/at stats` to see overall server statistics such as total unique players an
 
 ### Checking Average Daily Activity
 
-Run `/at average` to see your average daily play time over the last 7 days, `/at average <playerName>` for another player over the last 7 days, or `/at average <playerName> <days>` for a specific player and time range.
+Run `/at average` to see your average daily play time over the last 7 days, `/at average <playerName>` for another player over the last 7 days, or `/at average <playerName> <days>` for a specific player and time range. To change the number of days for yourself, give your own name first, e.g. `/at average Steve 30`.
+
+From the server console, `/at info` and `/at average` need a player name, because the console has no activity record of its own.
 
 ### Managing Configuration
 
