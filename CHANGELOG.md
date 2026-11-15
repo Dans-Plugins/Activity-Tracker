@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - `/at config set restApiPort` now refuses a port outside 1–65535 with `restApiPort must be between 1 and 65535.` and leaves the setting unchanged. Previously any whole number was saved, and the REST API then failed to start (or, for `0`, listened on a random port) after the restart.
+- `REST_API.md` and `openapi.yaml` now say that `playerName` is the literal string `"Unknown"` when the server can't resolve a UUID to a name, in the `GET /api/leaderboard`, `GET /api/players/{uuid}` and `GET /api/average-daily-activity/{uuid}` responses. Both previously described the field only as the player's name, so a client could not tell the placeholder from a real name. The API itself is unchanged.
 
 ## [1.10.0] – 2026-11-08
 
