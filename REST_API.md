@@ -66,6 +66,8 @@ Get the top 10 players by total hours played.
 ]
 ```
 
+`playerName` is the literal string `"Unknown"` when the server can't resolve the player's UUID to a name. Use `playerUuid` to identify the player.
+
 ### List All Players
 ```
 GET /api/players
@@ -103,6 +105,8 @@ Get detailed activity information for a specific player.
   "hoursSinceLogin": 2.5
 }
 ```
+
+`playerName` is `"Unknown"` when the server can't resolve the UUID to a name, as on the leaderboard.
 
 Fields with no value are left out of the response rather than sent as `null`. For an online player, `lastLogout` and `hoursSinceLogout` are absent (the current session has not ended); for an offline player, `hoursSinceLogin` is absent and `hoursSinceLogout` is present. `firstLogin`, `lastLogin` and `lastLogout` are absent for a player with no recorded sessions.
 
@@ -144,6 +148,8 @@ Get average daily activity for a specific player over a specified period.
   "totalHours": 22.75
 }
 ```
+
+`playerName` is `"Unknown"` when the server can't resolve the UUID to a name, as on the leaderboard.
 
 **Error Response (404):**
 ```json

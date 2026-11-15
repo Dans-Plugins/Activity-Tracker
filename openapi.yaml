@@ -219,7 +219,7 @@ components:
           example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         playerName:
           type: string
-          description: Name of the player
+          description: Name of the player. The literal string "Unknown" is sent when the server can't resolve the UUID to a name.
           example: "Steve"
         hoursPlayed:
           type: number
@@ -246,7 +246,7 @@ components:
           example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         playerName:
           type: string
-          description: Name of the player
+          description: Name of the player. The literal string "Unknown" is sent when the server can't resolve the UUID to a name.
           example: "Steve"
         totalLogins:
           type: integer
@@ -308,7 +308,7 @@ components:
           example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         playerName:
           type: string
-          description: Name of the player
+          description: Name of the player. The literal string "Unknown" is sent when the server can't resolve the UUID to a name.
           example: "Steve"
         days:
           type: integer
