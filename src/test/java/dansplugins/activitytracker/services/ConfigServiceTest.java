@@ -278,6 +278,39 @@ class ConfigServiceTest {
     }
 
     @Test
+    void setConfigOption_turningUsageReportingOffInGameStopsItAtOnce() throws Exception {
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.loadFromString("restApiEnabled: false\nusage-reporting:\n  enabled: true\n");
+        int[] stops = new int[1];
+        ConfigService service = new ConfigService(null) {
+            @Override
+            public FileConfiguration getConfig() {
+                return loaded;
+            }
+
+            @Override
+            protected void saveConfig(boolean usageReportingSetByOperator) {
+            }
+
+            @Override
+            protected void stopUsageReporting() {
+                stops[0]++;
+            }
+        };
+
+        CommandSender on = mock(CommandSender.class);
+        service.setConfigOption("usage-reporting.enabled", "true", on);
+        service.setConfigOption("restApiEnabled", "false", mock(CommandSender.class));
+        assertEquals(0, stops[0], "only turning usage reporting off stops it");
+        verify(on).sendMessage(RESTART_HINT);
+
+        CommandSender off = mock(CommandSender.class);
+        service.setConfigOption("usage-reporting.enabled", "false", off);
+        assertEquals(1, stops[0]);
+        verify(off, never()).sendMessage(RESTART_HINT);
+    }
+
+    @Test
     void setConfigOption_refusesAWholeSection() throws Exception {
         YamlConfiguration loaded = new YamlConfiguration();
         loaded.loadFromString("usage-reporting:\n  enabled: false\n");

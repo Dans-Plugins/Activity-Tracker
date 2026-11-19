@@ -227,6 +227,20 @@ public final class ActivityTracker extends PonderBukkitPlugin {
     }
 
     /**
+     * Stops usage reporting at once, for an operator who has just turned it off in-game with
+     * /at config set usage-reporting.enabled false. Turning it back on still waits for the next
+     * restart; turning it off never does.
+     */
+    public void stopUsageReporting() {
+        TraceClient previous = trace;
+        trace = TraceClient.disabled();
+        if (previous != null) {
+            previous.close();
+        }
+        getLogger().info("Usage reporting is off (config.yml).");
+    }
+
+    /**
      * The one console line, every startup, that says whether usage reporting is
      * on, what is sent, and how to turn it off.
      *

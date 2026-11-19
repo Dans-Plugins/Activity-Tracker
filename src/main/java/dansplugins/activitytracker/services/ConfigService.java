@@ -122,12 +122,18 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.GREEN + "String set.");
             }
 
-            if (isReadOnlyOnEnable(option)) {
+            // Turning usage reporting off takes effect at once; turning it on waits for a restart.
+            boolean usageReportingTurnedOff = option.equalsIgnoreCase(USAGE_REPORTING_ENABLED_KEY)
+                    && !Boolean.parseBoolean(value);
+            if (isReadOnlyOnEnable(option) && !usageReportingTurnedOff) {
                 sender.sendMessage(ChatColor.YELLOW + "Restart the server for this change to take effect.");
             }
 
             // save; only setting usage-reporting.enabled itself may change it on disk
             saveConfig(option.equalsIgnoreCase(USAGE_REPORTING_ENABLED_KEY));
+            if (usageReportingTurnedOff) {
+                stopUsageReporting();
+            }
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
         }
@@ -182,6 +188,11 @@ public class ConfigService {
     /** Overridable so tests can exercise a successful set without a plugin instance. */
     protected void saveConfig(boolean usageReportingSetByOperator) {
         activityTracker.saveConfig(usageReportingSetByOperator);
+    }
+
+    /** Overridable so tests can exercise turning reporting off without a plugin instance. */
+    protected void stopUsageReporting() {
+        activityTracker.stopUsageReporting();
     }
 
     /** Overridable so tests can point at a config.yml without a plugin instance. */

@@ -4,13 +4,13 @@ Configuration is stored in `plugins/ActivityTracker/config.yml`. Options can als
 
 ## When changes take effect
 
-The plugin reads `config.yml` from disk only when it is enabled (server start or restart). Edit the file while the server is stopped: an edit made while it is running is not picked up, and the next `/at config set` writes the plugin's in-memory settings back to the file, replacing the edit.
+The plugin reads `config.yml` from disk only when it is enabled (server start or restart). Edit the file while the server is stopped: an edit made while it is running is not picked up, and the next `/at config set` writes the plugin's in-memory settings back to the file, replacing the edit. The one exception is `usage-reporting.enabled: false`: an opt-out written while the server is running is kept by every later save (and takes effect at the next start).
 
 A value changed with `/at config set` is saved straight away, but not every option is re-read straight away:
 
 | Takes effect immediately | Takes effect the next time the plugin is enabled |
 |--------------------------|--------------------------------------------------|
-| `debugMode`, `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage`, `discordWebhookQuitMessage` | `restApiEnabled`, `restApiPort`, `usage-reporting.enabled`, `usage-reporting.endpoint`, `usage-reporting.key` |
+| `debugMode`, `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage`, `discordWebhookQuitMessage`, `usage-reporting.enabled` set to `false` | `restApiEnabled`, `restApiPort`, `usage-reporting.enabled` set to `true`, `usage-reporting.endpoint`, `usage-reporting.key` |
 
 ## version
 
