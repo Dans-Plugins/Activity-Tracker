@@ -67,9 +67,8 @@ class StorageServiceTest {
 
         logger = mock(Logger.class);
         configService = mock(ConfigService.class);
-        when(configService.hasBeenAltered()).thenReturn(false);
         persistentData = new PersistentData(logger);
-        // ActivityTracker is final and cannot be mocked; it is only used when the config has been altered.
+        // ActivityTracker is final and cannot be mocked; saving data files does not use it.
         storageService = new StorageService(configService, null, persistentData, logger);
     }
 
@@ -113,7 +112,6 @@ class StorageServiceTest {
 
         assertTrue(new File(DATA_DIR, ACTIVITY_RECORDS_FILE_NAME).isFile());
         assertTrue(new File(DATA_DIR, SESSIONS_FILE_NAME).isFile());
-        verify(configService).hasBeenAltered();
     }
 
     @Test

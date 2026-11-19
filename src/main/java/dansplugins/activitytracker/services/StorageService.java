@@ -60,9 +60,6 @@ public class StorageService {
     public void save() {
         saveActivityRecords();
         saveSessions();
-        if (configService.hasBeenAltered()) {
-            activityTracker.saveConfig();
-        }
     }
 
     public void load() {

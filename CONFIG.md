@@ -4,13 +4,13 @@ Configuration is stored in `plugins/ActivityTracker/config.yml`. Options can als
 
 ## When changes take effect
 
-The plugin reads `config.yml` from disk only when it is enabled (server start or restart). Edit the file while the server is stopped: an edit made while it is running is not picked up, and the next `/at config set` writes the plugin's in-memory settings back to the file, replacing the edit.
+The plugin reads `config.yml` from disk only when it is enabled (server start or restart). Edit the file while the server is stopped: an edit made while it is running is not picked up, and the next `/at config set` writes the plugin's in-memory settings back to the file, replacing the edit. The one exception is `usage-reporting.enabled: false`: an opt-out written while the server is running is kept by every later save (and takes effect at the next start).
 
 A value changed with `/at config set` is saved straight away, but not every option is re-read straight away:
 
 | Takes effect immediately | Takes effect the next time the plugin is enabled |
 |--------------------------|--------------------------------------------------|
-| `debugMode`, `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage`, `discordWebhookQuitMessage` | `restApiEnabled`, `restApiPort`, `usage-reporting.enabled`, `usage-reporting.endpoint`, `usage-reporting.key` |
+| `debugMode`, `discordWebhookEnabled`, `discordWebhookUrl`, `discordWebhookStaffOnly`, `discordWebhookJoinMessage`, `discordWebhookQuitMessage`, `usage-reporting.enabled` set to `false` | `restApiEnabled`, `restApiPort`, `usage-reporting.enabled` set to `true`, `usage-reporting.endpoint`, `usage-reporting.key` |
 
 ## version
 
@@ -118,7 +118,7 @@ discordWebhookQuitMessage: "👋 **{player}** has left the server."
 
 **Type:** boolean  
 **Default:** `true`  
-**Description:** Whether the plugin reports usage events (see [Usage reporting](#usage-reporting) below). Set to `false` to turn it off.
+**Description:** Whether the plugin reports usage events (see [Usage reporting](#usage-reporting) below). Set to `false` to turn it off. Only `true` (or `on`, `yes`, `1`) turns it on; any other value, a quoted `"false"` included, turns it off. The plugin never turns it back on by itself: every save of `config.yml` keeps an `enabled: false` that is on disk, even one written while the server is running, and a `config.yml` that cannot be parsed is never overwritten (reporting stays off until it is fixed). Apart from editing the file, only `/at config set usage-reporting.enabled true` turns it back on.
 
 **Example:**
 
