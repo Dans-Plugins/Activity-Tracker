@@ -1,5 +1,6 @@
 package dansplugins.activitytracker;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import dansplugins.activitytracker.services.ConfigService;
 import dansplugins.activitytracker.services.DiscordWebhookService;
 import dansplugins.activitytracker.services.StorageService;
 import dansplugins.activitytracker.trace.TraceClient;
+import dansplugins.activitytracker.trace.UsageReportingSetting;
 import dansplugins.activitytracker.api.RestApiService;
 import dansplugins.activitytracker.utils.Logger;
 import dansplugins.activitytracker.utils.Scheduler;
@@ -137,6 +139,33 @@ public final class ActivityTracker extends PonderBukkitPlugin {
         return configService.getBoolean("debugMode");
     }
 
+    /**
+     * Every save of config.yml goes through here, so none of them can lose the operator's
+     * settings, usage-reporting opt-out included: a file that cannot be parsed (loaded by Bukkit
+     * as empty, i.e. as the bundled defaults) is never overwritten, and an opt-out written to the
+     * file while the server was running is kept rather than replaced by the stale loaded copy.
+     */
+    @Override
+    public void saveConfig() {
+        saveConfig(false);
+    }
+
+    /**
+     * @param usageReportingSetByOperator true only when the operator has just set
+     *        usage-reporting.enabled with /at config set, the one way the plugin may turn it on
+     */
+    public void saveConfig(boolean usageReportingSetByOperator) {
+        if (!UsageReportingSetting.prepareSave(getConfig(), getConfigFile(), usageReportingSetByOperator)) {
+            getLogger().severe(UsageReportingSetting.UNPARSEABLE_MESSAGE);
+            return;
+        }
+        super.saveConfig();
+    }
+
+    public File getConfigFile() {
+        return new File(getDataFolder(), "config.yml");
+    }
+
     private void initializeConfig() {
         // Writes the bundled config.yml on a fresh install only; an existing file is
         // left alone and Bukkit serves the jar's copy as the defaults for any key it
@@ -180,8 +209,9 @@ public final class ActivityTracker extends PonderBukkitPlugin {
 
     /**
      * Usage reporting: one event now, one per command; see config.yml. The
-     * usage-reporting block is already on disk by now: initializeConfig() copies
-     * the bundled defaults into config.yml and saves it on every enable. The
+     * usage-reporting block is normally on disk by now: initializeConfig() copies
+     * the bundled defaults into config.yml and saves it on every enable, unless
+     * the file cannot be parsed, in which case reporting is off. The
      * server-wide switch, plugins/trace/config.yml, is created by the client if
      * it is missing and honoured if it says enabled: false.
      */

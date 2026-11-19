@@ -6,10 +6,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,16 +36,28 @@ import static org.mockito.Mockito.when;
  * substituted by overriding {@link ConfigService#getConfig()}.
  */
 class ConfigServiceTest {
+    /** Where config.yml would be; nothing is written there unless a test does. */
+    private static File configFile;
+
     private FileConfiguration config;
     private ConfigService configService;
 
+    @TempDir
+    Path folder;
+
     @BeforeEach
     void setUp() {
+        configFile = folder.resolve("config.yml").toFile();
         config = mock(FileConfiguration.class);
         configService = new ConfigService(null) {
             @Override
             public FileConfiguration getConfig() {
                 return config;
+            }
+
+            @Override
+            protected File getConfigFile() {
+                return configFile;
             }
         };
     }
@@ -52,7 +68,7 @@ class ConfigServiceTest {
         // block in its config.yml. Bukkit's one-argument getters fall through
         // to the jar's defaults; the two-argument ones would return their
         // fallback and turn reporting off on every existing installation.
-        when(config.getBoolean("usage-reporting.enabled")).thenReturn(true);
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
         when(config.getString("usage-reporting.endpoint")).thenReturn("https://trace.danielstephenson.dev");
         when(config.getString("usage-reporting.key")).thenReturn("bundled-key");
 
@@ -61,7 +77,7 @@ class ConfigServiceTest {
         assertEquals("bundled-key", configService.getUsageReportingKey());
         verify(config, never()).getString(eq("usage-reporting.key"), anyString());
         verify(config, never()).getString(eq("usage-reporting.endpoint"), anyString());
-        verify(config, never()).getBoolean(eq("usage-reporting.enabled"), anyBoolean());
+        verify(config, never()).get(eq("usage-reporting.enabled"), anyBoolean());
     }
 
     @Test
@@ -79,6 +95,11 @@ class ConfigServiceTest {
             @Override
             public FileConfiguration getConfig() {
                 return onDisk;
+            }
+
+            @Override
+            protected File getConfigFile() {
+                return configFile;
             }
         };
 
@@ -100,7 +121,7 @@ class ConfigServiceTest {
 
     @Test
     void usageReporting_readsTheConfiguredValues() {
-        when(config.getBoolean("usage-reporting.enabled")).thenReturn(false);
+        when(config.get("usage-reporting.enabled")).thenReturn(false);
         when(config.getString("usage-reporting.endpoint")).thenReturn("http://localhost:8080");
         when(config.getString("usage-reporting.key")).thenReturn("abc");
 
@@ -213,6 +234,63 @@ class ConfigServiceTest {
         verify(urlSender, never()).sendMessage(RESTART_HINT);
     }
 
+    @Test
+    void usageReporting_aQuotedFalseIsOff() throws Exception {
+        // getBoolean() reads the string "false" as the bundled default, true.
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.loadFromString("usage-reporting:\n  enabled: \"false\"\n");
+
+        assertFalse(configServiceOver(loaded).isUsageReportingEnabled());
+    }
+
+    @Test
+    void usageReporting_anOptOutOnDiskWinsOverTheLoadedConfig() throws Exception {
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.loadFromString("usage-reporting:\n  enabled: true\n");
+        Files.write(configFile.toPath(), "usage-reporting:\n  enabled: false\n".getBytes(StandardCharsets.UTF_8));
+
+        assertFalse(configServiceOver(loaded).isUsageReportingEnabled());
+    }
+
+    @Test
+    void setConfigOption_onlyUsageReportingEnabledItselfMayChangeTheSwitchOnDisk() throws Exception {
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.loadFromString("debugMode: false\nusage-reporting:\n  enabled: false\n");
+        boolean[] switchSetByOperator = new boolean[1];
+        ConfigService service = new ConfigService(null) {
+            @Override
+            public FileConfiguration getConfig() {
+                return loaded;
+            }
+
+            @Override
+            protected void saveConfig(boolean usageReportingSetByOperator) {
+                switchSetByOperator[0] = usageReportingSetByOperator;
+            }
+        };
+
+        service.setConfigOption("debugMode", "true", mock(CommandSender.class));
+        assertFalse(switchSetByOperator[0], "a save for another option must keep an opt-out on disk");
+
+        service.setConfigOption("usage-reporting.enabled", "true", mock(CommandSender.class));
+        assertTrue(switchSetByOperator[0], "the operator may turn reporting back on");
+        assertTrue(loaded.getBoolean("usage-reporting.enabled"));
+    }
+
+    @Test
+    void setConfigOption_refusesAWholeSection() throws Exception {
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.loadFromString("usage-reporting:\n  enabled: false\n");
+        CommandSender sender = mock(CommandSender.class);
+
+        // configServiceOver() has no plugin instance, so reaching saveConfig() would throw.
+        configServiceOver(loaded).setConfigOption("usage-reporting", "false", sender);
+
+        assertTrue(loaded.isConfigurationSection("usage-reporting"));
+        assertEquals(false, loaded.get("usage-reporting.enabled"));
+        verify(sender).sendMessage(ChatColor.RED + "That config option wasn't found.");
+    }
+
     /** A ConfigService whose successful sets save nowhere, since there is no plugin instance. */
     private static ConfigService savingConfigServiceOver(FileConfiguration onDisk) {
         return new ConfigService(null) {
@@ -222,7 +300,7 @@ class ConfigServiceTest {
             }
 
             @Override
-            protected void saveConfig() {
+            protected void saveConfig(boolean usageReportingSetByOperator) {
             }
         };
     }
@@ -232,6 +310,11 @@ class ConfigServiceTest {
             @Override
             public FileConfiguration getConfig() {
                 return onDisk;
+            }
+
+            @Override
+            protected File getConfigFile() {
+                return configFile;
             }
         };
     }

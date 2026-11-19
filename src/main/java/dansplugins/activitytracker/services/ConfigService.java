@@ -4,7 +4,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.io.File;
+
 import dansplugins.activitytracker.ActivityTracker;
+import dansplugins.activitytracker.trace.UsageReportingSetting;
 
 /*
     To add a new config option, the following methods must be altered:
@@ -29,8 +32,6 @@ public class ConfigService {
     };
 
     private final ActivityTracker activityTracker;
-
-    private boolean altered = false;
 
     public ConfigService(ActivityTracker activityTracker) {
         this.activityTracker = activityTracker;
@@ -72,14 +73,18 @@ public class ConfigService {
         }
         // The usage-reporting block is not set here: it lives in the bundled
         // config.yml, which Bukkit registers as the defaults for this file, and
-        // copyDefaults(true) below writes it out with everything else.
+        // copyDefaults(true) below writes it out with everything else. The save
+        // keeps an opt-out already in the file, and does not write at all over a
+        // file that cannot be parsed (see ActivityTracker#saveConfig).
         getConfig().options().copyDefaults(true);
         activityTracker.saveConfig();
     }
 
     public void setConfigOption(String option, String value, CommandSender sender) {
 
-        if (getConfig().isSet(option)) {
+        // A whole section such as usage-reporting is not one option; setting it would replace
+        // the block with a string, and its keys would then read as the bundled defaults.
+        if (getConfig().isSet(option) && !getConfig().isConfigurationSection(option)) {
 
             if (option.equalsIgnoreCase("version")) {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
@@ -121,9 +126,8 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.YELLOW + "Restart the server for this change to take effect.");
             }
 
-            // save
-            saveConfig();
-            altered = true;
+            // save; only setting usage-reporting.enabled itself may change it on disk
+            saveConfig(option.equalsIgnoreCase(USAGE_REPORTING_ENABLED_KEY));
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
         }
@@ -176,12 +180,13 @@ public class ConfigService {
     }
 
     /** Overridable so tests can exercise a successful set without a plugin instance. */
-    protected void saveConfig() {
-        activityTracker.saveConfig();
+    protected void saveConfig(boolean usageReportingSetByOperator) {
+        activityTracker.saveConfig(usageReportingSetByOperator);
     }
 
-    public boolean hasBeenAltered() {
-        return altered;
+    /** Overridable so tests can point at a config.yml without a plugin instance. */
+    protected File getConfigFile() {
+        return activityTracker.getConfigFile();
     }
 
     public FileConfiguration getConfig() {
@@ -213,8 +218,13 @@ public class ConfigService {
     // reporting off on every existing installation. Verified against
     // YamlConfiguration, not assumed.
 
+    /**
+     * Fails closed: only a value that clearly means on (not a quoted "false", which
+     * getBoolean() would read as the bundled true) turns reporting on, and an opt-out in
+     * config.yml on disk wins over the loaded copy.
+     */
     public boolean isUsageReportingEnabled() {
-        return getConfig().getBoolean(USAGE_REPORTING_ENABLED_KEY);
+        return UsageReportingSetting.isEnabled(getConfig(), getConfigFile());
     }
 
     public String getUsageReportingEndpoint() {
