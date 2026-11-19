@@ -118,7 +118,7 @@ discordWebhookQuitMessage: "👋 **{player}** has left the server."
 
 **Type:** boolean  
 **Default:** `true`  
-**Description:** Whether the plugin reports usage events (see [Usage reporting](#usage-reporting) below). Set to `false` to turn it off. Only `true` (or `on`, `yes`, `1`) turns it on; any other value, a quoted `"false"` included, turns it off. The plugin never turns it back on by itself: every save of `config.yml` keeps an `enabled: false` that is on disk, even one written while the server is running, and a `config.yml` that cannot be parsed is never overwritten (reporting stays off until it is fixed). Apart from editing the file, only `/at config set usage-reporting.enabled true` turns it back on.
+**Description:** Whether the plugin reports usage events (see [Usage reporting](#usage-reporting) below). Set to `false` to turn it off. Only `true` (or `on`, `yes`, `1`) turns it on; any other value, a quoted `"false"` included, turns it off. The plugin never turns it back on by itself: every save of `config.yml` keeps an `enabled: false` that is on disk, even one written while the server is running, and a `config.yml` that cannot be parsed is never overwritten (reporting stays off until it is fixed). Apart from editing the file, only `/at config set usage-reporting.enabled true` turns it back on. Other spellings of the block or the switch (`usage_reporting:`, `usageReporting:`, `enable: false`, `disabled: true`), or `usage-reporting: false`, also count as off.
 
 **Example:**
 
