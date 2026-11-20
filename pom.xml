@@ -6,7 +6,7 @@
 
     <groupId>dansplugins</groupId>
     <artifactId>ActivityTracker</artifactId>
-    <version>1.10.2-SNAPSHOT</version>
+    <version>1.11.0</version>
     <packaging>jar</packaging>
 
     <name>ActivityTracker</name>
