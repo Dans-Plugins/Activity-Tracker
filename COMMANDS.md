@@ -67,7 +67,7 @@ All commands use the base command `/at` (or `/activitytracker`).
 
 ### /at config set \<option\> \<value\>
 
-**Description:** Modifies a plugin configuration option. Boolean options accept only `true` or `false`, and `restApiPort` accepts only a whole number from 1 to 65535; any other value is rejected and the option is left unchanged. The value is everything after the option name, so it may contain spaces. The change is saved straight away, but `restApiEnabled`, `restApiPort` and the `usage-reporting.*` options only take effect after a server restart, and the reply to setting one of them says so; see [CONFIG.md](CONFIG.md#when-changes-take-effect).  
+**Description:** Modifies a plugin configuration option. Boolean options accept only `true` or `false`, and `restApiPort` accepts only a whole number from 1 to 65535; any other value is rejected and the option is left unchanged. The option name must be typed exactly as `/at config show` lists it, capitals included: `/at config set debugmode true` replies `That config option wasn't found.` The value is everything after the option name, so it may contain spaces. The change is saved straight away, but `restApiEnabled`, `restApiPort` and the `usage-reporting.*` options only take effect after a server restart, and the reply to setting one of them says so. The exception is `usage-reporting.enabled false`, which stops usage reporting at once, with no restart reply; see [CONFIG.md](CONFIG.md#when-changes-take-effect).  
 **Permission:** `at.config`  
 **Usage:** `/at config set <option> <value>`  
 **Example:** `/at config set debugMode true`, `/at config set discordWebhookJoinMessage Welcome back {player}!`

@@ -324,6 +324,21 @@ class ConfigServiceTest {
         verify(sender).sendMessage(ChatColor.RED + "That config option wasn't found.");
     }
 
+    @Test
+    void setConfigOption_matchesOptionNamesExactly() throws Exception {
+        // COMMANDS.md documents that option names are case-sensitive.
+        YamlConfiguration loaded = new YamlConfiguration();
+        loaded.loadFromString("debugMode: false\n");
+        CommandSender sender = mock(CommandSender.class);
+
+        // configServiceOver() has no plugin instance, so reaching saveConfig() would throw.
+        configServiceOver(loaded).setConfigOption("debugmode", "true", sender);
+
+        assertEquals(false, loaded.get("debugMode"));
+        assertFalse(loaded.isSet("debugmode"));
+        verify(sender).sendMessage(ChatColor.RED + "That config option wasn't found.");
+    }
+
     /** A ConfigService whose successful sets save nowhere, since there is no plugin instance. */
     private static ConfigService savingConfigServiceOver(FileConfiguration onDisk) {
         return new ConfigService(null) {
